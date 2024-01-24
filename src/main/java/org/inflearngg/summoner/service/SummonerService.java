@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.inflearngg.match.dto.response.MatchingResponseDto;
 import org.inflearngg.match.repository.MatchRepository;
 import org.inflearngg.summoner.dto.response.SummonerResponseDto;
-import org.inflearngg.summoner.repository.SummonerRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,7 +18,6 @@ public class SummonerService {
     private String API_KEY = "RGAPI-4368f3ed-e6f2-425f-89a5-2ac000869dbc";
     String API_URL = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}?api_key={api_key}";
     String API_URL_RANK = "https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerId}?api_key={api_key}";
-    private final SummonerRepository summonerRepository;
 
     // riotAPI 요청으로 소환사 정보 가져오기
     private RestTemplate restTemplate = new RestTemplate();
@@ -29,16 +27,6 @@ public class SummonerService {
     public SummonerInfo.SummonerBasicInfo getSummonerBasicInfo(String puuid) {
         try {
             ResponseEntity<SummonerInfo.SummonerBasicInfo> summonerEntity = restTemplate.getForEntity(API_URL, SummonerInfo.SummonerBasicInfo.class, puuid, API_KEY);
-            /**
-             *  모두 출력해보기
-             */
-            System.out.println("소환사 정보 : " + summonerEntity.getBody());
-            System.out.println("소환사 이름 : " + summonerEntity.getBody().getName());
-            System.out.println("소환사 레벨 : " + summonerEntity.getBody().getSummonerLevel());
-            System.out.println("소환사 아이디 : " + summonerEntity.getBody().getId());
-            System.out.println("소환사 puuid : " + summonerEntity.getBody().getPuuid());
-            System.out.println("소환사 profileIconId : " + summonerEntity.getBody().getProfileIconId());
-
 
             if(summonerEntity.getStatusCode().is2xxSuccessful()) {
                 return summonerEntity.getBody();
