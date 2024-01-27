@@ -25,7 +25,7 @@ public class ProcessingMatchInfo {
     @NoArgsConstructor
     public static class Info{
         private int gameDuration;
-        private int gameEndStamp;
+        private String gameEndStamp;
         private String queueType; // 게임 유형
         private boolean quickShutdown; // 다시 하기 유무
         private MaxDamage maxDamage;
@@ -88,6 +88,13 @@ public class ProcessingMatchInfo {
         private int spell1Id;
         private int spell2Id;
         private String pUuid;
+
+        public void setLane(String lane) {
+            this.lane = lane;
+            if(lane.equals("UTILITY")){
+                this.lane = "SUPPORT";
+            }
+        }
     }
 
     @Getter
