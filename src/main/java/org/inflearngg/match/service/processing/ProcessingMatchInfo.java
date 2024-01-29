@@ -1,4 +1,4 @@
-package org.inflearngg.match.service;
+package org.inflearngg.match.service.processing;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,9 @@ import org.inflearngg.match.dto.response.MatchingResponseDto;
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
+@Getter
+@NoArgsConstructor
 public class ProcessingMatchInfo {
 
     @Getter
@@ -16,20 +19,22 @@ public class ProcessingMatchInfo {
     @NoArgsConstructor
     public static class MatchData {
         private Info info;
-        private ParticipantInfo currentSummonerMatchData;
+        private ParticipantInfo currentSummonerRankInfo;
         private Team red;
         private Team blue;
     }
+
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class Info{
+    public static class Info {
         private int gameDuration;
         private String gameEndStamp;
         private String queueType; // 게임 유형
         private boolean quickShutdown; // 다시 하기 유무
         private MaxDamage maxDamage;
     }
+
     @Getter
     @Setter
     @NoArgsConstructor
@@ -49,11 +54,12 @@ public class ProcessingMatchInfo {
         // getters and setters
 
     }
+
     // 가공 해야됨.
     @Getter
     @Setter
     @NoArgsConstructor
-    protected static class Objectives {
+    public static class Objectives {
         private int baron;
         private int dragon;
         private int horde;
@@ -63,10 +69,11 @@ public class ProcessingMatchInfo {
 
         // getters and setters
     }
+
     @Getter
     @Setter
     @NoArgsConstructor
-    protected static class ParticipantInfo {
+    public static class ParticipantInfo {
         // 라인이 있으면 좋을 듯
         private String lane;
         private int kill;
@@ -91,7 +98,7 @@ public class ProcessingMatchInfo {
 
         public void setLane(String lane) {
             this.lane = lane;
-            if(lane.equals("UTILITY")){
+            if (lane.equals("UTILITY")) {
                 this.lane = "SUPPORT";
             }
         }
@@ -100,20 +107,22 @@ public class ProcessingMatchInfo {
     @Getter
     @Setter
     @AllArgsConstructor
-    protected static class Perks {
+    public static class Perks {
         private PerkDetail main;
         private PerkDetail sub;
 
         // getters and setters
     }
+
     @Getter
     @Setter
     @AllArgsConstructor
-    protected static class PerkDetail {
+    public static class PerkDetail {
         private int perkStyle;
         private ArrayList<Integer> perkList;
         // getters and setters
     }
+
     @Getter
     @Setter
     @NoArgsConstructor
