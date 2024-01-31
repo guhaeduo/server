@@ -12,7 +12,7 @@ public class MatchInfo {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class ApiData{
+    public static class ApiData {
         private Object metadata;
         private MatchBasicInfo info;
     }
@@ -29,7 +29,7 @@ public class MatchInfo {
 //        private String maxDamage;
         private ParticipantInfo[] participants;
         private Team[] teams;
-        private String queueId; //queueType 랭크유무
+        private int queueId; //queueType 랭크유무
         private String mapId;
         private String seasonId;
         private String gameVersion;
@@ -40,13 +40,14 @@ public class MatchInfo {
     @Setter
     @NoArgsConstructor
     public static class ParticipantInfo {
+        private int timePlayed; // 게임 시간
         private int kills; // 총킬수
         private int killingSprees; // 연속킬
         private int deaths; // 죽은 총 횟수
         private int assists; // 어시스트
         private int totalMinionsKilled; // 미니언 킬
         private String championName; // 챔피언 이름
-        private String championId; // 챔피언 id
+        private int championId; // 챔피언 icon number
         private int champLevel; // 챔피언 레벨
         private String riotIdGameName; // 게임 이름
         private String riotIdTagline; // 소환사 태그
@@ -71,44 +72,58 @@ public class MatchInfo {
         private int summoner2Id; // 스펠2 id
         private String puuid; // puuid
         private Perks perks;
+        private boolean isWin; // 승리여부
+        private Challenges challenges; // 킬관여율
         private int teamId;
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        public static class Perks {
+            private StatePerks statPerks;
+            private Style[] styles; // 메인룬, 보조룬 배열
+
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            protected static class StatePerks { // 스탯 룬
+                private int defense; // 방어
+                private int flex; // 유틸
+                private int offense; // 공격
+            }
+
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class Style { // 룬
+                protected String description; // 메인(primaryStyle)인지 서브(subStyle)인지
+                private int style; // 룬 스타일 (지배, 결의, 영감, 마법(8200), 정밀(8000))
+                private Selections[] selections; // 선택한 룬의 ID
+
+                @Getter
+                @Setter
+                @NoArgsConstructor
+                public static class Selections { // 룬
+                    private int perk; // 선택한 id(정밀의 경우, 집공, 침착, )
+                    private int var1; // 해당룬으로 얻은 게임 내 성과 데이터
+                    private int var2;
+                    private int var3;
+                }
+            }
+        }
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        public static class Challenges { // 킬관여율
+            private double kda;
+            private double killParticipation;
+            private double visionScorePerMinute;
+        }
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    protected static class Perks {
-        private StatePerks statPerks;
-        private Style[] styles; // 메인룬, 보조룬 배열
-    }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    protected static class StatePerks { // 스탯 룬
-        private int defense; // 방어
-        private int flex; // 유틸
-        private int offense; // 공격
-    }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    protected static class Style { // 룬
-        protected String description; // 메인(primaryStyle)인지 서브(subStyle)인지
-        private int style; // 룬 스타일 (지배, 결의, 영감, 마법(8200), 정밀(8000))
-        private Selections[] selections; // 선택한 룬의 ID
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    protected static class Selections { // 룬
-        private int perk; // 선택한 id(정밀의 경우, 집공, 침착, )
-        private int var1; // 해당룬으로 얻은 게임 내 성과 데이터
-        private int var2;
-        private int var3;
-    }
 
     // 직접구해야됨.
     //    private int totalKill;
@@ -125,58 +140,68 @@ public class MatchInfo {
         private int teamId; // 팀 id( 100 또는 200)
         private boolean win; // 승리여부
 
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        public static class Objectives {
+            private Baron baron;
+            private Dragon dragon;
+            private Horde horde;
+            private Inhibitor inhibitor;
+            private RiftHerald riftHerald;
+            private Tower tower;
+
+
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class Baron { // 바론
+                private boolean first;
+                private int kills;
+            }
+
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class Dragon { // 드레곤
+                private boolean first;
+                private int kills;
+            }
+
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class Horde {  // 유충 파괴수
+                private boolean first;
+                private int kills;
+            }
+
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class Inhibitor { // 억제기 파괴수
+                private boolean first;
+                private int kills;
+            }
+
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class RiftHerald { // 전령 획득 수
+                private boolean first;
+                private int kills;
+            }
+
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class Tower { // 타워수
+                private boolean first;
+                private int kills;
+            }
+        }
+
     }
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    public static class Objectives {
-        private Baron baron;
-        private Dragon dragon;
-        private Horde horde;
-        private Inhibitor inhibitor;
-        private RiftHerald riftHerald;
-        private Tower tower;
-    }
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    protected static class Baron{ // 바론
-        private boolean first;
-        private int kills;
-    }
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    protected static class Dragon{ // 드레곤
-        private boolean first;
-        private int kills;
-    }
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    protected static class Horde{  // 유충 파괴수
-        private boolean first;
-        private int kills;
-    }
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    protected static class Inhibitor{ // 억제기 파괴수
-        private boolean first;
-        private int kills;
-    }
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    protected static class RiftHerald{ // 전령 획득 수
-        private boolean first;
-        private int kills;
-    }
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    protected static class Tower{ // 타워수
-        private boolean first;
-        private int kills;
-    }
+
+
 }
