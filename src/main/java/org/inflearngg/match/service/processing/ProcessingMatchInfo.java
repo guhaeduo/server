@@ -54,6 +54,7 @@ public class ProcessingMatchInfo {
 
             info.setMaxDamage(maxDamage);
         }
+
         public static void setProcessingTeamAndCurrentSummonerAndMaxDamageData(int queueType, MatchInfo.ParticipantInfo[] participants, ProcessingMatchInfo.Info.MaxDamage maxDamage, ProcessingMatchInfo.Team redTeam, ProcessingMatchInfo.Team blueTeam, ProcessingMatchInfo.MatchData matchData, ProcessingRankInfo.SummonerRankInfo summonerRankInfo, String curSummonerPuuid) {
             ProcessingMatchInfo.ParticipantInfo participant;
             int redTotalKill = 0;
@@ -100,6 +101,7 @@ public class ProcessingMatchInfo {
                     maxDamage.setRiotGameTag(p.getRiotIdTagline());
                     maxDamage.setRiotGameName(p.getRiotIdGameName());
                     maxDamage.setChampionName(p.getChampionName());
+                    maxDamage.setChampionIconNumber(p.getChampionId());
                 }
             }
 
@@ -114,6 +116,7 @@ public class ProcessingMatchInfo {
             private String riotGameName;
             private String riotGameTag;
             private String championName;
+            private int championIconNumber;
 
             // getters and setters
         }
@@ -123,8 +126,8 @@ public class ProcessingMatchInfo {
     @Setter
     @NoArgsConstructor
     public static class Team {
-        private int totalKill;
-        private int totalDeath;
+        private int totalKills;
+        private int totalDeaths;
         private int totalAssists;
         private int totalGold;
         private int teamMaxDamage;
@@ -137,12 +140,13 @@ public class ProcessingMatchInfo {
 
         // getters and setters
         public static void setTeamData(ProcessingMatchInfo.Team redTeam, int redTotalKill, int redTotalDeath, int redTotalAssists, int redTotalGold, int redMaxDamage) {
-            redTeam.setTotalKill(redTotalKill);
-            redTeam.setTotalDeath(redTotalDeath);
+            redTeam.setTotalKills(redTotalKill);
+            redTeam.setTotalDeaths(redTotalDeath);
             redTeam.setTotalAssists(redTotalAssists);
             redTeam.setTotalGold(redTotalGold);
             redTeam.setTeamMaxDamage(redMaxDamage);
         }
+
         public static void setObjectiveAndIsWinData(MatchInfo.Team[] teams, ProcessingMatchInfo.Team redTeam, ProcessingMatchInfo.Team blueTeam) {
             for (int i = 0; i < teams.length; i++) {
                 if (teams[i].getTeamId() == 100) { //blueTeam
@@ -192,6 +196,7 @@ public class ProcessingMatchInfo {
         private int assist;
         private int minionKill;
         private String championName;
+        private int championIconNumber;
         private int championLevel;
         private String riotName;
         private String riotTag;
@@ -215,6 +220,7 @@ public class ProcessingMatchInfo {
             participantInfo.setAssist(p.getAssists());
             participantInfo.setMinionKill(p.getTotalMinionsKilled());
             participantInfo.setChampionName(p.getChampionName());
+            participantInfo.setChampionIconNumber(p.getChampionId());
             participantInfo.setChampionLevel(p.getChampLevel());
             participantInfo.setRiotName(p.getRiotIdGameName());
             participantInfo.setRiotTag(p.getRiotIdTagline());
@@ -286,7 +292,7 @@ public class ProcessingMatchInfo {
         private int perkStyle;
         private ArrayList<Integer> perkList;
         // getters and setters
-        private static void setPerksDetail(ProcessingMatchInfo.PerkDetail perksDetail,MatchInfo.ParticipantInfo.Perks.Style style) {
+        private static void setPerksDetail(ProcessingMatchInfo.PerkDetail perksDetail, MatchInfo.ParticipantInfo.Perks.Style style) {
             for (MatchInfo.ParticipantInfo.Perks.Style.Selections selection : style.getSelections()) {
                 perksDetail.getPerkList().add(selection.getPerk());
             }

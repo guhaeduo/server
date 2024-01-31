@@ -169,7 +169,7 @@ public class ProcessingRankInfo {
                 private int totalGameCnt;
                 private int wins;
                 //라인별 챔피언
-                private HashMap<Integer, ChampionData> champions;
+                private HashMap<Integer, ChampionData> champions = new HashMap<>();
                 //                private <ChampionData> champions;
 
 
