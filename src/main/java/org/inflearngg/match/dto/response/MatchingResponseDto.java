@@ -17,7 +17,7 @@ public class MatchingResponseDto {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class SummonerRankInfo{
+    public static class SummonerRankInfo {
         private RankInfo info;
         private Lane lane;
 
@@ -25,7 +25,7 @@ public class MatchingResponseDto {
         @Setter
         @AllArgsConstructor
         @NoArgsConstructor
-        public static class RankInfo{
+        public static class RankInfo {
             private double winningRate;
             private int wins;
             private int loses;
@@ -37,10 +37,11 @@ public class MatchingResponseDto {
 
 
         }
+
         @Getter
         @Setter
         @NoArgsConstructor
-        public static class Lane{
+        public static class Lane {
             private RankLaneData all;
             private RankLaneData top;
             private RankLaneData jug;
@@ -51,17 +52,18 @@ public class MatchingResponseDto {
             @Getter
             @Setter
             @NoArgsConstructor
-            @AllArgsConstructor
-            public static class RankLaneData{
+            public static class RankLaneData {
                 private double winningRate;
                 private List<MostChampion> mostChampionlist;
 
+                public RankLaneData(double winningRate) {
+                    this.winningRate = winningRate;
+                }
 
                 @Getter
                 @Setter
                 @NoArgsConstructor
-                @AllArgsConstructor
-                public static class MostChampion{
+                public static class MostChampion {
                     private String championName;
                     private int championIconNumber;
                     private double winningRate;
@@ -69,6 +71,14 @@ public class MatchingResponseDto {
                     private double visionScorePerMinute;
                     private double kda;
                     private double totalKillParticipation;
+
+                    public MostChampion(double winningRate, double csPerMinute, double visionScorePerMinute, double kda, double totalKillParticipation) {
+                        this.winningRate = winningRate;
+                        this.csPerMinute = csPerMinute;
+                        this.visionScorePerMinute = visionScorePerMinute;
+                        this.kda = kda;
+                        this.totalKillParticipation = totalKillParticipation;
+                    }
                 }
             }
         }
@@ -89,22 +99,56 @@ public class MatchingResponseDto {
         @NoArgsConstructor
         public static class MatchInfo {
             private int gameDuration;
-            private int gameEndStamp;
+            //            private int gameEndStamp;
             private String queueType;
             private boolean quickShutdown;
             private MaxDamage maxDamage;
 
             // getters and setters
+            public void setQueueType(int queueType) {
+                switch (queueType) {
+                    case 420:
+                        this.queueType = "솔로랭크";
+                        break;
+                    case 430:
+                        this.queueType = "블라인드 픽(일반)";
+                        break;
+                    case 440:
+                        this.queueType = "자유랭크";
+                        break;
+                    case 450:
+                        this.queueType = "무작위 총력전";
+                        break;
+                    case 840:
+                        this.queueType = "봇전(초급)";
+                        break;
+                    case 850:
+                        this.queueType = "봇전(중급)";
+                        break;
+                    case 900:
+                        this.queueType = "우르프";
+                        break;
+                    case 1010:
+                        this.queueType = "우르프(겨울)";
+                        break;
+                    default:
+                        this.queueType = "기타";
+                        break;
+                }
+            }
 
-            public static class MaxDamage{
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class MaxDamage {
                 private int damage;
                 private String championName;
                 private int championIconNumber;
-
-                private String summonerName;
-                private String summonerTag;
+                private String riotGameName;
+                private String riotGameTag;
             }
         }
+
         @Getter
         @Setter
         @NoArgsConstructor
@@ -120,8 +164,8 @@ public class MatchingResponseDto {
             private String championName;
             private int championIconNumber;
             private int championLevel;
-            private String riotName;
-            private String riotTag;
+            private String riotGameName;
+            private String riotGameTag;
             private int totalDamage;
             private int totalGold;
             private List<Integer> itemNumberList;
@@ -131,11 +175,12 @@ public class MatchingResponseDto {
             private int wardPlaced;
             private int spell1Id;
             private int spell2Id;
-            private int pUuid;
+            private String pUuid;
 
             // getters and setters
             @Getter
             @Setter
+            @NoArgsConstructor
             public static class Perks {
                 private PerkDetail main;
                 private PerkDetail sub;
@@ -155,10 +200,9 @@ public class MatchingResponseDto {
         @Getter
         @Setter
         @NoArgsConstructor
-        @AllArgsConstructor
         public static class Team {
-            private int totalKill;
-            private int totalDeath;
+            private int totalKills;
+            private int totalDeaths;
             private int totalAssists;
             private int totalGold;
             private int teamMaxDamage;
@@ -171,10 +215,12 @@ public class MatchingResponseDto {
 
             // getters and setters
 
+
+
+
             @Getter
             @Setter
             @NoArgsConstructor
-            @AllArgsConstructor
             public static class Objectives {
                 private int baron;
                 private int dragon;
@@ -190,12 +236,6 @@ public class MatchingResponseDto {
 
 
     }
-
-
-    
-
-
-
 
 
 }
