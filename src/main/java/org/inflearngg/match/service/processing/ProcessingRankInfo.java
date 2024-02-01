@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.inflearngg.match.service.MatchInfo;
+import org.inflearngg.match.service.RiotAPIMatchInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class ProcessingRankInfo {
 
         }
 
-        public static void setSummonerRankAndLane(MatchInfo.ParticipantInfo participantInfo, SummonerRankInfo summonerRankInfo, int queueType) {
+        public static void setSummonerRankAndLane(RiotAPIMatchInfo.ParticipantInfo participantInfo, SummonerRankInfo summonerRankInfo, int queueType) {
             log.info("queue 타입 : " + queueType);
 
             // 개인 렝겜, 혹은 자유 렝겜
@@ -86,7 +86,7 @@ public class ProcessingRankInfo {
             }
         }
 
-        private static void setLaneData(MatchInfo.ParticipantInfo participantInfo, Lane.RankLaneData rankLaneData) {
+        private static void setLaneData(RiotAPIMatchInfo.ParticipantInfo participantInfo, Lane.RankLaneData rankLaneData) {
 
             // 전체게임
             rankLaneData.setTotalGameCnt(rankLaneData.getTotalGameCnt() + 1);
@@ -107,7 +107,7 @@ public class ProcessingRankInfo {
             }
         }
 
-        private static void addChampionData(MatchInfo.ParticipantInfo participantInfo, Lane.RankLaneData lane) {
+        private static void addChampionData(RiotAPIMatchInfo.ParticipantInfo participantInfo, Lane.RankLaneData lane) {
             Lane.RankLaneData.ChampionData championData = lane.getChampions().get(participantInfo.getChampionId());
             championData.setTotalGameCnt(championData.getTotalGameCnt() + 1);
             if (participantInfo.isWin()) {
@@ -121,7 +121,7 @@ public class ProcessingRankInfo {
         }
 
         @NotNull
-        private static Lane.RankLaneData.ChampionData getChampionData(MatchInfo.ParticipantInfo participantInfo) {
+        private static Lane.RankLaneData.ChampionData getChampionData(RiotAPIMatchInfo.ParticipantInfo participantInfo) {
             Lane.RankLaneData.ChampionData championData = new Lane.RankLaneData.ChampionData();
             championData.setChampionName(participantInfo.getChampionName());
             championData.setChampionIconNumber(participantInfo.getChampionId());

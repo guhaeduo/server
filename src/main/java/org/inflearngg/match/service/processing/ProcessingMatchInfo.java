@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.inflearngg.match.dto.response.MatchingResponseDto;
-import org.inflearngg.match.service.MatchInfo;
+import org.inflearngg.match.service.RiotAPIMatchInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ import static org.inflearngg.match.service.processing.ProcessingRankInfo.Summone
 public class ProcessingMatchInfo {
 
 
-    public static void setProcessingInfoData(MatchInfo.MatchBasicInfo riotApiData, ProcessingMatchInfo.Info.MaxDamage maxDamage, ProcessingMatchInfo.MatchData processingData) {
+    public static void setProcessingInfoData(RiotAPIMatchInfo.MatchBasicInfo riotApiData, ProcessingMatchInfo.Info.MaxDamage maxDamage, ProcessingMatchInfo.MatchData processingData) {
         ProcessingMatchInfo.Info info = new ProcessingMatchInfo.Info();
         Info.setMatchGameInfo(info, riotApiData, maxDamage);
         processingData.setInfo(info);
@@ -46,7 +45,7 @@ public class ProcessingMatchInfo {
         private boolean quickShutdown; // 다시 하기 유무
         private MaxDamage maxDamage;
 
-        private static void setMatchGameInfo(ProcessingMatchInfo.Info info, MatchInfo.MatchBasicInfo matchData, ProcessingMatchInfo.Info.MaxDamage maxDamage) {
+        private static void setMatchGameInfo(ProcessingMatchInfo.Info info, RiotAPIMatchInfo.MatchBasicInfo matchData, ProcessingMatchInfo.Info.MaxDamage maxDamage) {
             info.setGameDuration(Integer.parseInt(matchData.getGameDuration()));
             info.setGameEndStamp(matchData.getGameEndTimestamp());
             info.setQueueType(matchData.getQueueId());
@@ -55,7 +54,7 @@ public class ProcessingMatchInfo {
             info.setMaxDamage(maxDamage);
         }
 
-        public static void setProcessingTeamAndCurrentSummonerAndMaxDamageData(int queueType, MatchInfo.ParticipantInfo[] participants, ProcessingMatchInfo.Info.MaxDamage maxDamage, ProcessingMatchInfo.Team redTeam, ProcessingMatchInfo.Team blueTeam, ProcessingMatchInfo.MatchData matchData, ProcessingRankInfo.SummonerRankInfo summonerRankInfo, String curSummonerPuuid) {
+        public static void setProcessingTeamAndCurrentSummonerAndMaxDamageData(int queueType, RiotAPIMatchInfo.ParticipantInfo[] participants, ProcessingMatchInfo.Info.MaxDamage maxDamage, ProcessingMatchInfo.Team redTeam, ProcessingMatchInfo.Team blueTeam, ProcessingMatchInfo.MatchData matchData, ProcessingRankInfo.SummonerRankInfo summonerRankInfo, String curSummonerPuuid) {
             ProcessingMatchInfo.ParticipantInfo participant;
             int redTotalKill = 0;
             int redTotalDeath = 0;
@@ -70,7 +69,7 @@ public class ProcessingMatchInfo {
             blueTeam.setParticipants(new ArrayList<>());
             redTeam.setParticipants(new ArrayList<>());
 
-            for (MatchInfo.ParticipantInfo p : participants) {
+            for (RiotAPIMatchInfo.ParticipantInfo p : participants) {
                 participant = ProcessingMatchInfo.ParticipantInfo.setProcessingParticipantInfo(p);
                 if (p.getPuuid().equals(curSummonerPuuid)) {
                     matchData.setCurrentSummonerRankInfo(participant);
@@ -147,7 +146,7 @@ public class ProcessingMatchInfo {
             redTeam.setTeamMaxDamage(redMaxDamage);
         }
 
-        public static void setObjectiveAndIsWinData(MatchInfo.Team[] teams, ProcessingMatchInfo.Team redTeam, ProcessingMatchInfo.Team blueTeam) {
+        public static void setObjectiveAndIsWinData(RiotAPIMatchInfo.Team[] teams, ProcessingMatchInfo.Team redTeam, ProcessingMatchInfo.Team blueTeam) {
             for (int i = 0; i < teams.length; i++) {
                 if (teams[i].getTeamId() == 100) { //blueTeam
                     Objectives.setObjectives(teams[i], blueTeam);
@@ -173,7 +172,7 @@ public class ProcessingMatchInfo {
         private int tower;
 
         // getters and setters
-        private static void setObjectives(MatchInfo.Team teams, ProcessingMatchInfo.Team team) {
+        private static void setObjectives(RiotAPIMatchInfo.Team teams, ProcessingMatchInfo.Team team) {
             team.setObjectives(new ProcessingMatchInfo.Objectives());
             team.getObjectives().setBaron(teams.getObjectives().getBaron().getKills());
             team.getObjectives().setDragon(teams.getObjectives().getDragon().getKills());
@@ -212,7 +211,7 @@ public class ProcessingMatchInfo {
         private String pUuid;
 
 
-        public static ProcessingMatchInfo.ParticipantInfo setProcessingParticipantInfo(MatchInfo.ParticipantInfo p) {
+        public static ProcessingMatchInfo.ParticipantInfo setProcessingParticipantInfo(RiotAPIMatchInfo.ParticipantInfo p) {
             ProcessingMatchInfo.ParticipantInfo participantInfo = new ProcessingMatchInfo.ParticipantInfo();
             participantInfo.setLane(p.getTeamPosition());
             participantInfo.setKill(p.getKills());
@@ -268,13 +267,13 @@ public class ProcessingMatchInfo {
         private PerkDetail sub;
 
         // getters and setters
-        private static void setPerks(MatchInfo.ParticipantInfo p, ProcessingMatchInfo.ParticipantInfo participantInfo) {
+        private static void setPerks(RiotAPIMatchInfo.ParticipantInfo p, ProcessingMatchInfo.ParticipantInfo participantInfo) {
             // 초기화
             ProcessingMatchInfo.PerkDetail mainPerk = new ProcessingMatchInfo.PerkDetail(0, new ArrayList<>());
             ProcessingMatchInfo.PerkDetail subPerk = new ProcessingMatchInfo.PerkDetail(0, new ArrayList<>());
             participantInfo.setPerks(new ProcessingMatchInfo.Perks(mainPerk, subPerk));
 
-            for (MatchInfo.ParticipantInfo.Perks.Style style : p.getPerks().getStyles()) {
+            for (RiotAPIMatchInfo.ParticipantInfo.Perks.Style style : p.getPerks().getStyles()) {
                 if (style.getDescription().equals("primaryStyle")) {
                     PerkDetail.setPerksDetail(mainPerk, style);
                 }
@@ -292,8 +291,8 @@ public class ProcessingMatchInfo {
         private int perkStyle;
         private ArrayList<Integer> perkList;
         // getters and setters
-        private static void setPerksDetail(ProcessingMatchInfo.PerkDetail perksDetail, MatchInfo.ParticipantInfo.Perks.Style style) {
-            for (MatchInfo.ParticipantInfo.Perks.Style.Selections selection : style.getSelections()) {
+        private static void setPerksDetail(ProcessingMatchInfo.PerkDetail perksDetail, RiotAPIMatchInfo.ParticipantInfo.Perks.Style style) {
+            for (RiotAPIMatchInfo.ParticipantInfo.Perks.Style.Selections selection : style.getSelections()) {
                 perksDetail.getPerkList().add(selection.getPerk());
             }
             perksDetail.setPerkStyle(style.getStyle());

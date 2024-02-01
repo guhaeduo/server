@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-
-public class MatchInfo {
+public class RiotAPIMatchInfo {
 
     // 현재 조회중인 소환사 데이터는 별도로 저장해야됨. currentSummonerMatchData
     @Getter
