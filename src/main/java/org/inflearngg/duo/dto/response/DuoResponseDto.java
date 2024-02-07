@@ -1,12 +1,15 @@
 package org.inflearngg.duo.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.querydsl.core.annotations.QueryProjection;
+import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.core.types.dsl.StringPath;
+import lombok.*;
 import org.inflearngg.duo.dto.request.DuoRequestDto;
 
 import java.util.List;
+
+import static org.inflearngg.duo.dto.response.DuoResponseDto.Position.*;
 
 public class DuoResponseDto {
     @Getter
@@ -19,14 +22,15 @@ public class DuoResponseDto {
         private int totalElements;
         private boolean hasNext;
         private boolean hasPrevious;
-        private List<DuoSearch> duoSearchList;
+        private List<DuoInfo> duoSearchList;
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    public static class DuoSearch {
-        private int postId;
+
+    // 동적 쿼리로 나온 결과물
+    @Data
+    @AllArgsConstructor
+    public static class DuoInfo {
+        private Long postId;
         private String riotGameName;
         private String riotGameTag;
         private String pUuid;
@@ -38,31 +42,55 @@ public class DuoResponseDto {
         private boolean isMicOn;
         private String memo;
 
+        public DuoInfo(Long postId, String riotGameName, String riotGameTag, String pUuid, boolean isRiotVerified, String needPosition, String needQueueType, String needTier, String mainLane, String mainChamp, int mainChampIconNum,String subLane, String subChamp, int subChampIconNum, boolean isMicOn, String memo) {
+            this.postId = postId;
+            this.riotGameName = riotGameName;
+            this.riotGameTag = riotGameTag;
+            this.pUuid = pUuid;
+            this.isRiotVerified = isRiotVerified;
+            this.needPosition = needPosition;
+            this.needQueueType = needQueueType;
+            this.needTier = needTier;
+            this.myPosition = new Position(new Main(mainLane, mainChamp, mainChampIconNum), new Sub(subLane, subChamp, subChampIconNum));
+            this.isMicOn = isMicOn;
+            this.memo = memo;
+        }
     }
 
     @Getter
     @Setter
-    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Position {
-        private DuoRequestDto.Position.Main main;
-        private DuoRequestDto.Position.Sub sub;
+        private Main main;
+        private Sub sub;
+
 
         @Getter
         @Setter
-        @AllArgsConstructor
         public static class Main {
             private String lane;
             private String championName;
             private int championIconNumber;
+
+            public Main(String lane, String championName, int championIconNumber) {
+                this.lane = lane;
+                this.championName = championName;
+                this.championIconNumber = championIconNumber;
+            }
         }
 
         @Getter
         @Setter
-        @AllArgsConstructor
         public static class Sub {
             private String lane;
             private String championName;
             private int championIconNumber;
+
+            public Sub(String lane, String championName, int championIconNumber) {
+                this.lane = lane;
+                this.championName = championName;
+                this.championIconNumber = championIconNumber;
+            }
         }
     }
 }

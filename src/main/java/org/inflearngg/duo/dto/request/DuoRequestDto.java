@@ -1,22 +1,16 @@
 package org.inflearngg.duo.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 public class DuoRequestDto {
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
+
+    @Data
     public static class DuoSearch {
-        private int pageIndex;
-        private int pageSize; // 고정
-        private String Lane;
-        private String queueType;
-        private String tier;
-        private boolean isRiotVerified;
+        private String lane; // 동적
+        private String queueType; // 동적
+        private String tier; // 동적
+        private boolean isRiotVerified; // 동적
 
 
     }

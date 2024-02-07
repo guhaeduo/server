@@ -1,10 +1,7 @@
 package org.inflearngg.duo.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -12,7 +9,6 @@ import java.time.LocalDate;
 @Setter
 @Getter
 @NoArgsConstructor
-@RequiredArgsConstructor
 public class DuoPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,5 +36,33 @@ public class DuoPost {
     private boolean isMicOn;
     private String memo;
     // 유저랑 연관관계 매핑해야됨.
+
+    public DuoPost(String riotGameName, String riotGameTag, String pUuid){
+        this(false, null, riotGameName, riotGameTag, pUuid, "TOP", "SOLO", "IRON", "MID", "ZED", 238, "BOT", "KAI'SA", 145, true, "test");
+    }
+
+    public DuoPost(String riotGameName, String riotGameTag, String pUuid, boolean isRiotVerified) {
+        this(isRiotVerified, null, riotGameName, riotGameTag, pUuid, "TOP", "SOLO", "IRON", "MID", "ZED", 238, "BOT", "KAI'SA", 145, true, "test");
+    }
+
+    public DuoPost(boolean isRiotVerified, String postPassword, String riotGameName, String riotGameTag, String pUuid, String needPosition, String needQueueType, String needTier, String myMainLane, String myMainChampionName, int myMainChampionIconNumber, String mySubLane, String mySubChampionName, int mySubChampionIconNumber, boolean isMicOn, String memo) {
+        this.isRiotVerified = isRiotVerified;
+        this.postPassword = postPassword;
+        this.riotGameName = riotGameName;
+        this.riotGameTag = riotGameTag;
+        this.pUuid = pUuid;
+        this.needPosition = needPosition;
+        this.needQueueType = needQueueType;
+        this.needTier = needTier;
+        this.myMainLane = myMainLane;
+        this.myMainChampionName = myMainChampionName;
+        this.myMainChampionIconNumber = myMainChampionIconNumber;
+        this.mySubLane = mySubLane;
+        this.mySubChampionName = mySubChampionName;
+        this.mySubChampionIconNumber = mySubChampionIconNumber;
+        this.isMicOn = isMicOn;
+        this.memo = memo;
+    }
+
 
 }
