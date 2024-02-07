@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.inflearngg.duo.dto.request.DuoRequestDto;
 import org.inflearngg.duo.dto.response.DuoResponseDto;
 import org.inflearngg.duo.service.DuoService;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,10 +16,8 @@ public class DuoController {
     private final DuoService duoService;
 
     @GetMapping("/{page}")
-    public DuoResponseDto.PageInfo getDuoList(@PathVariable int page, @RequestBody DuoRequestDto.DuoSearch duoSearch) {
-        duoService.getDuoList(page, duoSearch);
-
-        return null;
+    public Page<DuoResponseDto.DuoInfo> getDuoList(@PathVariable int page, @RequestBody DuoRequestDto.DuoSearch duoSearch) {
+        return duoService.getDuoList(page, duoSearch);
     }
 
     @GetMapping("/post/{postId}")
