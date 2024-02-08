@@ -12,23 +12,11 @@ import java.util.List;
 import static org.inflearngg.duo.dto.response.DuoResponseDto.Position.*;
 
 public class DuoResponseDto {
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    public static class PageInfo{
-        private int totalPage;
-        private int currentPage;
-        private int pageSize;
-        private int totalElements;
-        private boolean hasNext;
-        private boolean hasPrevious;
-        private List<DuoInfo> duoSearchList;
-    }
 
 
     // 동적 쿼리로 나온 결과물
-    @Data
-    @AllArgsConstructor
+    @Getter
+    @Setter
     public static class DuoInfo {
         private Long postId;
         private String riotGameName;
@@ -54,6 +42,10 @@ public class DuoResponseDto {
             this.myPosition = new Position(new Main(mainLane, mainChamp, mainChampIconNum), new Sub(subLane, subChamp, subChampIconNum));
             this.isMicOn = isMicOn;
             this.memo = memo;
+        }
+
+        public void setMyPosition(String myMainLane, String myMainChampionName, int myMainChampionIconNumber, String mySubLane, String mySubChampionName, int mySubChampionIconNumber) {
+            this.myPosition = new Position(new Main(myMainLane, myMainChampionName, myMainChampionIconNumber), new Sub(mySubLane, mySubChampionName, mySubChampionIconNumber));
         }
     }
 

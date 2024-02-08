@@ -24,7 +24,6 @@ public class SummonerController {
 
     //1.소환사 정보
     @GetMapping(value = "/{puuid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
     public SummonerResponseDto.SummonerData getSummonerInfoByPuuid(@PathVariable String puuid) {
 
         SummonerInfo.SummonerBasicInfo summonerBasicInfo = summonerService.getSummonerBasicInfo(puuid);

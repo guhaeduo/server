@@ -40,7 +40,7 @@ public class MatchService {
 
     //전적갯수
     private final int MATCH_CNT = 10;
-    private final int THRED_CNT = 2;
+    private final int THRED_CNT = 3;
     String API_URL_MathIdList = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?count={cnt}";
     String API_URL_MathData = "https://asia.api.riotgames.com/lol/match/v5/matches/{matchId}";
     private final RestTemplate restTemplate = new RestTemplate();
@@ -91,7 +91,7 @@ public class MatchService {
         for (String matchId : matchIdList) {
             futures.add(CompletableFuture.supplyAsync(() -> getMatchData(matchId))
                     .thenApply(completableFuture -> {
-                        MatchInfo.MatchBasicInfo riotApiData = null;
+                        RiotAPIMatchInfo.MatchBasicInfo riotApiData = null;
                         try {
                             riotApiData = completableFuture.get();
                             log.info("킬관여울 직접받기 : " + completableFuture.get().getParticipants()[0].getChallenges().getKillParticipation());
@@ -123,11 +123,11 @@ public class MatchService {
 
 
     @Async
-    public CompletableFuture<MatchInfo.MatchBasicInfo> getMatchData(String matchId) {
+    public CompletableFuture<RiotAPIMatchInfo.MatchBasicInfo> getMatchData(String matchId) {
 
         headers.set("X-Riot-Token", API_KEY);
         try {
-            ResponseEntity<MatchInfo.ApiData> matchInfo = restTemplate.exchange(API_URL_MathData, HttpMethod.GET, entity, MatchInfo.ApiData.class, matchId);
+            ResponseEntity<RiotAPIMatchInfo.ApiData> matchInfo = restTemplate.exchange(API_URL_MathData, HttpMethod.GET, entity, RiotAPIMatchInfo.ApiData.class, matchId);
             if (matchInfo.getStatusCode().is2xxSuccessful()) {
 //                내용전부 출력해보기
 //                String threadName = Thread.currentThread().getName();
