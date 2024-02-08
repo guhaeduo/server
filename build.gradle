@@ -56,6 +56,9 @@ tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     dependsOn test
 }
+tasks.named('build') {
+    dependsOn clean
+}
 
 generateJava {
     schemaPaths = ["${projectDir}/src/main/resources/graphql-client"]
@@ -70,6 +73,7 @@ sourceSets {
         }
     }
 }
+
 clean {
     delete file('src/main/generated')
 }
