@@ -4,9 +4,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.inflearngg.duo.dto.request.DuoRequestDto;
 import org.inflearngg.duo.dto.response.DuoResponseDto;
+import org.inflearngg.duo.entity.DuoPost;
+import org.inflearngg.duo.mapper.DuoMapper;
 import org.inflearngg.duo.service.DuoService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+
+import static org.inflearngg.duo.dto.request.DuoRequestDto.*;
+import static org.inflearngg.duo.dto.response.DuoResponseDto.*;
 
 @RestController
 @RequestMapping("/api/duo")
@@ -14,19 +19,31 @@ import org.springframework.web.bind.annotation.*;
 public class DuoController {
 
     private final DuoService duoService;
+    private final DuoMapper mapper;
 
     @GetMapping("/{page}")
-    public Page<DuoResponseDto.DuoInfo> getDuoList(@PathVariable int page, @RequestBody DuoRequestDto.DuoSearch duoSearch) {
+    public Page<DuoInfo> getDuoList(@PathVariable int page, @RequestBody DuoSearch duoSearch) {
+        // 추후 mapper 사용하기
         return duoService.getDuoList(page, duoSearch);
     }
 
     @GetMapping("/post/{postId}")
-    public String getDuoPost(Long postId) {
-        return "hello";
+    public DuoInfo getDuoPost(@PathVariable Long postId) { // 상세조회
+        return mapper.duoPostToDuoResponseDtoDuoInfo(
+                duoService.getDuoPost(postId)
+        );
     }
 
+    @PostMapping("/post")
+    public DuoInfo createDuoPost(@RequestBody DuoPostSave makeDuoPost) {
+        return mapper.duoPostToDuoResponseDtoDuoInfo(
+                duoService.createDuoPost(
+                        mapper.duoPostSaveToDuoPost(makeDuoPost)));
+    }
+
+
     @PatchMapping("/post/{postId}")
-    public String updateDuoPost(Long postId) {
+    public String updateDuoPost(@PathVariable Long postId, @RequestBody DuoPostUpdate duoPostUpdate) {
         return "hello";
     }
 
