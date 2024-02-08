@@ -2,6 +2,7 @@ package org.inflearngg.duo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.inflearngg.user.entity.User;
 
 import java.time.LocalDate;
 
@@ -27,20 +28,27 @@ public class DuoPost {
     private String needPosition;
     private String needQueueType;
     private String needTier;
+
     private String myMainLane;
     private String myMainChampionName;
     private int myMainChampionIconNumber;
     private String mySubLane;
     private String mySubChampionName;
     private int mySubChampionIconNumber;
+
     private boolean isMicOn;
     private String memo;
     // 유저랑 연관관계 매핑해야됨.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
+    // 테스트용 생성자
     public DuoPost(String riotGameName, String riotGameTag, String pUuid){
         this(false, null, riotGameName, riotGameTag, pUuid, "TOP", "SOLO", "IRON", "MID", "ZED", 238, "BOT", "KAI'SA", 145, true, "test");
     }
 
+    // 테스트용 생성자
     public DuoPost(String riotGameName, String riotGameTag, String pUuid, boolean isRiotVerified) {
         this(isRiotVerified, null, riotGameName, riotGameTag, pUuid, "TOP", "SOLO", "IRON", "MID", "ZED", 238, "BOT", "KAI'SA", 145, true, "test");
     }
@@ -64,5 +72,14 @@ public class DuoPost {
         this.memo = memo;
     }
 
-
+    // 추가되면, User에도 추가해야함.
+    public void setUser(User user) {
+        this.user = user;
+        user.getDuoPostList().add(this);
+    }
+    // 제거하면 User에도 제거해야함.
+    public void removeUser(User user) {
+        user.getDuoPostList().remove(this);
+        this.user = null;
+    }
 }

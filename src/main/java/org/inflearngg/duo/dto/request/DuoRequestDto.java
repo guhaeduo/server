@@ -19,6 +19,9 @@ public class DuoRequestDto {
     @Setter
     @NoArgsConstructor
     public static class DuoPostSave {
+        private boolean isLogin;
+        private Long userId;
+        private String pUuid;
         private String riotGameName;
         private String riotGameTag;
         private boolean isRiotVerified;
@@ -29,8 +32,6 @@ public class DuoRequestDto {
         private boolean isMicOn;
         private String memo;
         private String password;
-
-
 
     }
 
