@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.inflearngg.user.entity.User;
+import org.inflearngg.member.entity.Member;
 
 @Entity
 @Setter @Getter
@@ -19,8 +19,8 @@ public class VerifySummoner {
 
     // 유저랑 연관관계 매핑해야됨.
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     // 추가되면, User에도 추가해야함.
 

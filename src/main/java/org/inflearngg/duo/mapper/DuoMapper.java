@@ -3,8 +3,8 @@ package org.inflearngg.duo.mapper;
 import org.inflearngg.duo.dto.request.DuoRequestDto;
 import org.inflearngg.duo.dto.response.DuoResponseDto;
 import org.inflearngg.duo.entity.DuoPost;
-import org.inflearngg.user.entity.User;
-import org.mapstruct.Mapper;
+
+import org.inflearngg.member.entity.Member;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -51,7 +51,7 @@ public class DuoMapper {
         duoPost.setMicOn(duoPostSave.isMicOn());
         duoPost.setMemo(duoPostSave.getMemo());
         if(duoPostSave.isLogin()) // 로그인 했다면.
-            duoPost.setUser(new User(duoPostSave.getUserId()));
+            duoPost.setUser(new Member(duoPostSave.getMemberId()));
         else
             duoPost.setPostPassword(duoPostSave.getPassword());
         return duoPost;

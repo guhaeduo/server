@@ -20,7 +20,7 @@ public class DuoRequestDto {
     @NoArgsConstructor
     public static class DuoPostSave {
         private boolean isLogin;
-        private Long userId;
+        private Long memberId;
         private String pUuid;
         private String riotGameName;
         private String riotGameTag;

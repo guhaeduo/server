@@ -1,10 +1,10 @@
-package org.inflearngg.user.controller;
+package org.inflearngg.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class UserController {
+public class MemberController {
 
 }

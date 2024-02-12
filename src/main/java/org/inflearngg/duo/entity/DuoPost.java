@@ -2,7 +2,7 @@ package org.inflearngg.duo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.inflearngg.user.entity.User;
+import org.inflearngg.member.entity.Member;
 
 import java.time.LocalDate;
 
@@ -40,8 +40,8 @@ public class DuoPost {
     private String memo;
     // 유저랑 연관관계 매핑해야됨.
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     // 테스트용 생성자
     public DuoPost(String riotGameName, String riotGameTag, String pUuid){
@@ -73,13 +73,13 @@ public class DuoPost {
     }
 
     // 추가되면, User에도 추가해야함.
-    public void setUser(User user) {
-        this.user = user;
-        user.getDuoPostList().add(this);
+    public void setUser(Member member) {
+        this.member = member;
+        member.getDuoPostList().add(this);
     }
     // 제거하면 User에도 제거해야함.
-    public void removeUser(User user) {
-        user.getDuoPostList().remove(this);
-        this.user = null;
+    public void removeUser(Member member) {
+        member.getDuoPostList().remove(this);
+        this.member = null;
     }
 }

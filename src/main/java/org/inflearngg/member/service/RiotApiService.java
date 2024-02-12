@@ -1,4 +1,4 @@
-package org.inflearngg.user.service;
+package org.inflearngg.member.service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.stereotype.Service;

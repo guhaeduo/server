@@ -6,6 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.inflearngg.duo.entity.DuoPost;
+import org.inflearngg.member.entity.Member;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +16,27 @@ import org.springframework.stereotype.Component;
 public class DuoInit {
 
     private final DuoInitService duoInitService;
+    private final UserInitService userInitService;
 
     @PostConstruct
     public void init() {
+        userInitService.init();
         duoInitService.init();
     }
 
+    @Component
+    static class UserInitService {
+
+        @PersistenceContext
+        private EntityManager em;
+
+        @Transactional
+        public void init() {
+            Member member = new Member("test", "test-pw");
+            em.persist(member);
+            System.out.println("===========UserInitService.init============");
+        }
+    }
 
     @Component
     static class DuoInitService {
@@ -30,6 +46,7 @@ public class DuoInit {
 
         @Transactional
         public void init() {
+
             for (int i = 1; i <= 50; i++) {
                 DuoPost duoPost = new DuoPost("gameName" + i, "KR" + i, "ABCTEST" + i);
                 em.persist(duoPost);

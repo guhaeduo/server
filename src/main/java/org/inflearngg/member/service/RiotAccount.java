@@ -1,4 +1,4 @@
-package org.inflearngg.user.service;
+package org.inflearngg.member.service;
 
 public class RiotAccount {
 
