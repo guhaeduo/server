@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class DuoMapper {
 
     //entity -> responseDto
-    public DuoResponseDto.DuoInfo duoPostToDuoResponseDtoDuoInfo(DuoPost duoPost){
+    public DuoResponseDto.DuoInfo duoPostToDuoResponseDtoDuoInfo(DuoPost duoPost) {
         return new DuoResponseDto.DuoInfo(
                 duoPost.getPostId(),
                 duoPost.getRiotGameName(),
@@ -32,12 +32,34 @@ public class DuoMapper {
                 duoPost.isMicOn(),
                 duoPost.getMemo());
     }
+
     //requestDto -> entity
-    public DuoPost duoPostSaveToDuoPost(DuoRequestDto.DuoPostSave duoPostSave){
+    public DuoPost duoPostSaveToDuoPost(DuoRequestDto.DuoPostSave duoPostSave) {
         DuoPost duoPost = new DuoPost();
-        log.info("duoPostSave.getPUuid() : " + duoPostSave.getPuuid());
         duoPost.setPUuid(duoPostSave.getPuuid());
-        log.info("duoPost.getPUuid() : " + duoPost.getPUuid());
+        setDuplicateDuoPost(duoPostSave, duoPost);
+        log.info("isLogin : " + duoPostSave.getLogin());
+        if (duoPostSave.getLogin()) {
+            log.info("memberId : " + duoPostSave.getMemberId());
+            duoPost.setUser(new Member(duoPostSave.getMemberId()));
+        } else
+            duoPost.setPostPassword(duoPostSave.getPassword());
+        return duoPost;
+    }
+
+
+    public DuoPost duoPostUpdateToDuoPost(DuoRequestDto.DuoPostUpdate duoPostUpdate) {
+        DuoPost duoPost = new DuoPost();
+        duoPost.setPostId(duoPostUpdate.getPostId());
+        setDuplicateDuoPost(duoPostUpdate, duoPost);
+        if (duoPostUpdate.getMemberId() != null)
+            duoPost.setMember(new Member(duoPostUpdate.getMemberId()));
+        if (duoPostUpdate.getPasswordCheck() != null)
+            duoPost.setPostPassword(duoPostUpdate.getPasswordCheck());
+        return duoPost;
+    }
+
+    private static void setDuplicateDuoPost(DuoRequestDto.DuoPostSaveData duoPostSave, DuoPost duoPost) {
         duoPost.setRiotGameName(duoPostSave.getRiotGameName());
         duoPost.setRiotGameTag(duoPostSave.getRiotGameTag());
         duoPost.setRiotVerified(duoPostSave.isRiotVerified());
@@ -50,14 +72,7 @@ public class DuoMapper {
         duoPost.setMySubLane(duoPostSave.getMyPosition().getSub().getLane());
         duoPost.setMySubChampionName(duoPostSave.getMyPosition().getSub().getChampionName());
         duoPost.setMySubChampionIconNumber(duoPostSave.getMyPosition().getSub().getChampionIconNumber());
-
         duoPost.setMicOn(duoPostSave.isMicOn());
         duoPost.setMemo(duoPostSave.getMemo());
-        if(duoPostSave.isLogin()) // 로그인 했다면.
-            duoPost.setUser(new Member(duoPostSave.getMemberId()));
-        else
-            duoPost.setPostPassword(duoPostSave.getPassword());
-        return duoPost;
     }
-
 }
