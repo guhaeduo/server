@@ -22,10 +22,10 @@ public class DuoService {
     private final DuoRepository duoRepository;
     private static final int PAGE_SIZE = 10;
 
-    public  Page<DuoInfo> getDuoList(int page, DuoSearch duoSearch) {
-        Page<DuoInfo> duoInfos = duoRepository.searchDuoList(duoSearch, PageRequest.of(page, PAGE_SIZE));
-        return duoInfos;
+    public Page<DuoInfo> getDuoList(int page, DuoSearch duoSearch) {
+        return duoRepository.searchDuoList(duoSearch, PageRequest.of(page, PAGE_SIZE));
     }
+
     // 상세 조회
     public DuoPost getDuoPost(Long postId) {
         return duoRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
@@ -33,18 +33,16 @@ public class DuoService {
 
     public DuoPost createDuoPost(DuoPost makeDuoPost) {
         log.info("[save]memberId : " + makeDuoPost.getMember().getMemberId());
-        DuoPost save = duoRepository.save(makeDuoPost);
-
-        return save;
+        return duoRepository.save(makeDuoPost);
     }
 
-    public DuoPost updateDuoPost(Long postId,Long memberId, String password, DuoPost duoPostUpdate) {
+    public DuoPost updateDuoPost(Long postId, Long memberId, String password, DuoPost duoPostUpdate) {
         //memberId, passwordCheck 으로 게시판 주인인지 체크
         DuoPost getDuoPost = null;
-        if(memberId != null) {
+        if (memberId != null) {
             getDuoPost = validateMember(postId, memberId);
         }
-        if(password != null) {
+        if (password != null) {
             getDuoPost = validatePassword(postId, password);
         }
         if (getDuoPost == null)
@@ -55,54 +53,80 @@ public class DuoService {
         return duoPost;
     }
 
+    public boolean deleteDuoPost(Long postId, boolean isLogin, String deleteInfo) {
+        DuoPost duoPost = verifiedPostId(postId);
+
+        if (isLogin) {
+            //memberId
+            Long memberId = Long.valueOf(deleteInfo);
+            if (duoPost.getMember().getMemberId().equals(memberId)) {
+                duoRepository.deleteById(postId);
+                return true;
+            }
+            throw new IllegalArgumentException("해당 게시글의 주인이 아닙니다. id=" + postId);
+
+
+        } else {
+            if (duoPost.getPostPassword().equals(deleteInfo)) {
+                duoRepository.deleteById(postId);
+                return true;
+            }
+            throw new IllegalArgumentException("비밀번호가 틀렸습니다. id=" + postId);
+        }
+    }
+
     @NotNull
     private DuoPost getUpdateDuoPost(DuoPost duoPost, DuoPost duoPostUpdate) {
-        if(duoPostUpdate.isRiotVerified() != duoPost.isRiotVerified())
+        if (duoPostUpdate.isRiotVerified() != duoPost.isRiotVerified())
             duoPost.setRiotVerified(duoPostUpdate.isRiotVerified());
-        if(!duoPostUpdate.getRiotGameName().equals(duoPost.getRiotGameName()))
+        if (!duoPostUpdate.getRiotGameName().equals(duoPost.getRiotGameName()))
             duoPost.setRiotGameName(duoPostUpdate.getRiotGameName());
-        if(!duoPostUpdate.getRiotGameTag().equals(duoPost.getRiotGameTag()))
+        if (!duoPostUpdate.getRiotGameTag().equals(duoPost.getRiotGameTag()))
             duoPost.setRiotGameTag(duoPostUpdate.getRiotGameTag());
-        if(!duoPostUpdate.getNeedPosition().equals(duoPost.getNeedPosition()))
+        if (!duoPostUpdate.getNeedPosition().equals(duoPost.getNeedPosition()))
             duoPost.setNeedPosition(duoPostUpdate.getNeedPosition());
-        if(!duoPostUpdate.getNeedQueueType().equals(duoPost.getNeedQueueType()))
+        if (!duoPostUpdate.getNeedQueueType().equals(duoPost.getNeedQueueType()))
             duoPost.setNeedQueueType(duoPostUpdate.getNeedQueueType());
-        if(!duoPostUpdate.getNeedTier().equals(duoPost.getNeedTier()))
+        if (!duoPostUpdate.getNeedTier().equals(duoPost.getNeedTier()))
             duoPost.setNeedTier(duoPostUpdate.getNeedTier());
-        if(!duoPostUpdate.getMyMainLane().equals(duoPost.getMyMainLane()))
+        if (!duoPostUpdate.getMyMainLane().equals(duoPost.getMyMainLane()))
             duoPost.setMyMainLane(duoPostUpdate.getMyMainLane());
-        if(!duoPostUpdate.getMyMainChampionName().equals(duoPost.getMyMainChampionName())){
+        if (!duoPostUpdate.getMyMainChampionName().equals(duoPost.getMyMainChampionName())) {
             duoPost.setMyMainChampionName(duoPostUpdate.getMyMainChampionName());
             duoPost.setMyMainChampionIconNumber(duoPostUpdate.getMyMainChampionIconNumber());
         }
-        if(!duoPostUpdate.getMySubLane().equals(duoPost.getMySubLane()))
+        if (!duoPostUpdate.getMySubLane().equals(duoPost.getMySubLane()))
             duoPost.setMySubLane(duoPostUpdate.getMySubLane());
-        if(!duoPostUpdate.getMySubChampionName().equals(duoPost.getMySubChampionName())){
+        if (!duoPostUpdate.getMySubChampionName().equals(duoPost.getMySubChampionName())) {
             duoPost.setMySubChampionName(duoPostUpdate.getMySubChampionName());
             duoPost.setMySubChampionIconNumber(duoPostUpdate.getMySubChampionIconNumber());
         }
-        if(duoPostUpdate.isMicOn() != duoPost.isMicOn())
+        if (duoPostUpdate.isMicOn() != duoPost.isMicOn())
             duoPost.setMicOn(duoPostUpdate.isMicOn());
-        if(!duoPostUpdate.getMemo().equals(duoPost.getMemo()))
+        if (!duoPostUpdate.getMemo().equals(duoPost.getMemo()))
             duoPost.setMemo(duoPostUpdate.getMemo());
         return duoPost;
     }
 
+    private DuoPost verifiedPostId(Long postId) {
+        return duoRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
+    }
+
     private DuoPost validateMember(Long postId, Long memberId) {
-        DuoPost duoPost = duoRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
-        if(duoPost.getMember().getMemberId().equals(memberId))
+        DuoPost duoPost = verifiedPostId(postId);
+        if (duoPost.getMember().getMemberId().equals(memberId))
             return duoPost;
         throw new IllegalArgumentException("해당 게시글의 주인이 아닙니다. id=" + postId);
 
     }
+
+
     private DuoPost validatePassword(Long postId, String passwordCheck) {
-        DuoPost duoPost = duoRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
-        if(duoPost.getPostPassword().equals(passwordCheck))
+        DuoPost duoPost = verifiedPostId(postId);
+        if (duoPost.getPostPassword().equals(passwordCheck))
             return duoPost;
         throw new IllegalArgumentException("비밀번호가 틀렸습니다. id=" + postId);
     }
-
-
 
 
 }

@@ -1,11 +1,8 @@
 package org.inflearngg.duo.controller;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.inflearngg.duo.dto.request.DuoRequestDto;
-import org.inflearngg.duo.dto.response.DuoResponseDto;
-import org.inflearngg.duo.entity.DuoPost;
+
 import org.inflearngg.duo.mapper.DuoMapper;
 import org.inflearngg.duo.service.DuoService;
 import org.springframework.data.domain.Page;
@@ -58,8 +55,11 @@ public class DuoController {
     }
 
     @DeleteMapping("/post/{postId}")
-    public String deleteDuoPost(Long postId) {
-        return "hello";
+    public String deleteDuoPost(@PathVariable Long postId, @RequestBody DuoPostDelete duoPostDelete) {
+        if(duoService.deleteDuoPost(postId, duoPostDelete.getIsLogin(), duoPostDelete.getDeleteInfo())) {
+            return "delete success";
+        }
+        return "delete fail";
     }
 
 }

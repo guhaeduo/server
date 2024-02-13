@@ -92,8 +92,8 @@ public class DuoRequestDto {
     @Setter
     @NoArgsConstructor
     public static class DuoPostDelete {
-        private Long postId;
-        private String deletePw;
+        private Boolean isLogin; // true면 deleteInfo 에 memberId, false면 deleteInfo 에 password
+        private String deleteInfo;
     }
 
     @Getter
@@ -102,6 +102,11 @@ public class DuoRequestDto {
     public static class Position {
         private Main main;
         private Sub sub;
+        //테스트용
+        public Position(Main main, Sub sub) {
+            this.main = main;
+            this.sub = sub;
+        }
 
         @Getter
         @Setter
