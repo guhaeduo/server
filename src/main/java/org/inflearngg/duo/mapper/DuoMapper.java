@@ -1,5 +1,6 @@
 package org.inflearngg.duo.mapper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.duo.dto.request.DuoRequestDto;
 import org.inflearngg.duo.dto.response.DuoResponseDto;
 import org.inflearngg.duo.entity.DuoPost;
@@ -7,6 +8,7 @@ import org.inflearngg.duo.entity.DuoPost;
 import org.inflearngg.member.entity.Member;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class DuoMapper {
 
@@ -33,14 +35,15 @@ public class DuoMapper {
     //requestDto -> entity
     public DuoPost duoPostSaveToDuoPost(DuoRequestDto.DuoPostSave duoPostSave){
         DuoPost duoPost = new DuoPost();
-        duoPost.setPUuid(duoPostSave.getPUuid());
+        log.info("duoPostSave.getPUuid() : " + duoPostSave.getPuuid());
+        duoPost.setPUuid(duoPostSave.getPuuid());
+        log.info("duoPost.getPUuid() : " + duoPost.getPUuid());
         duoPost.setRiotGameName(duoPostSave.getRiotGameName());
         duoPost.setRiotGameTag(duoPostSave.getRiotGameTag());
         duoPost.setRiotVerified(duoPostSave.isRiotVerified());
         duoPost.setNeedPosition(duoPostSave.getNeedPosition());
         duoPost.setNeedQueueType(duoPostSave.getNeedQueueType());
         duoPost.setNeedTier(duoPostSave.getNeedTier());
-
         duoPost.setMyMainLane(duoPostSave.getMyPosition().getMain().getLane());
         duoPost.setMyMainChampionName(duoPostSave.getMyPosition().getMain().getChampionName());
         duoPost.setMyMainChampionIconNumber(duoPostSave.getMyPosition().getMain().getChampionIconNumber());

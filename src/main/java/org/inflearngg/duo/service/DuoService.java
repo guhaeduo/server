@@ -1,5 +1,6 @@
 package org.inflearngg.duo.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.inflearngg.duo.entity.DuoPost;
 import org.inflearngg.duo.repository.DuoRepository;
@@ -12,6 +13,7 @@ import static org.inflearngg.duo.dto.response.DuoResponseDto.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class DuoService {
 
     private final DuoRepository duoRepository;
@@ -23,7 +25,6 @@ public class DuoService {
     }
     // 상세 조회
     public DuoPost getDuoPost(Long postId) {
-
         return duoRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
     }
 
@@ -31,5 +32,6 @@ public class DuoService {
         DuoPost save = duoRepository.save(makeDuoPost);
         return save;
     }
+
 
 }

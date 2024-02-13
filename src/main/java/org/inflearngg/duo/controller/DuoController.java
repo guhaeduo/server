@@ -2,6 +2,7 @@ package org.inflearngg.duo.controller;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.duo.dto.request.DuoRequestDto;
 import org.inflearngg.duo.dto.response.DuoResponseDto;
 import org.inflearngg.duo.entity.DuoPost;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import static org.inflearngg.duo.dto.request.DuoRequestDto.*;
 import static org.inflearngg.duo.dto.response.DuoResponseDto.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/duo")
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class DuoController {
 
     @PostMapping("/post")
     public DuoInfo createDuoPost(@RequestBody DuoPostSave makeDuoPost) {
+        log.info("makeDuoPost.PUuid : " + makeDuoPost.getPuuid());
         return mapper.duoPostToDuoResponseDtoDuoInfo(
                 duoService.createDuoPost(
                         mapper.duoPostSaveToDuoPost(makeDuoPost)));
@@ -44,6 +47,7 @@ public class DuoController {
 
     @PatchMapping("/post/{postId}")
     public String updateDuoPost(@PathVariable Long postId, @RequestBody DuoPostUpdate duoPostUpdate) {
+
         return "hello";
     }
 

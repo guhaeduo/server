@@ -21,7 +21,7 @@ public class DuoRequestDto {
     public static class DuoPostSave {
         private boolean isLogin;
         private Long memberId;
-        private String pUuid;
+        private String puuid;
         private String riotGameName;
         private String riotGameTag;
         private boolean isRiotVerified;
@@ -32,7 +32,6 @@ public class DuoRequestDto {
         private boolean isMicOn;
         private String memo;
         private String password;
-
     }
 
     @Getter
@@ -49,6 +48,8 @@ public class DuoRequestDto {
         private Position myPosition;
         private boolean isMicOn;
         private String memo;
+        // 체크리스트
+        private String memberId;
         private String passwordCheck;
 
 
