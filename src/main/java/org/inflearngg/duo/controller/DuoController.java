@@ -1,11 +1,13 @@
 package org.inflearngg.duo.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.inflearngg.duo.mapper.DuoMapper;
 import org.inflearngg.duo.service.DuoService;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import static org.inflearngg.duo.dto.request.DuoRequestDto.*;
@@ -21,7 +23,7 @@ public class DuoController {
     private final DuoMapper mapper;
 
     @GetMapping("/{page}")
-    public Page<DuoInfo> getDuoList(@PathVariable int page, @RequestBody DuoSearch duoSearch) {
+    public Page<DuoInfo> getDuoList(@PathVariable("page") int page, @Valid @RequestBody DuoSearch duoSearch) {
         // 추후 mapper 사용하기
         return duoService.getDuoList(page, duoSearch);
     }
@@ -61,5 +63,7 @@ public class DuoController {
         }
         return "delete fail";
     }
+
+
 
 }
