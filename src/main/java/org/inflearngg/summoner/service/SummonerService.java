@@ -1,19 +1,25 @@
 package org.inflearngg.summoner.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SummonerService {
 
     @Value("${spring.api.key}")
     private String API_KEY;
+
+    // kr br, na, euw, eune, jp, oc, las, lan, ru, tr 등 앞에 링크 만 변경하면됨.
+
     String API_URL = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}?api_key={api_key}";
-    String API_URL_RANK = "https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerId}?api_key={api_key}";
+    // 리그 정보 가져오기
+//    String API_URL_RANK = ".api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerId}?api_key={api_key}";
 
     // riotAPI 요청으로 소환사 정보 가져오기
     private final RestTemplate restTemplate = new RestTemplate();
@@ -34,7 +40,9 @@ public class SummonerService {
         }
     }
 
-    public SummonerInfo.RankInfo[] getRankData(String SummonerId) {
+    public SummonerInfo.RankInfo[] getRankData(String region, String SummonerId) {
+        String API_URL_RANK = "https://" + region + ".api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerId}?api_key={api_key}";
+        log.info("API_URL_RANK : " + API_URL_RANK);
         try {
             ResponseEntity<SummonerInfo.RankInfo[]> rankDataEntity = restTemplate.getForEntity(API_URL_RANK, SummonerInfo.RankInfo[].class, SummonerId, API_KEY);
             if (rankDataEntity.getStatusCode().is2xxSuccessful()) {
