@@ -36,7 +36,7 @@ public class DuoController {
     }
 
     @PostMapping("/post")
-    public DuoInfo createDuoPost(@RequestBody DuoPostSave makeDuoPost) {
+    public DuoInfo createDuoPost(@Valid @RequestBody DuoPostSave makeDuoPost) {
         log.info("makeDuoPost.isLogin : " + makeDuoPost.getLogin());
         log.info("makeDuoPost.isRiotVerified : " + makeDuoPost.isRiotVerified());
         return mapper.duoPostToDuoResponseDtoDuoInfo(

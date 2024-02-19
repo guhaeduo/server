@@ -15,13 +15,14 @@ public class MatchApiMapper {
 
     //client.RiotAPIMatchInfo.ApiData -> dto.process.ProcessMatchInfo
 
-    public ProcessMatchInfo mapRiotAPIToProcessMatchInfo(RiotAPIMatchInfo.ApiData apiData, String curPuuid) {
+    public ProcessMatchInfo mapRiotAPIToProcessMatchInfo(RiotAPIMatchInfo.MatchBasicInfo riotApiData, String curPuuid) {
         ProcessMatchInfo processMatchInfo = new ProcessMatchInfo();
-        processMatchInfo.setInfo(mapRiotAPIToInfo(apiData.getInfo()));
+        processMatchInfo.setInfo(mapRiotAPIToInfo(riotApiData));
         processMatchInfo.setCurrentSummonerParticipantInfo(new Team.ParticipantInfo());
         processMatchInfo.setBlue(new Team());
         processMatchInfo.setRed(new Team());
-        setRedTeamAndBlueTeamAndMaxDamageAndCurrentSummoner(processMatchInfo.getRed(), processMatchInfo.getBlue(), apiData.getInfo().getTeams(), apiData.getInfo().getParticipants(), processMatchInfo.getInfo().getMaxDamage(), processMatchInfo, curPuuid);
+        processMatchInfo.getInfo().setMaxDamage(new Info.MaxDamage());
+        setRedTeamAndBlueTeamAndMaxDamageAndCurrentSummoner(processMatchInfo.getRed(), processMatchInfo.getBlue(), riotApiData.getTeams(), riotApiData.getParticipants(), processMatchInfo.getInfo().getMaxDamage(), processMatchInfo, curPuuid);
 
         return processMatchInfo;
     }
@@ -77,7 +78,7 @@ public class MatchApiMapper {
 
     }
 
-    private static void mapToTeamObjectInfo(Team blue, RiotAPIMatchInfo.Team team) {
+    private void mapToTeamObjectInfo(Team blue, RiotAPIMatchInfo.Team team) {
         blue.setTeamName(team.getTeamId());
         blue.setWin(team.isWin());
         blue.setObjectives(
@@ -92,7 +93,7 @@ public class MatchApiMapper {
         );
     }
 
-    private static void mapToTeamParticipantInfo(RiotAPIMatchInfo.ParticipantInfo part, Team team) {
+    private void mapToTeamParticipantInfo(RiotAPIMatchInfo.ParticipantInfo part, Team team) {
         team.addTotalKills(part.getKills());
         team.addTotalDeaths(part.getDeaths());
         team.addTotalAssists(part.getAssists());
@@ -103,7 +104,7 @@ public class MatchApiMapper {
     }
 
     @NotNull
-    private static Team.ParticipantInfo mapToParticipantInfo(RiotAPIMatchInfo.ParticipantInfo part) {
+    private Team.ParticipantInfo mapToParticipantInfo(RiotAPIMatchInfo.ParticipantInfo part) {
         // part -> participantInfo
         Team.ParticipantInfo participantInfo = new Team.ParticipantInfo();
         participantInfo.setLane(part.getTeamPosition());
@@ -145,7 +146,7 @@ public class MatchApiMapper {
     }
 
     @NotNull
-    private static Team.ParticipantInfo.Perks mapToPerks(RiotAPIMatchInfo.ParticipantInfo part) {
+    private Team.ParticipantInfo.Perks mapToPerks(RiotAPIMatchInfo.ParticipantInfo part) {
         Team.ParticipantInfo.Perks perks = new Team.ParticipantInfo.Perks();
         for (RiotAPIMatchInfo.ParticipantInfo.Perks.Style style : part.getPerks().getStyles()) {
             if (style.getDescription().equals("primaryStyle")) {
