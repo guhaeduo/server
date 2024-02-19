@@ -16,6 +16,7 @@ public class ProcessRankInfo {
     public void initRankInfo() {
         this.info = new RankInfo();
         this.lane = new Lane();
+        this.lane.initLane();
 
     }
 

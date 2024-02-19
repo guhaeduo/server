@@ -28,16 +28,22 @@ public class MatchingResponseDto {
         @NoArgsConstructor
         public static class RankInfo {
             private int cntGame;
-            private double winningRate;
+            private String winningRate;
             private int wins;
             private int loses;
 
-            private double kda;
+            private String kda;
             private int killAvg;
             private int deathAvg;
             private int assistAvg;
 
+            public void setWinningRate(double winningRate) {
+                this.winningRate = String.format("%.2f", winningRate);
+            }
 
+            public void setKda(double kda) {
+                this.kda = String.format("%.2f", kda);
+            }
         }
 
         @Getter
@@ -56,11 +62,11 @@ public class MatchingResponseDto {
             @NoArgsConstructor
             public static class RankLaneData {
                 private int cntGame;
-                private double winningRate;
+                private String winningRate;
                 private List<MostChampion> mostChampionlist;
 
-                public RankLaneData(double winningRate) {
-                    this.winningRate = winningRate;
+                public void setWinningRate(double winningRate) {
+                    this.winningRate = String.format("%.2f", winningRate);
                 }
 
                 @Getter
@@ -69,24 +75,38 @@ public class MatchingResponseDto {
                 public static class MostChampion {
                     private String championName;
                     private int championIconNumber;
-                    private double winningRate;
-                    private double csPerMinute;
-                    private double visionScorePerMinute;
-                    private double kda;
-                    private double totalKillParticipation;
+                    private String winningRate;
+                    private String csPerMinute;
+                    private String visionScorePerMinute;
+                    private String kda;
+                    private String avgKillParticipation;
 
-                    public MostChampion(double winningRate, double csPerMinute, double visionScorePerMinute, double kda, double totalKillParticipation) {
-                        this.winningRate = winningRate;
-                        this.csPerMinute = csPerMinute;
-                        this.visionScorePerMinute = visionScorePerMinute;
-                        this.kda = kda;
-                        this.totalKillParticipation = totalKillParticipation;
+
+                    public void setWinningRate(double winningRate) {
+                        this.winningRate = String.format("%.2f", winningRate);
                     }
+
+                    public void setCsPerMinute(double csPerMinute) {
+                        this.csPerMinute = String.format("%.2f", csPerMinute);
+                    }
+
+                    public void setVisionScorePerMinute(double visionScorePerMinute) {
+                        this.visionScorePerMinute = String.format("%.2f", visionScorePerMinute);
+                    }
+
+                    public void setKda(double kda) {
+                        this.kda = String.format("%.2f", kda);
+                    }
+
+                    public void setAvgKillParticipation(double avgKillParticipation) {
+                        this.avgKillParticipation = String.format("%.2f", avgKillParticipation);
+                    }
+
+
                 }
             }
         }
     }
-
 
     @Getter
     @Setter
@@ -214,8 +234,6 @@ public class MatchingResponseDto {
             private Integer grade;
 
             // getters and setters
-
-
 
 
             @Getter

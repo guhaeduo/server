@@ -30,7 +30,6 @@ public class RankInfoApiMapper {
             info.addKdaAndTotalKillsAndTotalDeathsAndTotalAssists(participantInfo.getKills(), participantInfo.getDeaths(), participantInfo.getAssists(), participantInfo.getChallenges().getKda());
 
             Lane lane = rankInfo.getLane();
-            lane.initLane();
             //ALL
             setRankLane(participantInfo, lane.getAll());
             switch (participantInfo.getTeamPosition()) {

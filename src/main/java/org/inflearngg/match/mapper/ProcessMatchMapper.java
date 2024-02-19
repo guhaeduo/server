@@ -1,50 +1,50 @@
 package org.inflearngg.match.mapper;
 
+import org.inflearngg.match.dto.process.ProcessMatchInfo;
+import org.inflearngg.match.dto.process.ProcessRankInfo;
 import org.inflearngg.match.dto.response.MatchingResponseDto;
-import org.inflearngg.match.service.processing.ProcessingData;
-import org.inflearngg.match.service.processing.ProcessingMatchInfo;
-import org.inflearngg.match.service.processing.ProcessingRankInfo;
-import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public class MatchMapper {
+@Component
+public class ProcessMatchMapper {
 
-    //mapper
-    public MatchingResponseDto mapToMatchingResponseDto(ProcessingData processingData) {
-        MatchingResponseDto matchingResponseDto = new MatchingResponseDto();
-        matchingResponseDto.setSummonerRankInfo(mapToSummonerRankInfo(processingData.getSummonerRankInfo()));
-        matchingResponseDto.setMatchDataList(mapToMatchDataList(processingData.getMatchDataList()));
-        return matchingResponseDto;
-    }
+
 
     /**
-     * summonerRankInfo
+     * RankSummary
      */
-    private MatchingResponseDto.SummonerRankInfo mapToSummonerRankInfo(ProcessingRankInfo.SummonerRankInfo summonerRankInfo) {
+    public MatchingResponseDto.SummonerRankInfo mapToSummonerRankInfo(ProcessRankInfo processRankInfo) {
         MatchingResponseDto.SummonerRankInfo matchingSummonerRankInfo = new MatchingResponseDto.SummonerRankInfo();
-        matchingSummonerRankInfo.setInfo(mapToRankInfo(summonerRankInfo.getInfo()));
-        matchingSummonerRankInfo.setLane(mapToLane(summonerRankInfo.getLane()));
+        matchingSummonerRankInfo.setInfo(mapToRankInfo(processRankInfo.getInfo()));
+        matchingSummonerRankInfo.setLane(mapToLane(processRankInfo.getLane()));
         return matchingSummonerRankInfo;
     }
 
-    private MatchingResponseDto.SummonerRankInfo.RankInfo mapToRankInfo(ProcessingRankInfo.SummonerRankInfo.RankInfo rankInfo) {
+    private MatchingResponseDto.SummonerRankInfo.RankInfo mapToRankInfo(ProcessRankInfo.RankInfo rankInfo) {
         MatchingResponseDto.SummonerRankInfo.RankInfo matchingRankInfo = new MatchingResponseDto.SummonerRankInfo.RankInfo();
-        matchingRankInfo.setWinningRate((double) rankInfo.getWins() / rankInfo.getCntGame() * 100);
+        matchingRankInfo.setCntGame(rankInfo.getCntGame());
+        matchingRankInfo.setWinningRate((double)rankInfo.getWins() / rankInfo.getCntGame() * 100);
         matchingRankInfo.setWins(rankInfo.getWins());
         matchingRankInfo.setLoses(rankInfo.getLoses());
-        matchingRankInfo.setKda(rankInfo.getKda() / rankInfo.getCntGame());
+        matchingRankInfo.setKda(rankInfo.getSumKda() / rankInfo.getCntGame());
+        if (rankInfo.getCntGame() == 0) {
+            matchingRankInfo.setKillAvg(0);
+            matchingRankInfo.setDeathAvg(0);
+            matchingRankInfo.setAssistAvg(0);
+            return matchingRankInfo;
+        }
         matchingRankInfo.setKillAvg(rankInfo.getTotalKills() / rankInfo.getCntGame());
         matchingRankInfo.setDeathAvg(rankInfo.getTotalDeaths() / rankInfo.getCntGame());
         matchingRankInfo.setAssistAvg(rankInfo.getTotalAssists() / rankInfo.getCntGame());
         return matchingRankInfo;
     }
 
-    private MatchingResponseDto.SummonerRankInfo.Lane mapToLane(ProcessingRankInfo.SummonerRankInfo.Lane lane) {
+    private MatchingResponseDto.SummonerRankInfo.Lane mapToLane(ProcessRankInfo.Lane lane) {
         MatchingResponseDto.SummonerRankInfo.Lane matchingLane = new MatchingResponseDto.SummonerRankInfo.Lane();
         matchingLane.setAll(mapToRankLaneData(lane.getAll()));
         matchingLane.setTop(mapToRankLaneData(lane.getTop()));
@@ -55,16 +55,17 @@ public class MatchMapper {
         return matchingLane;
     }
 
-    private MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData mapToRankLaneData(ProcessingRankInfo.SummonerRankInfo.Lane.RankLaneData rankLaneData) {
-        MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData matchingRankLaneData = new MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData(0);
+    private MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData mapToRankLaneData(ProcessRankInfo.RankLaneData rankLaneData) {
+        MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData matchingRankLaneData = new MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData();
         if(rankLaneData.getTotalGameCnt() == 0) {
             matchingRankLaneData.setMostChampionlist(new ArrayList<>());
             return matchingRankLaneData;
         }
+        matchingRankLaneData.setCntGame(rankLaneData.getTotalGameCnt());
         matchingRankLaneData.setWinningRate((double) rankLaneData.getWins() / rankLaneData.getTotalGameCnt() * 100);
         matchingRankLaneData.setMostChampionlist(mapToMostChampionList(
                         rankLaneData.getChampions().values().stream()
-                                .sorted(Comparator.comparingInt(ProcessingRankInfo.SummonerRankInfo.Lane.RankLaneData.ChampionData::getTotalGameCnt).reversed())
+                                .sorted(Comparator.comparingInt(ProcessRankInfo.RankLaneData.ChampionData::getTotalGameCnt).reversed())
                                 .limit(3)
                                 .collect(Collectors.toList())
                 )
@@ -72,10 +73,10 @@ public class MatchMapper {
         return matchingRankLaneData;
     }
 
-    private List<MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion> mapToMostChampionList(List<ProcessingRankInfo.SummonerRankInfo.Lane.RankLaneData.ChampionData> mostChampionList) {
+    private List<MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion> mapToMostChampionList(List<ProcessRankInfo.RankLaneData.ChampionData> mostChampionList) {
         List<MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion> matchingMostChampionList = new ArrayList<>();
-        for (ProcessingRankInfo.SummonerRankInfo.Lane.RankLaneData.ChampionData championData : mostChampionList) {
-            MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion matchingMostChampion = new MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion(0,0,0,0,0);
+        MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion matchingMostChampion = new MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion();
+        for (ProcessRankInfo.RankLaneData.ChampionData championData : mostChampionList) {
             if(championData.getTotalGameCnt() != 0) {
                 int gameMinuteTime = championData.getGameTime() / 60;
                 matchingMostChampion.setChampionName(championData.getChampionName());
@@ -84,7 +85,7 @@ public class MatchMapper {
                 matchingMostChampion.setCsPerMinute((double) championData.getTotalCS() / gameMinuteTime);
                 matchingMostChampion.setVisionScorePerMinute(championData.getVisionScorePerMinute() / championData.getTotalGameCnt());
                 matchingMostChampion.setKda(championData.getKda() / championData.getTotalGameCnt());
-                matchingMostChampion.setTotalKillParticipation(championData.getTotalKillParticipation() / championData.getTotalGameCnt());
+                matchingMostChampion.setAvgKillParticipation(championData.getTotalKillParticipation() / championData.getTotalGameCnt());
             }
 
             matchingMostChampionList.add(matchingMostChampion);
@@ -93,14 +94,16 @@ public class MatchMapper {
     }
 
     /**
-     * MatchDataList
+     * =========================================================================================================================================================
+     * MatchList
+     * =========================================================================================================================================================
      */
-    private List<MatchingResponseDto.MatchData> mapToMatchDataList(List<ProcessingMatchInfo.MatchData> matchDataList) {
+    public List<MatchingResponseDto.MatchData> mapToMatchDataList(List<ProcessMatchInfo> matchDataList) {
         List<MatchingResponseDto.MatchData> matchingMatchDataList = new ArrayList<>();
-        for (ProcessingMatchInfo.MatchData matchData : matchDataList) {
+        for (ProcessMatchInfo matchData : matchDataList) {
             MatchingResponseDto.MatchData matchingMatchData = new MatchingResponseDto.MatchData();
             matchingMatchData.setInfo(mapToInfo(matchData.getInfo()));
-            matchingMatchData.setCurrentSummonerMatchData(mapToSummonerMatchData(matchData.getCurrentSummonerRankInfo()));
+            matchingMatchData.setCurrentSummonerMatchData(mapToSummonerMatchData(matchData.getCurrentSummonerParticipantInfo()));
             matchingMatchData.setRed(mapToTeam(matchData.getRed()));
             matchingMatchData.setBlue(mapToTeam(matchData.getBlue()));
             matchingMatchDataList.add(matchingMatchData);
@@ -108,7 +111,7 @@ public class MatchMapper {
         return matchingMatchDataList;
     }
 
-    private MatchingResponseDto.MatchData.MatchInfo mapToInfo(ProcessingMatchInfo.Info info) {
+    private MatchingResponseDto.MatchData.MatchInfo mapToInfo(ProcessMatchInfo.Info info) {
         MatchingResponseDto.MatchData.MatchInfo matchingInfo = new MatchingResponseDto.MatchData.MatchInfo();
         matchingInfo.setGameDuration(info.getGameDuration());
         matchingInfo.setQueueType(info.getQueueType());
@@ -117,7 +120,7 @@ public class MatchMapper {
         return matchingInfo;
     }
 
-    private MatchingResponseDto.MatchData.MatchInfo.MaxDamage mapToMaxDamage(ProcessingMatchInfo.Info.MaxDamage maxDamage) {
+    private MatchingResponseDto.MatchData.MatchInfo.MaxDamage mapToMaxDamage(ProcessMatchInfo.Info.MaxDamage maxDamage) {
         MatchingResponseDto.MatchData.MatchInfo.MaxDamage matchingMaxDamage = new MatchingResponseDto.MatchData.MatchInfo.MaxDamage();
         matchingMaxDamage.setChampionName(maxDamage.getChampionName());
         matchingMaxDamage.setChampionIconNumber(maxDamage.getChampionIconNumber());
@@ -130,7 +133,7 @@ public class MatchMapper {
     /**
      * Team
      */
-    public MatchingResponseDto.MatchData.Team mapToTeam(ProcessingMatchInfo.Team team) {
+    public MatchingResponseDto.MatchData.Team mapToTeam(ProcessMatchInfo.Team team) {
         MatchingResponseDto.MatchData.Team matchingTeam = new MatchingResponseDto.MatchData.Team();
         matchingTeam.setTotalKills(team.getTotalKills());
         matchingTeam.setTotalDeaths(team.getTotalDeaths());
@@ -143,7 +146,7 @@ public class MatchMapper {
         return matchingTeam;
     }
 
-    private MatchingResponseDto.MatchData.Team.Objectives mapToObjects(ProcessingMatchInfo.Objectives objectives) {
+    private MatchingResponseDto.MatchData.Team.Objectives mapToObjects(ProcessMatchInfo.Team.Objectives objectives) {
         MatchingResponseDto.MatchData.Team.Objectives matchingObjectives = new MatchingResponseDto.MatchData.Team.Objectives();
         matchingObjectives.setBaron(objectives.getBaron());
         matchingObjectives.setDragon(objectives.getDragon());
@@ -157,16 +160,16 @@ public class MatchMapper {
     /**
      * Participants
      */
-    private List<MatchingResponseDto.MatchData.SummonerMatchData> mapToParticipants(List<ProcessingMatchInfo.ParticipantInfo> participants) {
+    private List<MatchingResponseDto.MatchData.SummonerMatchData> mapToParticipants(List<ProcessMatchInfo.Team.ParticipantInfo> participants) {
         List<MatchingResponseDto.MatchData.SummonerMatchData> matchingParticipants = new ArrayList<>();
-        for (ProcessingMatchInfo.ParticipantInfo participant : participants) {
+        for (ProcessMatchInfo.Team.ParticipantInfo participant : participants) {
             MatchingResponseDto.MatchData.SummonerMatchData summonerMatchData = mapToSummonerMatchData(participant);
             matchingParticipants.add(summonerMatchData);
         }
         return matchingParticipants;
     }
 
-    private MatchingResponseDto.MatchData.SummonerMatchData mapToSummonerMatchData(ProcessingMatchInfo.ParticipantInfo SummonerMatchData) {
+    private MatchingResponseDto.MatchData.SummonerMatchData mapToSummonerMatchData(ProcessMatchInfo.Team.ParticipantInfo SummonerMatchData) {
         MatchingResponseDto.MatchData.SummonerMatchData matchingSummonerMatchData = new MatchingResponseDto.MatchData.SummonerMatchData();
         matchingSummonerMatchData.setPosition(SummonerMatchData.getLane());
         matchingSummonerMatchData.setBot(SummonerMatchData.isBot());
@@ -195,7 +198,7 @@ public class MatchMapper {
         return matchingSummonerMatchData;
     }
 
-    private MatchingResponseDto.MatchData.SummonerMatchData.Perks mapToPerks(ProcessingMatchInfo.Perks perks) {
+    private MatchingResponseDto.MatchData.SummonerMatchData.Perks mapToPerks(ProcessMatchInfo.Team.ParticipantInfo.Perks perks) {
         MatchingResponseDto.MatchData.SummonerMatchData.Perks matchingperks = new MatchingResponseDto.MatchData.SummonerMatchData.Perks();
         matchingperks.setMain(mapToPerkDetail(perks.getMain()));
         matchingperks.setSub(mapToPerkDetail(perks.getSub()));
@@ -203,7 +206,7 @@ public class MatchMapper {
         return matchingperks;
     }
 
-    private MatchingResponseDto.MatchData.SummonerMatchData.Perks.PerkDetail mapToPerkDetail(ProcessingMatchInfo.PerkDetail perkDetail) {
+    private MatchingResponseDto.MatchData.SummonerMatchData.Perks.PerkDetail mapToPerkDetail(ProcessMatchInfo.Team.ParticipantInfo.Perks.PerkDetail perkDetail) {
         MatchingResponseDto.MatchData.SummonerMatchData.Perks.PerkDetail matchingPerkDetail = new MatchingResponseDto.MatchData.SummonerMatchData.Perks.PerkDetail();
         matchingPerkDetail.setPerkStyle(perkDetail.getPerkStyle());
         matchingPerkDetail.setPerkIdList(perkDetail.getPerkList());
