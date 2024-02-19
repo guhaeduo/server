@@ -3,8 +3,11 @@ package org.inflearngg.summoner.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -40,19 +43,23 @@ public class SummonerService {
         }
     }
 
-    public SummonerInfo.RankInfo[] getRankData(String region, String SummonerId) {
+    public SummonerInfo.RankInfo[] getRankData(String region, String SummonerId) throws HttpClientErrorException {
         String API_URL_RANK = "https://" + region + ".api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerId}?api_key={api_key}";
         log.info("API_URL_RANK : " + API_URL_RANK);
         try {
             ResponseEntity<SummonerInfo.RankInfo[]> rankDataEntity = restTemplate.getForEntity(API_URL_RANK, SummonerInfo.RankInfo[].class, SummonerId, API_KEY);
             if (rankDataEntity.getStatusCode().is2xxSuccessful()) {
                 return rankDataEntity.getBody();
-            } else {
+            }
+            else {
                 throw new RuntimeException("소환사 랭크 정보를 가져오는데 실패했습니다.");
             }
-        } catch (Exception e) {
+        }
+        catch (HttpClientErrorException e){
+            throw e;
+        }
+        catch (Exception e) {
             throw new RuntimeException("API 요청 중 오류가 발생 했습니다.", e);
         }
     }
-
 }
