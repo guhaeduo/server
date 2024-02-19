@@ -1,10 +1,12 @@
 package org.inflearngg.match.dto.process;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashMap;
+import java.util.PriorityQueue;
 
 @Getter
 @Setter
@@ -20,18 +22,32 @@ public class ProcessRankInfo {
 
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LaneSummary {
+        private String mainLane;
+        private String mainChampion;
+        private int mainChampionIconNumber;
+
+    }
 
     @Getter
     @NoArgsConstructor
     public static class RankInfo {
         private int cntGame;
-//        private String winningRate;
+        //        private String winningRate;
         private int wins;
         private int loses;
         private double sumKda;
         private int totalKills;
         private int totalDeaths;
         private int totalAssists;
+        @Setter
+        private LaneSummary mainLane = new LaneSummary();
+        @Setter
+        private LaneSummary subLane = new LaneSummary();
 
 
         public void addGameCnt() {
@@ -75,6 +91,25 @@ public class ProcessRankInfo {
             this.adc = new RankLaneData();
             this.sup = new RankLaneData();
         }
+
+        public LaneSummary getMostChampionData(String lane) {
+            switch (lane) {
+                case "TOP":
+                    return new LaneSummary( "TOP",top.getMostChampionData().getChampionName(), top.getMostChampionData().getChampionIconNumber());
+                case "JUNGLE":
+                    return new LaneSummary( "JUNGLE",jug.getMostChampionData().getChampionName(), jug.getMostChampionData().getChampionIconNumber());
+                case "MIDDLE":
+                    return new LaneSummary( "MIDDLE",mid.getMostChampionData().getChampionName(), mid.getMostChampionData().getChampionIconNumber());
+                case "BOTTOM":
+                    return new LaneSummary( "BOTTOM",adc.getMostChampionData().getChampionName(), adc.getMostChampionData().getChampionIconNumber());
+                case "UTILITY":
+                    return new LaneSummary( "SUPPORT",sup.getMostChampionData().getChampionName(), sup.getMostChampionData().getChampionIconNumber());
+                default:
+                    return new LaneSummary();
+            }
+        }
+
+
     }
 
     @Getter
@@ -103,8 +138,10 @@ public class ProcessRankInfo {
             champions.put(championIconNumber, championData);
         }
 
-        public ChampionData getChampionData(int championIconNumber) {
-            return champions.get(championIconNumber);
+        public ChampionData getMostChampionData() {
+            PriorityQueue<ChampionData> pq = new PriorityQueue<>((a, b) -> b.getTotalGameCnt() - a.getTotalGameCnt());
+            pq.addAll(champions.values());
+            return pq.poll();
         }
 
         @Getter

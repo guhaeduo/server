@@ -36,6 +36,8 @@ public class MatchingResponseDto {
             private int killAvg;
             private int deathAvg;
             private int assistAvg;
+            private LaneSummary mainLane;
+            private LaneSummary subLane;
 
             public void setWinningRate(double winningRate) {
                 this.winningRate = String.format("%.2f", winningRate);
@@ -43,6 +45,15 @@ public class MatchingResponseDto {
 
             public void setKda(double kda) {
                 this.kda = String.format("%.2f", kda);
+            }
+
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class LaneSummary {
+                private String lane;
+                private String champion;
+                private int championIconNumber;
             }
         }
 
@@ -73,6 +84,7 @@ public class MatchingResponseDto {
                 @Setter
                 @NoArgsConstructor
                 public static class MostChampion {
+                    private int cntGame;
                     private String championName;
                     private int championIconNumber;
                     private String winningRate;

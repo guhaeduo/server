@@ -41,7 +41,18 @@ public class ProcessMatchMapper {
         matchingRankInfo.setKillAvg(rankInfo.getTotalKills() / rankInfo.getCntGame());
         matchingRankInfo.setDeathAvg(rankInfo.getTotalDeaths() / rankInfo.getCntGame());
         matchingRankInfo.setAssistAvg(rankInfo.getTotalAssists() / rankInfo.getCntGame());
+        matchingRankInfo.setMainLane(mapToLaneSummary(rankInfo.getMainLane()));
+        matchingRankInfo.setSubLane(mapToLaneSummary(rankInfo.getSubLane()));
+
         return matchingRankInfo;
+    }
+
+    private MatchingResponseDto.SummonerRankInfo.RankInfo.LaneSummary mapToLaneSummary(ProcessRankInfo.LaneSummary lane) {
+        MatchingResponseDto.SummonerRankInfo.RankInfo.LaneSummary matchingLane = new MatchingResponseDto.SummonerRankInfo.RankInfo.LaneSummary();matchingLane.setLane(lane.getMainLane());
+        matchingLane.setChampion(lane.getMainChampion());
+        matchingLane.setChampionIconNumber(lane.getMainChampionIconNumber());
+        return matchingLane;
+
     }
 
     private MatchingResponseDto.SummonerRankInfo.Lane mapToLane(ProcessRankInfo.Lane lane) {
@@ -75,9 +86,10 @@ public class ProcessMatchMapper {
 
     private List<MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion> mapToMostChampionList(List<ProcessRankInfo.RankLaneData.ChampionData> mostChampionList) {
         List<MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion> matchingMostChampionList = new ArrayList<>();
-        MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion matchingMostChampion = new MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion();
         for (ProcessRankInfo.RankLaneData.ChampionData championData : mostChampionList) {
+            MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion matchingMostChampion = new MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion();
             if(championData.getTotalGameCnt() != 0) {
+                matchingMostChampion.setCntGame(championData.getTotalGameCnt());
                 int gameMinuteTime = championData.getGameTime() / 60;
                 matchingMostChampion.setChampionName(championData.getChampionName());
                 matchingMostChampion.setChampionIconNumber(championData.getChampionIconNumber());

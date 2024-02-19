@@ -13,7 +13,7 @@ import static org.inflearngg.match.dto.process.ProcessRankInfo.*;
 public class RankInfoApiMapper {
     //client.RiotAPIRankInfo.RankInfo -> dto.process.ProcessRankInfo.RankInfo
 
-    public void setSummonerRankAndLane(RiotAPIMatchInfo.ParticipantInfo participantInfo, ProcessRankInfo rankInfo) {
+    public void setSummonerRankAndLane(RiotAPIMatchInfo.ParticipantInfo participantInfo, ProcessRankInfo rankInfo, HashMap<String, Integer> laneMap) {
 
         // 개인 렝겜, 혹은 자유 렝겜
 //        if (queueType == 420 || queueType == 440) {
@@ -34,18 +34,23 @@ public class RankInfoApiMapper {
             setRankLane(participantInfo, lane.getAll());
             switch (participantInfo.getTeamPosition()) {
                 case "TOP":
+                    laneMap.put("TOP", laneMap.getOrDefault("TOP", 0) + 1);
                     setRankLane(participantInfo, lane.getTop());
                     break;
                 case "JUNGLE":
+                    laneMap.put("JUNGLE", laneMap.getOrDefault("JUNGLE", 0) + 1);
                     setRankLane(participantInfo, lane.getJug());
                     break;
                 case "MIDDLE":
+                    laneMap.put("MIDDLE", laneMap.getOrDefault("MIDDLE", 0) + 1);
                     setRankLane(participantInfo, lane.getMid());
                     break;
                 case "BOTTOM":
+                    laneMap.put("BOTTOM", laneMap.getOrDefault("BOTTOM", 0) + 1);
                     setRankLane(participantInfo, lane.getAdc());
                     break;
                 case "UTILITY":
+                    laneMap.put("SUPPORT", laneMap.getOrDefault("SUPPORT", 0) + 1);
                     setRankLane(participantInfo, lane.getSup());
                     break;
             }
@@ -69,7 +74,6 @@ public class RankInfoApiMapper {
     private void addChampionData(RiotAPIMatchInfo.ParticipantInfo participantInfo, RankLaneData lane) {
 
         RankLaneData.ChampionData championData = lane.getChampions().get(participantInfo.getChampionId());
-        championData.setTotalGameCnt(championData.getTotalGameCnt() + 1);
         championData.addTotalGameCnt();
         if (participantInfo.isWin()) {
             championData.addWin();
@@ -86,7 +90,9 @@ public class RankInfoApiMapper {
     private RankLaneData.ChampionData getChampionData(RiotAPIMatchInfo.ParticipantInfo participantInfo) {
         RankLaneData.ChampionData championData = new RankLaneData.ChampionData(participantInfo.getChampionName(), participantInfo.getChampionId());
         championData.setTotalGameCnt(1);
-        championData.setWins(1);
+        if (participantInfo.isWin()) {
+            championData.setWins(1);
+        }
         championData.setGameTime(participantInfo.getTimePlayed());
         championData.setTotalCS(participantInfo.getTotalMinionsKilled());
         championData.setKda(participantInfo.getChallenges().getKda());

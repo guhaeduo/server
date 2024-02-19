@@ -13,9 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 
-import java.util.ArrayList;
+import java.util.*;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -51,22 +50,19 @@ public class MatchService {
 
     public void calculateSummonerSummaryInfo(String[] matchIdList, String puuid, ProcessRankInfo rankInfo) throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(THRED_CNT);
-
+        HashMap<String, Integer> laneMap = new HashMap<>();
         log.info("[비동기 시작]");
         for (String matchId : matchIdList) {
-            log.info("[matchId]" + matchId);
+//            log.info("[matchId]" + matchId);
             CompletableFuture<RiotAPIMatchInfo.MatchBasicInfo> data;
             try {
                 data = matchClient.fetchAsyncMatchData(matchId);
                 if (data == null) {
                     continue;
                 }
-                int i = 1;
                 for (RiotAPIMatchInfo.ParticipantInfo participantInfo : data.get().getParticipants()) {
-                    log.info("match" + matchId + "__" + i);
-                    i++;
                     if (participantInfo.getPuuid().equals(puuid)) {
-                        rankInfoApiMapper.setSummonerRankAndLane(participantInfo, rankInfo);
+                        rankInfoApiMapper.setSummonerRankAndLane(participantInfo, rankInfo, laneMap);
                     }
                 }
             } catch (HttpClientErrorException e) {
@@ -75,8 +71,23 @@ public class MatchService {
                 log.info("오류가 발생했습니다.");
             }
         }
+        //laneMap value 값 내림차순 정렬
+        setMainLaneAndSubLaneSummary(rankInfo, laneMap);
         executorService.shutdown();
 
+    }
+
+    private static void setMainLaneAndSubLaneSummary(ProcessRankInfo rankInfo, HashMap<String, Integer> laneMap) {
+        PriorityQueue<HashMap.Entry<String, Integer>> pq = new PriorityQueue<>((a, b) -> b.getValue() - a.getValue());
+        pq.addAll(laneMap.entrySet());
+        if(!pq.isEmpty()){
+            String mainLane = pq.poll().getKey();
+            rankInfo.getInfo().setMainLane(rankInfo.getLane().getMostChampionData(mainLane));
+        }
+        if(!pq.isEmpty()){
+            String subLane = pq.poll().getKey();
+            rankInfo.getInfo().setSubLane(rankInfo.getLane().getMostChampionData(subLane));
+        }
     }
 
 
