@@ -6,11 +6,20 @@ import lombok.Setter;
 
 public class MatchRequestDto {
 
-    @Setter
+
     @Getter
-    @NoArgsConstructor
-    public static class QueueType {
-        private String queueType;
+    public static enum QueueType {
+        ALL(0),
+        NORMAL(490),
+        SOLO(420),
+        FREE(440);
+
+        private final int queueId;
+
+        QueueType(int queueId) {
+            this.queueId = queueId;
+        }
+
     }
 
 }

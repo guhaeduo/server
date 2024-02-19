@@ -11,7 +11,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class MatchingResponseDto {
-    private SummonerRankInfo summonerRankInfo;
+    private int totalGameCnt;
+    private String queueType;
     private List<MatchData> matchDataList;
 
     @Getter
@@ -26,6 +27,7 @@ public class MatchingResponseDto {
         @AllArgsConstructor
         @NoArgsConstructor
         public static class RankInfo {
+            private int cntGame;
             private double winningRate;
             private int wins;
             private int loses;
@@ -53,6 +55,7 @@ public class MatchingResponseDto {
             @Setter
             @NoArgsConstructor
             public static class RankLaneData {
+                private int cntGame;
                 private double winningRate;
                 private List<MostChampion> mostChampionlist;
 
@@ -110,8 +113,8 @@ public class MatchingResponseDto {
                     case 420:
                         this.queueType = "솔로랭크";
                         break;
-                    case 430:
-                        this.queueType = "블라인드 픽(일반)";
+                    case 490:
+                        this.queueType = "빠른대전(일반게임)";
                         break;
                     case 440:
                         this.queueType = "자유랭크";
@@ -125,11 +128,8 @@ public class MatchingResponseDto {
                     case 850:
                         this.queueType = "봇전(중급)";
                         break;
-                    case 900:
+                    case 1900:
                         this.queueType = "우르프";
-                        break;
-                    case 1010:
-                        this.queueType = "우르프(겨울)";
                         break;
                     default:
                         this.queueType = "기타";

@@ -13,6 +13,12 @@ public class ProcessRankInfo {
     private RankInfo info;
     private Lane lane;
 
+    public void initRankInfo() {
+        this.info = new RankInfo();
+        this.lane = new Lane();
+
+    }
+
 
     @Getter
     @NoArgsConstructor
@@ -26,6 +32,10 @@ public class ProcessRankInfo {
         private int totalDeaths;
         private int totalAssists;
 
+
+        public void addGameCnt() {
+            this.cntGame += 1;
+        }
         public void isWin() {
             this.wins += 1;
             this.cntGame += 1;
@@ -55,6 +65,15 @@ public class ProcessRankInfo {
         private RankLaneData adc;
         private RankLaneData sup;
 
+
+        public void initLane() {
+            this.all = new RankLaneData();
+            this.top = new RankLaneData();
+            this.jug = new RankLaneData();
+            this.mid = new RankLaneData();
+            this.adc = new RankLaneData();
+            this.sup = new RankLaneData();
+        }
     }
 
     @Getter

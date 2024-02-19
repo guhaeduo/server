@@ -1,8 +1,11 @@
-package org.inflearngg.match.service;
+package org.inflearngg.match.client;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RiotAPIMatchInfo {
 
@@ -19,7 +22,7 @@ public class RiotAPIMatchInfo {
     @Setter
     @NoArgsConstructor
     public static class MatchBasicInfo {
-        private String gameDuration; // 게임 시간
+        private int gameDuration; // 게임 시간
         private String gameEndTimestamp;// 게임 종료 시간(밀리초 단위)
         private String gameStartTimestamp;// 게임 시작 시간(밀리초 단위)
         private String gameMode; // 게임모드  CLASSIC, ARAM, URF, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO
@@ -74,6 +77,18 @@ public class RiotAPIMatchInfo {
         private Challenges challenges; // 킬관여율
         private int teamId;
 
+
+        public List<Integer> getItemList() {
+            List<Integer> itemList= new ArrayList<>();
+            itemList.add(item0);
+            itemList.add(item1);
+            itemList.add(item2);
+            itemList.add(item3);
+            itemList.add(item4);
+            itemList.add(item5);
+            itemList.add(item6);
+            return itemList;
+        }
         @Getter
         @Setter
         @NoArgsConstructor
@@ -97,6 +112,15 @@ public class RiotAPIMatchInfo {
                 protected String description; // 메인(primaryStyle)인지 서브(subStyle)인지
                 private int style; // 룬 스타일 (지배, 결의, 영감, 마법(8200), 정밀(8000))
                 private Selections[] selections; // 선택한 룬의 ID
+
+
+                public List<Integer> getRuneIdList() {
+                    List<Integer> runeIdList = new ArrayList<>();
+                    for (Selections selection : selections) {
+                        runeIdList.add(selection.getPerk());
+                    }
+                    return runeIdList;
+                }
 
                 @Getter
                 @Setter
@@ -148,6 +172,25 @@ public class RiotAPIMatchInfo {
             private Inhibitor inhibitor;
             private RiftHerald riftHerald;
             private Tower tower;
+
+            public int getBaronKills() {
+                return baron.kills;
+            }
+            public int getDragonKills() {
+                return dragon.kills;
+            }
+            public int getHordeKills() {
+                return horde.kills;
+            }
+            public int getInhibitorKills() {
+                return inhibitor.kills;
+            }
+            public int getRiftHeraldKills() {
+                return riftHerald.kills;
+            }
+            public int getTowerKills() {
+                return tower.kills;
+            }
 
 
             @Getter
