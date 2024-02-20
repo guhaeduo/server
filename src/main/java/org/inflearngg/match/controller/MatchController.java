@@ -1,5 +1,6 @@
 package org.inflearngg.match.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.match.dto.request.MatchRequestDto;
@@ -31,13 +32,18 @@ public class MatchController {
     @ResponseBody
     public MatchingResponseDto getMatchDataListByPuuid(
             @RequestHeader("puuid") String puuid,
-            @RequestHeader("queueType") MatchRequestDto.QueueType queueId) {
+            @RequestHeader("queueType") MatchRequestDto.QueueType queueId,
+            @RequestHeader("region") MatchRequestDto.Region region
+    ) {
+        // 헤더 검증
+        if (puuid == null) {
+            throw new RuntimeException("puuid 헤더 정보가 잘못되었습니다.");
+        }
         LocalDateTime startTime = LocalDateTime.now();
         log.info("요청시간 : " + startTime);
-        log.info("queueType : " + queueId.getQueueId());
-        String[] matchIdList = matchService.getMatchIdsByPuuid(puuid, queueId.getQueueId());
+        String[] matchIdList = matchService.getMatchIdsByPuuid(puuid, queueId.getQueueId(), region.getContinent());
         MatchingResponseDto matchingResponseDto = new MatchingResponseDto();
-        matchingResponseDto.setMatchDataList(mapper.mapToMatchDataList(matchService.getMatchDataList(matchIdList, puuid)));
+        matchingResponseDto.setMatchDataList(mapper.mapToMatchDataList(matchService.getMatchDataList(matchIdList, puuid, region.getContinent())));
         matchingResponseDto.setTotalGameCnt(matchIdList.length);
         matchingResponseDto.setQueueType(queueId.name());
 
@@ -51,9 +57,17 @@ public class MatchController {
     @ResponseBody
     public MatchingResponseDto.SummonerRankInfo getSummonerRankInfo(
             @RequestHeader("puuid") String puuid,
-            @RequestHeader("queueType") MatchRequestDto.QueueType queueId) throws ExecutionException, InterruptedException {
-        String[] matchIdList = matchService.getMatchIdsByPuuid(puuid, queueId.getQueueId());
-        return mapper.mapToSummonerRankInfo(matchService.getSummonerSummaryInfo(matchIdList, puuid));
+            @RequestHeader("queueType") MatchRequestDto.QueueType queueId,
+            @RequestHeader("region") MatchRequestDto.Region region
+    ) throws ExecutionException, InterruptedException {
+        LocalDateTime startTime = LocalDateTime.now();
+        log.info("요청시간 : " + startTime);
+        String[] matchIdList = matchService.getMatchIdsByPuuid(puuid, queueId.getQueueId(), region.getContinent());
+        MatchingResponseDto.SummonerRankInfo summonerRankInfo = mapper.mapToSummonerRankInfo(matchService.getSummonerSummaryInfo(matchIdList, puuid, region.getContinent()));
+        LocalDateTime endTime = LocalDateTime.now();
+        log.info("응답시간 : " + endTime);
+        log.info("요청 후 응답시간 : " + startTime.until(endTime, ChronoUnit.SECONDS) + "s");
+        return summonerRankInfo;
     }
 
 }

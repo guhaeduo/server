@@ -33,22 +33,22 @@ public class MatchService {
 
     private final int THRED_CNT = 3;
 
-    public String[] getMatchIdsByPuuid(String puuid, int queueType) {
+    public String[] getMatchIdsByPuuid(String puuid, int queueType, String region) {
         // Header에 API키 셋팅
-        return matchClient.fetchMatchIdListAPI(puuid, queueType);
+        return matchClient.fetchMatchIdListAPI(puuid, queueType , region);
 
     }
 
     //SummonerRankInfo
-    public ProcessRankInfo getSummonerSummaryInfo(String[] matchIdList, String puuid) throws ExecutionException, InterruptedException {
+    public ProcessRankInfo getSummonerSummaryInfo(String[] matchIdList, String puuid,String region) throws ExecutionException, InterruptedException {
         ProcessRankInfo processRankInfo = new ProcessRankInfo();
         processRankInfo.initRankInfo();
-        calculateSummonerSummaryInfo(matchIdList, puuid, processRankInfo);
+        calculateSummonerSummaryInfo(matchIdList, puuid, processRankInfo, region);
         return processRankInfo;
     }
 
 
-    public void calculateSummonerSummaryInfo(String[] matchIdList, String puuid, ProcessRankInfo rankInfo) throws ExecutionException, InterruptedException {
+    public void calculateSummonerSummaryInfo(String[] matchIdList, String puuid, ProcessRankInfo rankInfo, String region) throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(THRED_CNT);
         HashMap<String, Integer> laneMap = new HashMap<>();
         log.info("[비동기 시작]");
@@ -56,7 +56,7 @@ public class MatchService {
 //            log.info("[matchId]" + matchId);
             CompletableFuture<RiotAPIMatchInfo.MatchBasicInfo> data;
             try {
-                data = matchClient.fetchAsyncMatchData(matchId);
+                data = matchClient.fetchAsyncMatchData(matchId, region);
                 if (data == null) {
                     continue;
                 }
@@ -82,23 +82,23 @@ public class MatchService {
         pq.addAll(laneMap.entrySet());
         if(!pq.isEmpty()){
             String mainLane = pq.poll().getKey();
-            rankInfo.getInfo().setMainLane(rankInfo.getLane().getMostChampionData(mainLane));
+            rankInfo.getInfo().setMainLane(mainLane);
         }
         if(!pq.isEmpty()){
             String subLane = pq.poll().getKey();
-            rankInfo.getInfo().setSubLane(rankInfo.getLane().getMostChampionData(subLane));
+            rankInfo.getInfo().setSubLane(subLane);
         }
     }
 
 
-    public List<ProcessMatchInfo> getMatchDataList(String[] matchIdList, String puuid) {
+    public List<ProcessMatchInfo> getMatchDataList(String[] matchIdList, String puuid, String region) {
         ArrayList<CompletableFuture<ProcessMatchInfo>> futures = new ArrayList<>();
         ExecutorService executorService = Executors.newFixedThreadPool(THRED_CNT);
 
 
         log.info("[비동기 시작]");
         for (String matchId : matchIdList) {
-            futures.add(CompletableFuture.supplyAsync(() -> matchClient.fetchAsyncMatchData(matchId))
+            futures.add(CompletableFuture.supplyAsync(() -> matchClient.fetchAsyncMatchData(matchId,region))
                     .thenApply(completableFuture -> {
                                 RiotAPIMatchInfo.MatchBasicInfo riotApiData = null;
                                 try {
