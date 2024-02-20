@@ -13,10 +13,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +54,6 @@ public class GlobalExceptionHandler {
 
         String message = jsonNode.at("/status/message").asText();
         int status = e.getStatusCode().value();
-//        log.info("HttpClientErrorException : " + status1);
         log.info("HttpClientErrorException : " + message);
 
         List<ErrorResponse.FieldError> fieldErrors = new ArrayList<>();
@@ -68,6 +69,30 @@ public class GlobalExceptionHandler {
                 .status(status)
                 .errors(fieldErrors)
                 .build();
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        final List<ErrorResponse.FieldError> fieldErrors = new ArrayList<>();
+        fieldErrors.add(ErrorResponse.FieldError.builder()
+                .field(e.getName())
+                .value(e.getValue().toString())
+                .reason(e.getMessage())
+                .build());
+        return bindingFieldErrors(ErrorCode.HEADER_INPUT_VALUE, fieldErrors);
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleMissingRequestHeaderException(MissingRequestHeaderException e) {
+        final List<ErrorResponse.FieldError> fieldErrors = new ArrayList<>();
+        fieldErrors.add(ErrorResponse.FieldError.builder()
+                .field(e.getHeaderName())
+                .value("null")
+                .reason(e.getMessage())
+                .build());
+        return bindingFieldErrors(ErrorCode.HEADER_NOT_NULL, fieldErrors);
     }
 
 
