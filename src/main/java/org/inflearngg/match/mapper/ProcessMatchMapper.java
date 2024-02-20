@@ -41,18 +41,10 @@ public class ProcessMatchMapper {
         matchingRankInfo.setKillAvg(rankInfo.getTotalKills() / rankInfo.getCntGame());
         matchingRankInfo.setDeathAvg(rankInfo.getTotalDeaths() / rankInfo.getCntGame());
         matchingRankInfo.setAssistAvg(rankInfo.getTotalAssists() / rankInfo.getCntGame());
-        matchingRankInfo.setMainLane(mapToLaneSummary(rankInfo.getMainLane()));
-        matchingRankInfo.setSubLane(mapToLaneSummary(rankInfo.getSubLane()));
+        matchingRankInfo.setMainLane(rankInfo.getMainLane());
+        matchingRankInfo.setSubLane(rankInfo.getSubLane());
 
         return matchingRankInfo;
-    }
-
-    private MatchingResponseDto.SummonerRankInfo.RankInfo.LaneSummary mapToLaneSummary(ProcessRankInfo.LaneSummary lane) {
-        MatchingResponseDto.SummonerRankInfo.RankInfo.LaneSummary matchingLane = new MatchingResponseDto.SummonerRankInfo.RankInfo.LaneSummary();matchingLane.setLane(lane.getMainLane());
-        matchingLane.setChampion(lane.getMainChampion());
-        matchingLane.setChampionIconNumber(lane.getMainChampionIconNumber());
-        return matchingLane;
-
     }
 
     private MatchingResponseDto.SummonerRankInfo.Lane mapToLane(ProcessRankInfo.Lane lane) {
@@ -95,9 +87,9 @@ public class ProcessMatchMapper {
                 matchingMostChampion.setChampionIconNumber(championData.getChampionIconNumber());
                 matchingMostChampion.setWinningRate((double) championData.getWins() / championData.getTotalGameCnt() * 100);
                 matchingMostChampion.setCsPerMinute((double) championData.getTotalCS() / gameMinuteTime);
-                matchingMostChampion.setVisionScorePerMinute(championData.getVisionScorePerMinute() / championData.getTotalGameCnt());
+                matchingMostChampion.setVisionScore(championData.getVisionScore() / championData.getTotalGameCnt());
                 matchingMostChampion.setKda(championData.getKda() / championData.getTotalGameCnt());
-                matchingMostChampion.setAvgKillParticipation(championData.getTotalKillParticipation() / championData.getTotalGameCnt());
+                matchingMostChampion.setKillParticipation(championData.getTotalKillParticipation() / championData.getTotalGameCnt() *100);
             }
 
             matchingMostChampionList.add(matchingMostChampion);

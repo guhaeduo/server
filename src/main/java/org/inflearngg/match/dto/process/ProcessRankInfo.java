@@ -23,17 +23,6 @@ public class ProcessRankInfo {
     }
 
     @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class LaneSummary {
-        private String mainLane;
-        private String mainChampion;
-        private int mainChampionIconNumber;
-
-    }
-
-    @Getter
     @NoArgsConstructor
     public static class RankInfo {
         private int cntGame;
@@ -45,20 +34,19 @@ public class ProcessRankInfo {
         private int totalDeaths;
         private int totalAssists;
         @Setter
-        private LaneSummary mainLane = new LaneSummary();
+        private String mainLane;
         @Setter
-        private LaneSummary subLane = new LaneSummary();
-
+        private String subLane;
 
         public void addGameCnt() {
             this.cntGame += 1;
         }
-        public void isWin() {
+        public void addWin() {
             this.wins += 1;
             this.cntGame += 1;
         }
 
-        public void isLose() {
+        public void addLose() {
             this.loses += 1;
             this.cntGame += 1;
         }
@@ -91,25 +79,6 @@ public class ProcessRankInfo {
             this.adc = new RankLaneData();
             this.sup = new RankLaneData();
         }
-
-        public LaneSummary getMostChampionData(String lane) {
-            switch (lane) {
-                case "TOP":
-                    return new LaneSummary( "TOP",top.getMostChampionData().getChampionName(), top.getMostChampionData().getChampionIconNumber());
-                case "JUNGLE":
-                    return new LaneSummary( "JUNGLE",jug.getMostChampionData().getChampionName(), jug.getMostChampionData().getChampionIconNumber());
-                case "MIDDLE":
-                    return new LaneSummary( "MIDDLE",mid.getMostChampionData().getChampionName(), mid.getMostChampionData().getChampionIconNumber());
-                case "BOTTOM":
-                    return new LaneSummary( "BOTTOM",adc.getMostChampionData().getChampionName(), adc.getMostChampionData().getChampionIconNumber());
-                case "UTILITY":
-                    return new LaneSummary( "SUPPORT",sup.getMostChampionData().getChampionName(), sup.getMostChampionData().getChampionIconNumber());
-                default:
-                    return new LaneSummary();
-            }
-        }
-
-
     }
 
     @Getter
@@ -154,7 +123,7 @@ public class ProcessRankInfo {
             private int wins;
             private int gameTime;
             private int totalCS;
-            private double visionScorePerMinute;
+            private double visionScore;
             private double kda;
             private double totalKillParticipation;
 
@@ -176,8 +145,8 @@ public class ProcessRankInfo {
             public void addTotalCS(int totalCS) {
                 this.totalCS += totalCS;
             }
-            public void addVisionScorePerMinute(double visionScorePerMinute) {
-                this.visionScorePerMinute += visionScorePerMinute;
+            public void addVisionScore(int visionScore) {
+                this.visionScore += visionScore;
             }
             public void addKda(double kda) {
                 this.kda += kda;

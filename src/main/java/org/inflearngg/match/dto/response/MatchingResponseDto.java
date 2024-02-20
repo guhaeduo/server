@@ -36,25 +36,17 @@ public class MatchingResponseDto {
             private int killAvg;
             private int deathAvg;
             private int assistAvg;
-            private LaneSummary mainLane;
-            private LaneSummary subLane;
+            private String mainLane;
+            private String subLane;
 
             public void setWinningRate(double winningRate) {
-                this.winningRate = String.format("%.2f", winningRate);
+                this.winningRate = Math.round(winningRate)+ "%";
             }
 
             public void setKda(double kda) {
                 this.kda = String.format("%.2f", kda);
             }
 
-            @Getter
-            @Setter
-            @NoArgsConstructor
-            public static class LaneSummary {
-                private String lane;
-                private String champion;
-                private int championIconNumber;
-            }
         }
 
         @Getter
@@ -77,8 +69,9 @@ public class MatchingResponseDto {
                 private List<MostChampion> mostChampionlist;
 
                 public void setWinningRate(double winningRate) {
-                    this.winningRate = String.format("%.2f", winningRate);
+                    this.winningRate = Math.round(winningRate)+ "%";
                 }
+
 
                 @Getter
                 @Setter
@@ -89,29 +82,30 @@ public class MatchingResponseDto {
                     private int championIconNumber;
                     private String winningRate;
                     private String csPerMinute;
-                    private String visionScorePerMinute;
+                    private String visionScore;
                     private String kda;
-                    private String avgKillParticipation;
+                    private String KillParticipation;
 
 
                     public void setWinningRate(double winningRate) {
-                        this.winningRate = String.format("%.2f", winningRate);
+                        this.winningRate = Math.round(winningRate)+ "%";
                     }
+
 
                     public void setCsPerMinute(double csPerMinute) {
                         this.csPerMinute = String.format("%.2f", csPerMinute);
                     }
 
-                    public void setVisionScorePerMinute(double visionScorePerMinute) {
-                        this.visionScorePerMinute = String.format("%.2f", visionScorePerMinute);
+                    public void setVisionScore(double visionScorePerMinute) {
+                        this.visionScore = String.format("%.2f", visionScorePerMinute);
                     }
 
                     public void setKda(double kda) {
                         this.kda = String.format("%.2f", kda);
                     }
 
-                    public void setAvgKillParticipation(double avgKillParticipation) {
-                        this.avgKillParticipation = String.format("%.2f", avgKillParticipation);
+                    public void setKillParticipation(double avgKillParticipation) {
+                        this.KillParticipation = Math.round(avgKillParticipation) + "%";
                     }
 
 

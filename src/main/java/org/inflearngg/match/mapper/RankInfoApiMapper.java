@@ -21,9 +21,9 @@ public class RankInfoApiMapper {
             RankInfo info = rankInfo.getInfo();
             // 이긴 횟수, 진 횟수
             if (participantInfo.isWin()) {
-                info.isWin();
+                info.addWin();
             } else {
-                info.isLose();
+                info.addLose();
             }
 
             //총 kill, death, assist, kda
@@ -38,19 +38,19 @@ public class RankInfoApiMapper {
                     setRankLane(participantInfo, lane.getTop());
                     break;
                 case "JUNGLE":
-                    laneMap.put("JUNGLE", laneMap.getOrDefault("JUNGLE", 0) + 1);
+                    laneMap.put("JUG", laneMap.getOrDefault("JUG", 0) + 1);
                     setRankLane(participantInfo, lane.getJug());
                     break;
                 case "MIDDLE":
-                    laneMap.put("MIDDLE", laneMap.getOrDefault("MIDDLE", 0) + 1);
+                    laneMap.put("MID", laneMap.getOrDefault("MID", 0) + 1);
                     setRankLane(participantInfo, lane.getMid());
                     break;
                 case "BOTTOM":
-                    laneMap.put("BOTTOM", laneMap.getOrDefault("BOTTOM", 0) + 1);
+                    laneMap.put("ADC", laneMap.getOrDefault("ADC", 0) + 1);
                     setRankLane(participantInfo, lane.getAdc());
                     break;
                 case "UTILITY":
-                    laneMap.put("SUPPORT", laneMap.getOrDefault("SUPPORT", 0) + 1);
+                    laneMap.put("SUP", laneMap.getOrDefault("SUP", 0) + 1);
                     setRankLane(participantInfo, lane.getSup());
                     break;
             }
@@ -79,8 +79,8 @@ public class RankInfoApiMapper {
             championData.addWin();
         }
         championData.addGameTime(participantInfo.getTimePlayed());
-        championData.addTotalCS(participantInfo.getTotalMinionsKilled());
-        championData.addVisionScorePerMinute(participantInfo.getChallenges().getVisionScorePerMinute());
+        championData.addTotalCS(participantInfo.getTotalMinionsKilled() + participantInfo.getNeutralMinionsKilled());
+        championData.addVisionScore(participantInfo.getVisionScore());
         championData.addKda(participantInfo.getChallenges().getKda());
         championData.addTotalKillParticipation(participantInfo.getChallenges().getKillParticipation());
 
@@ -94,9 +94,9 @@ public class RankInfoApiMapper {
             championData.setWins(1);
         }
         championData.setGameTime(participantInfo.getTimePlayed());
-        championData.setTotalCS(participantInfo.getTotalMinionsKilled());
+        championData.setTotalCS(participantInfo.getTotalMinionsKilled() + participantInfo.getNeutralMinionsKilled());
         championData.setKda(participantInfo.getChallenges().getKda());
-        championData.setVisionScorePerMinute(participantInfo.getChallenges().getVisionScorePerMinute());
+        championData.setVisionScore(participantInfo.getVisionScore());
         championData.setTotalKillParticipation(participantInfo.getChallenges().getKillParticipation());
         return championData;
     }

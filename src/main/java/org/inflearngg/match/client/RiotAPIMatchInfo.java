@@ -47,6 +47,7 @@ public class RiotAPIMatchInfo {
         private int deaths; // 죽은 총 횟수
         private int assists; // 어시스트
         private int totalMinionsKilled; // 미니언 킬
+        private int neutralMinionsKilled; // 중립미니언 킬
         private String championName; // 챔피언 이름
         private int championId; // 챔피언 icon number
         private int champLevel; // 챔피언 레벨
