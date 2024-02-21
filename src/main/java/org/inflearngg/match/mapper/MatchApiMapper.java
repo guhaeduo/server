@@ -138,7 +138,7 @@ public class MatchApiMapper {
         participantInfo.setDeath(part.getDeaths());
         participantInfo.setAssist(part.getAssists());
         participantInfo.setMinionKill(part.getTotalMinionsKilled());
-        participantInfo.setCsPerMinute((double) part.getTotalMinionsKilled() /minute);
+        participantInfo.setCsPerMinute((double) (part.getTotalMinionsKilled() + part.getNeutralMinionsKilled()) /minute);
         participantInfo.setKillParticipation(part.getChallenges().getKillParticipation() * 100);
         participantInfo.setChampionName(part.getChampionName());
         participantInfo.setChampionIconNumber(part.getChampionId());
