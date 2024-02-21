@@ -1,5 +1,6 @@
 package org.inflearngg.match.mapper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.match.dto.process.ProcessMatchInfo;
 import org.inflearngg.match.dto.process.ProcessRankInfo;
 import org.inflearngg.match.dto.response.MatchingResponseDto;
@@ -10,9 +11,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.inflearngg.match.dto.response.MatchingResponseDto.MatchData.MatchInfo.MaxData.*;
+
+@Slf4j
 @Component
 public class ProcessMatchMapper {
-
 
 
     /**
@@ -28,7 +31,7 @@ public class ProcessMatchMapper {
     private MatchingResponseDto.SummonerRankInfo.RankInfo mapToRankInfo(ProcessRankInfo.RankInfo rankInfo) {
         MatchingResponseDto.SummonerRankInfo.RankInfo matchingRankInfo = new MatchingResponseDto.SummonerRankInfo.RankInfo();
         matchingRankInfo.setCntGame(rankInfo.getCntGame());
-        matchingRankInfo.setWinningRate((double)rankInfo.getWins() / rankInfo.getCntGame() * 100);
+        matchingRankInfo.setWinningRate((double) rankInfo.getWins() / rankInfo.getCntGame() * 100);
         matchingRankInfo.setWins(rankInfo.getWins());
         matchingRankInfo.setLoses(rankInfo.getLoses());
         matchingRankInfo.setKda(rankInfo.getSumKda() / rankInfo.getCntGame());
@@ -60,7 +63,7 @@ public class ProcessMatchMapper {
 
     private MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData mapToRankLaneData(ProcessRankInfo.RankLaneData rankLaneData) {
         MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData matchingRankLaneData = new MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData();
-        if(rankLaneData.getTotalGameCnt() == 0) {
+        if (rankLaneData.getTotalGameCnt() == 0) {
             matchingRankLaneData.setMostChampionlist(new ArrayList<>());
             return matchingRankLaneData;
         }
@@ -80,16 +83,15 @@ public class ProcessMatchMapper {
         List<MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion> matchingMostChampionList = new ArrayList<>();
         for (ProcessRankInfo.RankLaneData.ChampionData championData : mostChampionList) {
             MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion matchingMostChampion = new MatchingResponseDto.SummonerRankInfo.Lane.RankLaneData.MostChampion();
-            if(championData.getTotalGameCnt() != 0) {
+            if (championData.getTotalGameCnt() != 0) {
                 matchingMostChampion.setCntGame(championData.getTotalGameCnt());
                 int gameMinuteTime = championData.getGameTime() / 60;
                 matchingMostChampion.setChampionName(championData.getChampionName());
-                matchingMostChampion.setChampionIconNumber(championData.getChampionIconNumber());
                 matchingMostChampion.setWinningRate((double) championData.getWins() / championData.getTotalGameCnt() * 100);
                 matchingMostChampion.setCsPerMinute((double) championData.getTotalCS() / gameMinuteTime);
                 matchingMostChampion.setVisionScore(championData.getVisionScore() / championData.getTotalGameCnt());
                 matchingMostChampion.setKda(championData.getKda() / championData.getTotalGameCnt());
-                matchingMostChampion.setKillParticipation(championData.getTotalKillParticipation() / championData.getTotalGameCnt() *100);
+                matchingMostChampion.setKillParticipation(championData.getTotalKillParticipation() / championData.getTotalGameCnt() * 100);
             }
 
             matchingMostChampionList.add(matchingMostChampion);
@@ -106,8 +108,15 @@ public class ProcessMatchMapper {
         List<MatchingResponseDto.MatchData> matchingMatchDataList = new ArrayList<>();
         for (ProcessMatchInfo matchData : matchDataList) {
             MatchingResponseDto.MatchData matchingMatchData = new MatchingResponseDto.MatchData();
+            matchingMatchData.setMatchId(matchData.getMatchId());
             matchingMatchData.setInfo(mapToInfo(matchData.getInfo()));
-            matchingMatchData.setCurrentSummonerMatchData(mapToSummonerMatchData(matchData.getCurrentSummonerParticipantInfo()));
+            int totalKills = 0;
+            if (matchData.getCurrentSummonerParticipantInfo().getTeamId() == 100)
+                totalKills = matchData.getBlue().getTotalKills();
+            else
+                totalKills = matchData.getRed().getTotalKills();
+
+            matchingMatchData.setCurrentSummonerMatchData(mapToSummonerMatchData(matchData.getCurrentSummonerParticipantInfo(), totalKills));
             matchingMatchData.setRed(mapToTeam(matchData.getRed()));
             matchingMatchData.setBlue(mapToTeam(matchData.getBlue()));
             matchingMatchDataList.add(matchingMatchData);
@@ -118,20 +127,37 @@ public class ProcessMatchMapper {
     private MatchingResponseDto.MatchData.MatchInfo mapToInfo(ProcessMatchInfo.Info info) {
         MatchingResponseDto.MatchData.MatchInfo matchingInfo = new MatchingResponseDto.MatchData.MatchInfo();
         matchingInfo.setGameDuration(info.getGameDuration());
+        matchingInfo.setGameEndStamp(info.getGameEndStamp());
         matchingInfo.setQueueType(info.getQueueType());
         matchingInfo.setQuickShutdown(info.isQuickShutdown());
-        matchingInfo.setMaxDamage(mapToMaxDamage(info.getMaxDamage()));
+        matchingInfo.setMaxData(mapToMaxDamage(info.getMaxData()));
         return matchingInfo;
     }
 
-    private MatchingResponseDto.MatchData.MatchInfo.MaxDamage mapToMaxDamage(ProcessMatchInfo.Info.MaxDamage maxDamage) {
-        MatchingResponseDto.MatchData.MatchInfo.MaxDamage matchingMaxDamage = new MatchingResponseDto.MatchData.MatchInfo.MaxDamage();
-        matchingMaxDamage.setChampionName(maxDamage.getChampionName());
-        matchingMaxDamage.setChampionIconNumber(maxDamage.getChampionIconNumber());
-        matchingMaxDamage.setDamage(maxDamage.getDamage());
-        matchingMaxDamage.setRiotGameName(maxDamage.getRiotGameName());
-        matchingMaxDamage.setRiotGameTag(maxDamage.getRiotGameTag());
-        return matchingMaxDamage;
+    private MatchingResponseDto.MatchData.MatchInfo.MaxData mapToMaxDamage(ProcessMatchInfo.Info.MaxData maxData) {
+
+        MatchingResponseDto.MatchData.MatchInfo.MaxData matchingMaxData = new MatchingResponseDto.MatchData.MatchInfo.MaxData();
+
+        //최대데미지
+        MaxDamage maxDamage = new MaxDamage();
+        maxDamage.setMaxDamage(maxData.getMaxDamage().getDamage(), maxData.getMaxDamage().getRiotGameName(), maxData.getMaxDamage().getChampionName());
+
+        //최대 킬
+        MaxKill maxKill = new MaxKill();
+        maxKill.setMaxKill(maxData.getMaxKill().getKill(), maxData.getMaxKill().getRiotGameName(), maxData.getMaxKill().getChampionName());
+        //최대 데스
+        MaxDeath maxDeath = new MaxDeath();
+        maxDeath.setMaxDeath(maxData.getMaxDeath().getDeath(), maxData.getMaxDeath().getRiotGameName(), maxData.getMaxDeath().getChampionName());
+
+        //최대 어시스트
+        MaxAssist maxAssist = new MaxAssist();
+        maxAssist.setMaxAssist(maxData.getMaxAssist().getAssist(), maxData.getMaxAssist().getRiotGameName(), maxData.getMaxAssist().getChampionName());
+
+        matchingMaxData.setMaxDamage(maxDamage);
+        matchingMaxData.setMaxKill(maxKill);
+        matchingMaxData.setMaxDeath(maxDeath);
+        matchingMaxData.setMaxAssist(maxAssist);
+        return matchingMaxData;
     }
 
     /**
@@ -146,7 +172,7 @@ public class ProcessMatchMapper {
         matchingTeam.setTeamMaxDamage(team.getTeamMaxDamage());
         matchingTeam.setWin(team.isWin());
         matchingTeam.setObjectives(mapToObjects(team.getObjectives()));
-        matchingTeam.setParticipants(mapToParticipants(team.getParticipants()));
+        matchingTeam.setParticipants(mapToParticipants(team.getParticipants(), team.getTotalKills()));
         return matchingTeam;
     }
 
@@ -164,25 +190,34 @@ public class ProcessMatchMapper {
     /**
      * Participants
      */
-    private List<MatchingResponseDto.MatchData.SummonerMatchData> mapToParticipants(List<ProcessMatchInfo.Team.ParticipantInfo> participants) {
+    private List<MatchingResponseDto.MatchData.SummonerMatchData> mapToParticipants(List<ProcessMatchInfo.Team.ParticipantInfo> participants, int totalKills) {
         List<MatchingResponseDto.MatchData.SummonerMatchData> matchingParticipants = new ArrayList<>();
         for (ProcessMatchInfo.Team.ParticipantInfo participant : participants) {
-            MatchingResponseDto.MatchData.SummonerMatchData summonerMatchData = mapToSummonerMatchData(participant);
+            MatchingResponseDto.MatchData.SummonerMatchData summonerMatchData = mapToSummonerMatchData(participant, totalKills);
             matchingParticipants.add(summonerMatchData);
         }
         return matchingParticipants;
     }
 
-    private MatchingResponseDto.MatchData.SummonerMatchData mapToSummonerMatchData(ProcessMatchInfo.Team.ParticipantInfo SummonerMatchData) {
+    private MatchingResponseDto.MatchData.SummonerMatchData mapToSummonerMatchData(ProcessMatchInfo.Team.ParticipantInfo SummonerMatchData, int totalKills) {
         MatchingResponseDto.MatchData.SummonerMatchData matchingSummonerMatchData = new MatchingResponseDto.MatchData.SummonerMatchData();
-        matchingSummonerMatchData.setPosition(SummonerMatchData.getLane());
+        matchingSummonerMatchData.setLane(SummonerMatchData.getLane());
+        matchingSummonerMatchData.setWin(SummonerMatchData.isWin());
         matchingSummonerMatchData.setBot(SummonerMatchData.isBot());
         matchingSummonerMatchData.setKill(SummonerMatchData.getKill());
         matchingSummonerMatchData.setDeath(SummonerMatchData.getDeath());
+        matchingSummonerMatchData.setAssists(SummonerMatchData.getAssist());
         matchingSummonerMatchData.setMinionKill(SummonerMatchData.getMinionKill());
-
+        matchingSummonerMatchData.setCsPerMinute(SummonerMatchData.getCsPerMinute());
+        double killParticipation = SummonerMatchData.getKillParticipation();
+        log.info("killParticipation : " + killParticipation);
+        if (killParticipation == 0.0) {
+            log.info("totalKills : " + totalKills);
+            killParticipation = (double) (SummonerMatchData.getKill() + SummonerMatchData.getAssist()) / totalKills * 100;
+            log.info("calculKillParticipation : " + killParticipation);
+        }
+        matchingSummonerMatchData.setKillParticipation(killParticipation);
         matchingSummonerMatchData.setChampionName(SummonerMatchData.getChampionName());
-        matchingSummonerMatchData.setChampionIconNumber(SummonerMatchData.getChampionIconNumber());
         matchingSummonerMatchData.setChampionLevel(SummonerMatchData.getChampionLevel());
         matchingSummonerMatchData.setRiotGameName(SummonerMatchData.getRiotName());
         matchingSummonerMatchData.setRiotGameTag(SummonerMatchData.getRiotTag());
@@ -206,7 +241,6 @@ public class ProcessMatchMapper {
         MatchingResponseDto.MatchData.SummonerMatchData.Perks matchingperks = new MatchingResponseDto.MatchData.SummonerMatchData.Perks();
         matchingperks.setMain(mapToPerkDetail(perks.getMain()));
         matchingperks.setSub(mapToPerkDetail(perks.getSub()));
-
         return matchingperks;
     }
 

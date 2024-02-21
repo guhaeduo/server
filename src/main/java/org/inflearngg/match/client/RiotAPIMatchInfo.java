@@ -23,7 +23,7 @@ public class RiotAPIMatchInfo {
     @NoArgsConstructor
     public static class MatchBasicInfo {
         private int gameDuration; // 게임 시간
-        private String gameEndTimestamp;// 게임 종료 시간(밀리초 단위)
+        private Long gameEndTimestamp;// 게임 종료 시간(밀리초 단위)
         private String gameStartTimestamp;// 게임 시작 시간(밀리초 단위)
         private String gameMode; // 게임모드  CLASSIC, ARAM, URF, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO
         //        private boolean quickShutdown;
@@ -75,7 +75,7 @@ public class RiotAPIMatchInfo {
         private String puuid; // puuid
         private Perks perks;
         private boolean isWin; // 승리여부
-        private Challenges challenges; // 킬관여율
+        private Challenges challenges = new Challenges(); // 킬관여율
         private int teamId;
 
 

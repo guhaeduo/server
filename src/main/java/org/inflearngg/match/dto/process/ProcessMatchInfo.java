@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProcessMatchInfo {
 
+    private String matchId;
     private Info info;
     private Team.ParticipantInfo currentSummonerParticipantInfo;
     private Team blue;
@@ -24,30 +24,84 @@ public class ProcessMatchInfo {
     @NoArgsConstructor
     public static class Info {
         private int gameDuration; // 게임 시간
-        private String gameEndStamp; // 끝난 시간
+        private long gameEndStamp; // 끝난 시간
         private int queueType; // 게임 유형 -> 나중에 솔로겜인지, 자유랭인지
         private boolean quickShutdown; // 게임이 빠르게 종료되었는지
-        private MaxDamage maxDamage;
+        private MaxData maxData;
 
 
 
         @Getter
         @Setter
         @NoArgsConstructor
-        public static class MaxDamage {
-            private int damage;
-            private String riotGameName;
-            private String riotGameTag;
-            private String championName;
-            private int championIconNumber;
+        public static class MaxData {
+            private MaxDamage maxDamage;
+            private MaxKill maxKill;
+            private MaxDeath maxDeath;
+            private MaxAssist maxAssist;
 
-            // getters and setters
-            public void setMaxDamage(int damage, String riotGameName, String riotGameTag, String championName, int championIconNumber) {
-                this.damage = damage;
-                this.riotGameName = riotGameName;
-                this.riotGameTag = riotGameTag;
-                this.championName = championName;
-                this.championIconNumber = championIconNumber;
+            public void initMaxData() {
+                this.maxDamage = new MaxDamage();
+                this.maxKill = new MaxKill();
+                this.maxDeath = new MaxDeath();
+                this.maxAssist = new MaxAssist();
+            }
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class MaxDamage {
+                private int damage;
+                private String riotGameName;
+                private String championName;
+
+                public void setMaxDamage(int damage, String riotGameName, String championName) {
+                    this.damage = damage;
+                    this.riotGameName = riotGameName;
+                    this.championName = championName;
+                }
+            }
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class MaxKill {
+                private int kill;
+                private String riotGameName;
+                private String championName;
+
+                public void setMaxKill(int kill, String riotGameName, String championName) {
+                    this.kill = kill;
+                    this.riotGameName = riotGameName;
+                    this.championName = championName;
+                }
+
+            }
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class MaxDeath {
+                private int death;
+                private String riotGameName;
+                private String championName;
+
+                public void setMaxDeath(int death, String riotGameName, String championName) {
+                    this.death = death;
+                    this.riotGameName = riotGameName;
+                    this.championName = championName;
+                }
+            }
+            @Getter
+            @Setter
+            @NoArgsConstructor
+            public static class MaxAssist {
+                private int assist;
+                private String riotGameName;
+                private String championName;
+
+                public void setMaxAssist(int assist, String riotGameName, String championName) {
+                    this.assist = assist;
+                    this.riotGameName = riotGameName;
+                    this.championName = championName;
+                }
             }
         }
     }
@@ -141,11 +195,15 @@ public class ProcessMatchInfo {
         @NoArgsConstructor
         public static class ParticipantInfo {
             // 라인이 있으면 좋을 듯
+            private int teamId; // 팀 아이디
+            private boolean isWin;
             private String lane;
             private int kill;
             private boolean isBot;
             private int death;
             private int assist;
+            private double killParticipation;
+            private double csPerMinute;
             private int minionKill;
             private String championName;
             private int championIconNumber;
@@ -163,11 +221,24 @@ public class ProcessMatchInfo {
             private int spell2Id;
             private String pUuid;
 
-
             public void setLane(String lane) {
                 this.lane = lane;
-                if (lane.equals("UTILITY")) {
-                    this.lane = "SUPPORT";
+                switch (lane) {
+                    case "TOP":
+                        this.lane = "TOP";
+                        break;
+                    case "JUNGLE":
+                        this.lane = "JUG";
+                        break;
+                    case "MIDDLE":
+                        this.lane = "MID";
+                        break;
+                    case "BOTTOM":
+                        this.lane = "ADC";
+                        break;
+                    case "UTILITY":
+                        this.lane = "SUP";
+                        break;
                 }
             }
 

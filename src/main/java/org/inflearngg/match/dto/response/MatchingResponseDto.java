@@ -1,5 +1,6 @@
 package org.inflearngg.match.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,7 +41,7 @@ public class MatchingResponseDto {
             private String subLane;
 
             public void setWinningRate(double winningRate) {
-                this.winningRate = Math.round(winningRate)+ "%";
+                this.winningRate = Math.round(winningRate) + "%";
             }
 
             public void setKda(double kda) {
@@ -53,11 +54,17 @@ public class MatchingResponseDto {
         @Setter
         @NoArgsConstructor
         public static class Lane {
+            @JsonSetter("ALL")
             private RankLaneData all;
+            @JsonSetter("TOP")
             private RankLaneData top;
+            @JsonSetter("JUG")
             private RankLaneData jug;
+            @JsonSetter("MID")
             private RankLaneData mid;
+            @JsonSetter("ADC")
             private RankLaneData adc;
+            @JsonSetter("SUP")
             private RankLaneData sup;
 
             @Getter
@@ -69,7 +76,7 @@ public class MatchingResponseDto {
                 private List<MostChampion> mostChampionlist;
 
                 public void setWinningRate(double winningRate) {
-                    this.winningRate = Math.round(winningRate)+ "%";
+                    this.winningRate = Math.round(winningRate) + "%";
                 }
 
 
@@ -79,7 +86,6 @@ public class MatchingResponseDto {
                 public static class MostChampion {
                     private int cntGame;
                     private String championName;
-                    private int championIconNumber;
                     private String winningRate;
                     private String csPerMinute;
                     private String visionScore;
@@ -88,7 +94,7 @@ public class MatchingResponseDto {
 
 
                     public void setWinningRate(double winningRate) {
-                        this.winningRate = Math.round(winningRate)+ "%";
+                        this.winningRate = Math.round(winningRate) + "%";
                     }
 
 
@@ -118,6 +124,7 @@ public class MatchingResponseDto {
     @Setter
     @NoArgsConstructor
     public static class MatchData {
+        private String matchId;
         private MatchInfo info;
         private SummonerMatchData currentSummonerMatchData;
         private Team red;
@@ -128,10 +135,10 @@ public class MatchingResponseDto {
         @NoArgsConstructor
         public static class MatchInfo {
             private int gameDuration;
-            //            private int gameEndStamp;
+            private long gameEndStamp;
             private String queueType;
             private boolean quickShutdown;
-            private MaxDamage maxDamage;
+            private MaxData maxData;
 
             // getters and setters
             public void setQueueType(int queueType) {
@@ -166,12 +173,68 @@ public class MatchingResponseDto {
             @Getter
             @Setter
             @NoArgsConstructor
-            public static class MaxDamage {
-                private int damage;
-                private String championName;
-                private int championIconNumber;
-                private String riotGameName;
-                private String riotGameTag;
+            public static class MaxData {
+                private MaxDamage maxDamage;
+                private MaxKill maxKill;
+                private MaxDeath maxDeath;
+                private MaxAssist maxAssist;
+
+                @Getter
+                @Setter
+                public static class MaxDamage {
+                    private int damage;
+                    private String championName;
+                    private String riotGameName;
+
+                    public void setMaxDamage(int damage, String riotGameName, String championName) {
+                        this.damage = damage;
+                        this.riotGameName = riotGameName;
+                        this.championName = championName;
+                    }
+                }
+
+                @Getter
+                @Setter
+                public static class MaxKill {
+                    private int kill;
+                    private String championName;
+                    private String riotGameName;
+
+                    public void setMaxKill(int kill, String riotGameName, String championName) {
+                        this.kill = kill;
+                        this.riotGameName = riotGameName;
+                        this.championName = championName;
+                    }
+                }
+
+                @Getter
+                @Setter
+                public static class MaxDeath {
+                    private int death;
+                    private String championName;
+                    private String riotGameName;
+
+                    public void setMaxDeath(int death, String riotGameName, String championName) {
+                        this.death = death;
+                        this.riotGameName = riotGameName;
+                        this.championName = championName;
+                    }
+                }
+
+                @Getter
+                @Setter
+                public static class MaxAssist {
+                    private int assist;
+                    private String championName;
+                    private String riotGameName;
+
+                    public void setMaxAssist(int assist, String riotGameName, String championName) {
+                        this.assist = assist;
+                        this.riotGameName = riotGameName;
+                        this.championName = championName;
+                    }
+                }
+
             }
         }
 
@@ -180,15 +243,16 @@ public class MatchingResponseDto {
         @NoArgsConstructor
         @AllArgsConstructor
         public static class SummonerMatchData {
-            private String position;
+            private String lane;
+            private boolean isWin;
             private int kill;
             private boolean isBot;
             private int death;
             private int assists;
-            private int damage;
             private int minionKill;
+            private String killParticipation;
+            private String csPerMinute;
             private String championName;
-            private int championIconNumber;
             private int championLevel;
             private String riotGameName;
             private String riotGameTag;
@@ -204,6 +268,15 @@ public class MatchingResponseDto {
             private String pUuid;
 
             // getters and setters
+
+            public void setKillParticipation(double killParticipation) {
+                this.killParticipation = Math.round(killParticipation) + "%";
+            }
+
+            public void setCsPerMinute(double csPerMinute) {
+                this.csPerMinute = String.format("%.1f", csPerMinute);
+            }
+
             @Getter
             @Setter
             @NoArgsConstructor

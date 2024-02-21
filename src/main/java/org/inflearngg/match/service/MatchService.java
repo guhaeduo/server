@@ -108,7 +108,7 @@ public class MatchService {
                                     throw new RuntimeException(e);
                                 }
 
-                                return matchApiMapper.mapRiotAPIToProcessMatchInfo(riotApiData, puuid);
+                                return matchApiMapper.mapRiotAPIToProcessMatchInfo(riotApiData, puuid, matchId);
                             }
                     )
             );

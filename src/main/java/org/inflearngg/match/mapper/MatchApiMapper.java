@@ -1,5 +1,6 @@
 package org.inflearngg.match.mapper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.match.client.RiotAPIMatchInfo;
 import org.inflearngg.match.dto.process.ProcessMatchInfo;
 import org.jetbrains.annotations.NotNull;
@@ -10,19 +11,23 @@ import java.util.List;
 
 import static org.inflearngg.match.dto.process.ProcessMatchInfo.*;
 
+
+
+@Slf4j
 @Component
 public class MatchApiMapper {
 
     //client.RiotAPIMatchInfo.ApiData -> dto.process.ProcessMatchInfo
 
-    public ProcessMatchInfo mapRiotAPIToProcessMatchInfo(RiotAPIMatchInfo.MatchBasicInfo riotApiData, String curPuuid) {
+    public ProcessMatchInfo mapRiotAPIToProcessMatchInfo(RiotAPIMatchInfo.MatchBasicInfo riotApiData, String curPuuid, String matchId){
         ProcessMatchInfo processMatchInfo = new ProcessMatchInfo();
+        processMatchInfo.setMatchId(matchId);
         processMatchInfo.setInfo(mapRiotAPIToInfo(riotApiData));
         processMatchInfo.setCurrentSummonerParticipantInfo(new Team.ParticipantInfo());
         processMatchInfo.setBlue(new Team());
         processMatchInfo.setRed(new Team());
-        processMatchInfo.getInfo().setMaxDamage(new Info.MaxDamage());
-        setRedTeamAndBlueTeamAndMaxDamageAndCurrentSummoner(processMatchInfo.getRed(), processMatchInfo.getBlue(), riotApiData.getTeams(), riotApiData.getParticipants(), processMatchInfo.getInfo().getMaxDamage(), processMatchInfo, curPuuid);
+
+        setRedTeamAndBlueTeamAndMaxDamageAndCurrentSummoner(processMatchInfo.getRed(), processMatchInfo.getBlue(), riotApiData.getTeams(), riotApiData.getParticipants(), processMatchInfo.getInfo().getMaxData(), processMatchInfo, curPuuid);
 
         return processMatchInfo;
     }
@@ -36,9 +41,10 @@ public class MatchApiMapper {
         info.setGameDuration(matchBasicInfo.getGameDuration());
         info.setGameEndStamp(matchBasicInfo.getGameEndTimestamp());
         info.setQueueType(matchBasicInfo.getQueueId());
-
         info.setQuickShutdown(matchBasicInfo.getGameDuration() <= 300);
-        info.setMaxDamage(new Info.MaxDamage());
+        Info.MaxData maxData = new Info.MaxData();
+        maxData.initMaxData();
+        info.setMaxData(maxData);
         return info;
     }
 
@@ -47,23 +53,40 @@ public class MatchApiMapper {
 
 
     //client.RiotAPIMatchInfo.Team -> dto.process.ProcessMatchInfo.Team
-    private void setRedTeamAndBlueTeamAndMaxDamageAndCurrentSummoner(Team red, Team blue, RiotAPIMatchInfo.Team[] teams, RiotAPIMatchInfo.ParticipantInfo[] participants, Info.MaxDamage maxDamage, ProcessMatchInfo info, String curPuuid) {
+    private void setRedTeamAndBlueTeamAndMaxDamageAndCurrentSummoner(Team red, Team blue, RiotAPIMatchInfo.Team[] teams, RiotAPIMatchInfo.ParticipantInfo[] participants, Info.MaxData maxData, ProcessMatchInfo info, String curPuuid) {
         // 이때, 참가자 정보랑 MaxDamage 정보를 매핑해야함.
         //참가자 정보 매핑
+        int minute = info.getInfo().getGameDuration() / 60;
         for (RiotAPIMatchInfo.ParticipantInfo part : participants) {
+            // 현재 유저 정보
             if (part.getPuuid().equals(curPuuid)) {
-                info.setCurrentSummonerParticipantInfo(mapToParticipantInfo(part));
+                info.setCurrentSummonerParticipantInfo(mapToParticipantInfo(part, minute));
             }
-            if (maxDamage.getDamage() < part.getTotalDamageDealtToChampions()) {
-                maxDamage.setMaxDamage(part.getTotalDamageDealtToChampions(), part.getRiotIdGameName(), part.getRiotIdTagline(), part.getChampionName(), part.getChampionId());
+            // 최대 데미지
+            if (maxData.getMaxDamage().getDamage() < part.getTotalDamageDealtToChampions()) {
+                maxData.getMaxDamage().setMaxDamage(part.getTotalDamageDealtToChampions(), part.getRiotIdGameName(), part.getChampionName());
             }
+            // 최대 킬
+            if(maxData.getMaxKill().getKill() < part.getKills()){
+                maxData.getMaxKill().setMaxKill(part.getKills(), part.getRiotIdGameName(), part.getChampionName());
+            }
+            // 최대 데스
+            if(maxData.getMaxDeath().getDeath() < part.getDeaths()){
+                maxData.getMaxDeath().setMaxDeath(part.getDeaths(), part.getRiotIdGameName(), part.getChampionName());
+            }
+            // 최대 어시스트
+            if (maxData.getMaxAssist().getAssist() < part.getAssists()){
+                maxData.getMaxAssist().setMaxAssist(part.getAssists(), part.getRiotIdGameName(), part.getChampionName());
+            }
+            // 팀 정보 매핑
             if (part.getTeamId() == 100) {
-                mapToTeamParticipantInfo(part, blue);
+                mapToTeamParticipantInfo(part, blue, minute);
             } else {
-                mapToTeamParticipantInfo(part, red);
+                mapToTeamParticipantInfo(part, red, minute);
             }
 
         }
+        // 팀 총킬 세팅
 
         // 오브젝트 매핑
         for (RiotAPIMatchInfo.Team team : teams) {
@@ -93,26 +116,30 @@ public class MatchApiMapper {
         );
     }
 
-    private void mapToTeamParticipantInfo(RiotAPIMatchInfo.ParticipantInfo part, Team team) {
+    private void mapToTeamParticipantInfo(RiotAPIMatchInfo.ParticipantInfo part, Team team, int minute) {
         team.addTotalKills(part.getKills());
         team.addTotalDeaths(part.getDeaths());
         team.addTotalAssists(part.getAssists());
         team.addTotalGold(part.getGoldEarned());
         team.setMaxDamage(part.getTotalDamageDealtToChampions(), team.getTeamMaxDamage());
-        Team.ParticipantInfo participantInfo = mapToParticipantInfo(part);
+        Team.ParticipantInfo participantInfo = mapToParticipantInfo(part, minute);
         team.addParticipant(participantInfo);
     }
 
     @NotNull
-    private Team.ParticipantInfo mapToParticipantInfo(RiotAPIMatchInfo.ParticipantInfo part) {
+    private Team.ParticipantInfo mapToParticipantInfo(RiotAPIMatchInfo.ParticipantInfo part, int minute) {
         // part -> participantInfo
         Team.ParticipantInfo participantInfo = new Team.ParticipantInfo();
         participantInfo.setLane(part.getTeamPosition());
+        participantInfo.setWin(part.isWin());
+        participantInfo.setTeamId(part.getTeamId());
 //queueType = 850이면 봇전이다.
         participantInfo.setKill(part.getKills());
         participantInfo.setDeath(part.getDeaths());
         participantInfo.setAssist(part.getAssists());
         participantInfo.setMinionKill(part.getTotalMinionsKilled());
+        participantInfo.setCsPerMinute((double) part.getTotalMinionsKilled() /minute);
+        participantInfo.setKillParticipation(part.getChallenges().getKillParticipation() * 100);
         participantInfo.setChampionName(part.getChampionName());
         participantInfo.setChampionIconNumber(part.getChampionId());
         participantInfo.setChampionLevel(part.getChampLevel());
