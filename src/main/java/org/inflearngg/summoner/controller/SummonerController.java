@@ -25,11 +25,8 @@ public class SummonerController {
     public SummonerData getSummonerInfoByPuuid(
             @RequestHeader("region") SummonerRequestDto.Region region,
             @RequestHeader("summonerId") String summonerId) {
-        log.info("region : " + region + " summonerId : " + summonerId);
         SummonerInfo.RankInfo[] rankInfos = summonerService.getRankData(region.name(), summonerId);
         SummonerData summonerData = summonerMapper.mapToSummonerResponseDto(rankInfos);
-        System.out.println("[정보가져와] 솔랭 : " + summonerData.getSoloRank() + "  자유랭 : " +  summonerData.getFreeRank());
-
         return summonerData;
     }
 

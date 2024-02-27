@@ -40,7 +40,7 @@ public class MatchController {
             throw new RuntimeException("puuid 헤더 정보가 잘못되었습니다.");
         }
         LocalDateTime startTime = LocalDateTime.now();
-        log.info("요청시간 : " + startTime);
+        log.debug("요청시간 : " + startTime);
         String[] matchIdList = matchService.getMatchIdsByPuuid(puuid, queueId.getQueueId(), region.getContinent());
         MatchingResponseDto matchingResponseDto = new MatchingResponseDto();
         matchingResponseDto.setMatchDataList(mapper.mapToMatchDataList(matchService.getMatchDataList(matchIdList, puuid, region.getContinent())));
@@ -48,8 +48,8 @@ public class MatchController {
         matchingResponseDto.setQueueType(queueId.name());
 
         LocalDateTime endTime = LocalDateTime.now();
-        log.info("응답시간 : " + endTime);
-        log.info("요청 후 응답시간 : " + startTime.until(endTime, ChronoUnit.SECONDS) + "s");
+        log.debug("응답시간 : " + endTime);
+        log.debug("요청 후 응답시간 : " + startTime.until(endTime, ChronoUnit.SECONDS) + "s");
         return matchingResponseDto;
     }
 
@@ -61,12 +61,12 @@ public class MatchController {
             @RequestHeader("region") MatchRequestDto.Region region
     ) throws ExecutionException, InterruptedException {
         LocalDateTime startTime = LocalDateTime.now();
-        log.info("요청시간 : " + startTime);
+        log.debug("요청시간 : " + startTime);
         String[] matchIdList = matchService.getMatchIdsByPuuid(puuid, queueId.getQueueId(), region.getContinent());
         MatchingResponseDto.SummonerRankInfo summonerRankInfo = mapper.mapToSummonerRankInfo(matchService.getSummonerSummaryInfo(matchIdList, puuid, region.getContinent()));
         LocalDateTime endTime = LocalDateTime.now();
-        log.info("응답시간 : " + endTime);
-        log.info("요청 후 응답시간 : " + startTime.until(endTime, ChronoUnit.SECONDS) + "s");
+        log.debug("응답시간 : " + endTime);
+        log.debug("요청 후 응답시간 : " + startTime.until(endTime, ChronoUnit.SECONDS) + "s");
         return summonerRankInfo;
     }
 

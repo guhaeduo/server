@@ -29,7 +29,7 @@ public class DuoController {
     }
 
     @GetMapping("/post/{postId}")
-    public DuoInfo getDuoPost(@PathVariable Long postId) { // 상세조회
+    public DuoInfo getDuoPost(@PathVariable("postId") Long postId) { // 상세조회
         return mapper.duoPostToDuoResponseDtoDuoInfo(
                 duoService.getDuoPost(postId)
         );
@@ -37,8 +37,8 @@ public class DuoController {
 
     @PostMapping("/post")
     public DuoInfo createDuoPost(@Valid @RequestBody DuoPostSave makeDuoPost) {
-        log.info("makeDuoPost.isLogin : " + makeDuoPost.getLogin());
-        log.info("makeDuoPost.isRiotVerified : " + makeDuoPost.isRiotVerified());
+        log.debug("makeDuoPost.isLogin : " + makeDuoPost.getLogin());
+        log.debug("makeDuoPost.isRiotVerified : " + makeDuoPost.isRiotVerified());
         return mapper.duoPostToDuoResponseDtoDuoInfo(
                 duoService.createDuoPost(
                         mapper.duoPostSaveToDuoPost(makeDuoPost)));
@@ -46,7 +46,7 @@ public class DuoController {
 
 
     @PatchMapping("/post/{postId}")
-    public DuoInfo updateDuoPost(@PathVariable Long postId, @RequestBody DuoPostUpdate duoPostUpdate) {
+    public DuoInfo updateDuoPost(@PathVariable("postId") Long postId, @RequestBody DuoPostUpdate duoPostUpdate) {
         return mapper.duoPostToDuoResponseDtoDuoInfo(
                 duoService.updateDuoPost(
                         postId,

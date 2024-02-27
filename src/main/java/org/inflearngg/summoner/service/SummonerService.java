@@ -45,7 +45,6 @@ public class SummonerService {
 
     public SummonerInfo.RankInfo[] getRankData(String region, String SummonerId) throws HttpClientErrorException {
         String API_URL_RANK = "https://" + region + ".api.riotgames.com/lol/league/v4/entries/by-summoner/{summonerId}?api_key={api_key}";
-        log.info("API_URL_RANK : " + API_URL_RANK);
         try {
             ResponseEntity<SummonerInfo.RankInfo[]> rankDataEntity = restTemplate.getForEntity(API_URL_RANK, SummonerInfo.RankInfo[].class, SummonerId, API_KEY);
             if (rankDataEntity.getStatusCode().is2xxSuccessful()) {

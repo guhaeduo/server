@@ -246,11 +246,8 @@ public class ProcessMatchMapper {
         matchingSummonerMatchData.setMinionKill(SummonerMatchData.getMinionKill());
         matchingSummonerMatchData.setCsPerMinute(SummonerMatchData.getCsPerMinute());
         double killParticipation = SummonerMatchData.getKillParticipation();
-        log.info("killParticipation : " + killParticipation);
         if (killParticipation == 0.0) {
-            log.info("totalKills : " + totalKills);
             killParticipation = (double) (SummonerMatchData.getKill() + SummonerMatchData.getAssist()) / totalKills * 100;
-            log.info("calculKillParticipation : " + killParticipation);
         }
         matchingSummonerMatchData.setKillParticipation(killParticipation);
         matchingSummonerMatchData.setChampionName(SummonerMatchData.getChampionName());

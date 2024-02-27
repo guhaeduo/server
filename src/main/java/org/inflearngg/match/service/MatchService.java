@@ -51,7 +51,7 @@ public class MatchService {
     public void calculateSummonerSummaryInfo(String[] matchIdList, String puuid, ProcessRankInfo rankInfo, String region) throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(THRED_CNT);
         HashMap<String, Integer> laneMap = new HashMap<>();
-        log.info("[비동기 시작]");
+        log.debug("[비동기 시작]");
         for (String matchId : matchIdList) {
 //            log.info("[matchId]" + matchId);
             CompletableFuture<RiotAPIMatchInfo.MatchBasicInfo> data;
@@ -96,7 +96,7 @@ public class MatchService {
         ExecutorService executorService = Executors.newFixedThreadPool(THRED_CNT);
 
 
-        log.info("[비동기 시작]");
+        log.debug("[비동기 시작]");
         for (String matchId : matchIdList) {
             futures.add(CompletableFuture.supplyAsync(() -> matchClient.fetchAsyncMatchData(matchId,region))
                     .thenApply(completableFuture -> {

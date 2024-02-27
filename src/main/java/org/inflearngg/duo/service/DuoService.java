@@ -32,7 +32,6 @@ public class DuoService {
     }
 
     public DuoPost createDuoPost(DuoPost makeDuoPost) {
-        log.info("[save]memberId : " + makeDuoPost.getMember().getMemberId());
         return duoRepository.save(makeDuoPost);
     }
 

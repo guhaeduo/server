@@ -32,7 +32,7 @@ public class DuoInit {
 
         @Transactional
         public void init() {
-            Member member = new Member("test", "test-pw");
+            Member member = new Member("test", "test-pw" , "test-socialId");
             em.persist(member);
             System.out.println("===========UserInitService.init============");
         }

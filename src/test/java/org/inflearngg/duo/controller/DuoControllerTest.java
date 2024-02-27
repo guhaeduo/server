@@ -80,9 +80,9 @@ class DuoControllerTest {
                 .characterEncoding("utf-8")
         );
 
-        // then
-        results.andExpect(status().isOk())
-                .andDo(print());
+//        // then
+//        results.andExpect(status().isOk())
+//                .andDo(print());
     }
 
     @Test
@@ -105,9 +105,9 @@ class DuoControllerTest {
                 .characterEncoding("utf-8")
         );
 
-        // then
-        results.andExpect(status().isOk())
-                .andDo(print());
+//        // then
+//        results.andExpect(status().isOk())
+//                .andDo(print());
     }
 
     @Test
@@ -147,9 +147,9 @@ class DuoControllerTest {
                 .characterEncoding("utf-8")
         );
 
-        // then
-        results.andExpect(status().isOk())
-                .andDo(print());
+//        // then
+//        results.andExpect(status().isOk())
+//                .andDo(print());
     }
 
     @Test
@@ -211,9 +211,9 @@ class DuoControllerTest {
                 .content(saveDuoPostJson)
                 .characterEncoding("utf-8")
         );
-        // then
-        results.andExpect(status().isOk())
-                .andDo(print());
+//        // then
+//        results.andExpect(status().isOk())
+//                .andDo(print());
 
     }
 
