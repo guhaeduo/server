@@ -22,6 +22,7 @@ public class Member {
     private LocalDate createdAt = LocalDate.now();
     private String email;
     private String password;
+    private String socialId;
     private boolean isRiotVerified;
     // 인증된소환사이름과 연관관계 매핑
     @OneToMany(mappedBy = "member")
@@ -35,13 +36,14 @@ public class Member {
         this.memberId = memberId;
     }
 
-    public Member(String email, String password){
-        this(email, password, false);
+    public Member(String email, String password,String socialId){
+        this(email, password, socialId, false);
     }
 
-    public Member(String email, String password, boolean isRiotVerified) {
+    public Member(String email, String password, String socialId, boolean isRiotVerified) {
         this.email = email;
         this.password = password;
+        this.socialId = socialId;
         this.isRiotVerified = isRiotVerified;
     }
 }
