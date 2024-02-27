@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.inflearngg.match.dto.MaxStat;
 
 import java.util.List;
 
@@ -181,58 +182,43 @@ public class MatchingResponseDto {
 
                 @Getter
                 @Setter
-                public static class MaxDamage {
+                @NoArgsConstructor
+                public static class MaxDamage extends MaxStat {
                     private int damage;
                     private String championName;
                     private String riotGameName;
-
-                    public void setMaxDamage(int damage, String riotGameName, String championName) {
-                        this.damage = damage;
-                        this.riotGameName = riotGameName;
-                        this.championName = championName;
-                    }
+                    private String riotGameTag;
                 }
 
                 @Getter
                 @Setter
-                public static class MaxKill {
+                @NoArgsConstructor
+                public static class MaxKill extends MaxStat  {
                     private int kill;
                     private String championName;
                     private String riotGameName;
-
-                    public void setMaxKill(int kill, String riotGameName, String championName) {
-                        this.kill = kill;
-                        this.riotGameName = riotGameName;
-                        this.championName = championName;
-                    }
+                    private String riotGameTag;
                 }
 
                 @Getter
                 @Setter
-                public static class MaxDeath {
+                @NoArgsConstructor
+                public static class MaxDeath extends MaxStat {
                     private int death;
                     private String championName;
                     private String riotGameName;
-
-                    public void setMaxDeath(int death, String riotGameName, String championName) {
-                        this.death = death;
-                        this.riotGameName = riotGameName;
-                        this.championName = championName;
-                    }
+                    private String riotGameTag;
                 }
 
                 @Getter
                 @Setter
-                public static class MaxAssist {
+                @NoArgsConstructor
+                public static class MaxAssist extends MaxStat {
                     private int assist;
                     private String championName;
                     private String riotGameName;
+                    private String riotGameTag;
 
-                    public void setMaxAssist(int assist, String riotGameName, String championName) {
-                        this.assist = assist;
-                        this.riotGameName = riotGameName;
-                        this.championName = championName;
-                    }
                 }
 
             }

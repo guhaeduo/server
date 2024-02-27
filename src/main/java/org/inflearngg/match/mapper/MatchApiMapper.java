@@ -61,22 +61,23 @@ public class MatchApiMapper {
             // 현재 유저 정보
             if (part.getPuuid().equals(curPuuid)) {
                 info.setCurrentSummonerParticipantInfo(mapToParticipantInfo(part, minute));
+                maxData.defaultMaxData(part.getRiotIdGameName(), part.getRiotIdTagline(), part.getChampionName());
             }
             // 최대 데미지
             if (maxData.getMaxDamage().getDamage() < part.getTotalDamageDealtToChampions()) {
-                maxData.getMaxDamage().setMaxDamage(part.getTotalDamageDealtToChampions(), part.getRiotIdGameName(), part.getChampionName());
+                maxData.getMaxDamage().setMaxDamage(part.getTotalDamageDealtToChampions(), part.getRiotIdGameName(), part.getRiotIdTagline(), part.getChampionName());
             }
             // 최대 킬
             if(maxData.getMaxKill().getKill() < part.getKills()){
-                maxData.getMaxKill().setMaxKill(part.getKills(), part.getRiotIdGameName(), part.getChampionName());
+                maxData.getMaxKill().setMaxKill(part.getKills(), part.getRiotIdGameName(), part.getRiotIdTagline(),part.getChampionName());
             }
             // 최대 데스
             if(maxData.getMaxDeath().getDeath() < part.getDeaths()){
-                maxData.getMaxDeath().setMaxDeath(part.getDeaths(), part.getRiotIdGameName(), part.getChampionName());
+                maxData.getMaxDeath().setMaxDeath(part.getDeaths(), part.getRiotIdGameName(), part.getRiotIdTagline(),part.getChampionName());
             }
             // 최대 어시스트
             if (maxData.getMaxAssist().getAssist() < part.getAssists()){
-                maxData.getMaxAssist().setMaxAssist(part.getAssists(), part.getRiotIdGameName(), part.getChampionName());
+                maxData.getMaxAssist().setMaxAssist(part.getAssists(), part.getRiotIdGameName(), part.getRiotIdTagline(), part.getChampionName());
             }
             // 팀 정보 매핑
             if (part.getTeamId() == 100) {

@@ -1,6 +1,7 @@
 package org.inflearngg.match.mapper;
 
 import lombok.extern.slf4j.Slf4j;
+import org.inflearngg.match.dto.MaxStat;
 import org.inflearngg.match.dto.process.ProcessMatchInfo;
 import org.inflearngg.match.dto.process.ProcessRankInfo;
 import org.inflearngg.match.dto.response.MatchingResponseDto;
@@ -34,7 +35,7 @@ public class ProcessMatchMapper {
         matchingRankInfo.setWinningRate((double) rankInfo.getWins() / rankInfo.getCntGame() * 100);
         matchingRankInfo.setWins(rankInfo.getWins());
         matchingRankInfo.setLoses(rankInfo.getLoses());
-        matchingRankInfo.setKda( (rankInfo.getTotalKills() + rankInfo.getTotalAssists()) / (double) rankInfo.getTotalDeaths());
+        matchingRankInfo.setKda((rankInfo.getTotalKills() + rankInfo.getTotalAssists()) / (double) rankInfo.getTotalDeaths());
         if (rankInfo.getCntGame() == 0) {
             matchingRankInfo.setKillAvg(0);
             matchingRankInfo.setDeathAvg(0);
@@ -139,26 +140,61 @@ public class ProcessMatchMapper {
         MatchingResponseDto.MatchData.MatchInfo.MaxData matchingMaxData = new MatchingResponseDto.MatchData.MatchInfo.MaxData();
 
         //최대데미지
-        MaxDamage maxDamage = new MaxDamage();
-        maxDamage.setMaxDamage(maxData.getMaxDamage().getDamage(), maxData.getMaxDamage().getRiotGameName(), maxData.getMaxDamage().getChampionName());
-
+        MaxDamage maxDamage = setDefaultMaxValues(new MaxDamage(), maxData);
+        if (maxData.getMaxDamage().getDamage() != 0) {
+//            setMaxValues();
+            maxDamage.setDamage(maxData.getMaxDamage().getDamage());
+            maxDamage.setRiotGameName(maxData.getMaxDamage().getRiotGameName());
+            maxDamage.setChampionName(maxData.getMaxDamage().getChampionName());
+            maxDamage.setRiotGameTag(maxData.getMaxDamage().getRiotTag());
+        }
         //최대 킬
-        MaxKill maxKill = new MaxKill();
-        maxKill.setMaxKill(maxData.getMaxKill().getKill(), maxData.getMaxKill().getRiotGameName(), maxData.getMaxKill().getChampionName());
+        MaxKill maxKill = setDefaultMaxValues(new MaxKill(), maxData);
+        if (maxData.getMaxKill().getKill() != 0) {
+//            setMaxValues();
+            maxKill.setKill(maxData.getMaxKill().getKill());
+            maxKill.setRiotGameName(maxData.getMaxKill().getRiotGameName());
+            maxKill.setChampionName(maxData.getMaxKill().getChampionName());
+            maxKill.setRiotGameTag(maxData.getMaxKill().getRiotTag());
+        }
         //최대 데스
-        MaxDeath maxDeath = new MaxDeath();
-        maxDeath.setMaxDeath(maxData.getMaxDeath().getDeath(), maxData.getMaxDeath().getRiotGameName(), maxData.getMaxDeath().getChampionName());
+        MaxDeath maxDeath = setDefaultMaxValues(new MaxDeath(), maxData);
+        if (maxData.getMaxDeath().getDeath() != 0) {
+            maxDeath.setDeath(maxData.getMaxDeath().getDeath());
+            maxDeath.setRiotGameName(maxData.getMaxDeath().getRiotGameName());
+            maxDeath.setChampionName(maxData.getMaxDeath().getChampionName());
+            maxDeath.setRiotGameTag(maxData.getMaxDeath().getRiotTag());
 
+        }
         //최대 어시스트
-        MaxAssist maxAssist = new MaxAssist();
-        maxAssist.setMaxAssist(maxData.getMaxAssist().getAssist(), maxData.getMaxAssist().getRiotGameName(), maxData.getMaxAssist().getChampionName());
-
+        MaxAssist maxAssist = setDefaultMaxValues(new MaxAssist(), maxData);
+        if (maxData.getMaxAssist().getAssist() != 0) {
+            maxAssist.setAssist(maxData.getMaxAssist().getAssist());
+            maxAssist.setRiotGameName(maxData.getMaxAssist().getRiotGameName());
+            maxAssist.setChampionName(maxData.getMaxAssist().getChampionName());
+            maxAssist.setRiotGameTag(maxData.getMaxAssist().getRiotTag());
+        }
         matchingMaxData.setMaxDamage(maxDamage);
         matchingMaxData.setMaxKill(maxKill);
         matchingMaxData.setMaxDeath(maxDeath);
         matchingMaxData.setMaxAssist(maxAssist);
         return matchingMaxData;
     }
+
+    private <T extends MaxStat> T setDefaultMaxValues(MaxStat stat , ProcessMatchInfo.Info.MaxData defaultStat) {
+        stat.setRiotGameName(defaultStat.getDefaultRiotGameName());
+        stat.setChampionName(defaultStat.getDefaultChampionName());
+        stat.setRiotGameTag(defaultStat.getDefaultRiotTag());
+        return (T) stat;
+    }
+    private  void setMaxValues(MaxStat stat ,MaxStat getMaxStat) {
+        stat.setRiotGameName(getMaxStat.getRiotGameName());
+        stat.setChampionName(getMaxStat.getChampionName());
+        stat.setRiotGameTag(getMaxStat.getRiotGameTag());
+//        return (T) stat;
+    }
+
+
 
     /**
      * Team

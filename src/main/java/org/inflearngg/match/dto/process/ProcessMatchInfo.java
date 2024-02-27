@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.inflearngg.match.dto.MaxStat;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +37,10 @@ public class ProcessMatchInfo {
         @Setter
         @NoArgsConstructor
         public static class MaxData {
+            private String defaultRiotGameName;
+            private String defaultRiotTag;
+            private String defaultChampionName;
+
             private MaxDamage maxDamage;
             private MaxKill maxKill;
             private MaxDeath maxDeath;
@@ -46,31 +52,40 @@ public class ProcessMatchInfo {
                 this.maxDeath = new MaxDeath();
                 this.maxAssist = new MaxAssist();
             }
+            public void defaultMaxData(String riotGameName, String riotTag, String championName) {
+                this.defaultRiotGameName = riotGameName;
+                this.defaultRiotTag = riotTag;
+                this.defaultChampionName = championName;
+            }
             @Getter
             @Setter
             @NoArgsConstructor
-            public static class MaxDamage {
+            public static class MaxDamage extends MaxStat {
                 private int damage;
                 private String riotGameName;
+                private String riotTag;
                 private String championName;
 
-                public void setMaxDamage(int damage, String riotGameName, String championName) {
+                public void setMaxDamage(int damage, String riotGameName, String riotTag, String championName) {
                     this.damage = damage;
                     this.riotGameName = riotGameName;
+                    this.riotTag = riotTag;
                     this.championName = championName;
                 }
             }
             @Getter
             @Setter
             @NoArgsConstructor
-            public static class MaxKill {
+            public static class MaxKill extends MaxStat {
                 private int kill;
                 private String riotGameName;
+                private String riotTag;
                 private String championName;
 
-                public void setMaxKill(int kill, String riotGameName, String championName) {
+                public void setMaxKill(int kill, String riotGameName,String riotTag, String championName) {
                     this.kill = kill;
                     this.riotGameName = riotGameName;
+                    this.riotTag = riotTag;
                     this.championName = championName;
                 }
 
@@ -78,28 +93,32 @@ public class ProcessMatchInfo {
             @Getter
             @Setter
             @NoArgsConstructor
-            public static class MaxDeath {
+            public static class MaxDeath extends MaxStat {
                 private int death;
                 private String riotGameName;
+                private String riotTag;
                 private String championName;
 
-                public void setMaxDeath(int death, String riotGameName, String championName) {
+                public void setMaxDeath(int death, String riotGameName, String riotTag, String championName) {
                     this.death = death;
                     this.riotGameName = riotGameName;
+                    this.riotTag = riotTag;
                     this.championName = championName;
                 }
             }
             @Getter
             @Setter
             @NoArgsConstructor
-            public static class MaxAssist {
+            public static class MaxAssist extends MaxStat {
                 private int assist;
                 private String riotGameName;
+                private String riotTag;
                 private String championName;
 
-                public void setMaxAssist(int assist, String riotGameName, String championName) {
+                public void setMaxAssist(int assist, String riotGameName,String riotTag, String championName) {
                     this.assist = assist;
                     this.riotGameName = riotGameName;
+                    this.riotTag = riotTag;
                     this.championName = championName;
                 }
             }
