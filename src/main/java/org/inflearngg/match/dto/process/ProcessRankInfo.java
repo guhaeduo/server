@@ -29,7 +29,7 @@ public class ProcessRankInfo {
         //        private String winningRate;
         private int wins;
         private int loses;
-        private double sumKda;
+//        private double sumKda;
         private int totalKills;
         private int totalDeaths;
         private int totalAssists;
@@ -51,11 +51,11 @@ public class ProcessRankInfo {
             this.cntGame += 1;
         }
 
-        public void addKdaAndTotalKillsAndTotalDeathsAndTotalAssists(int totalKills, int totalDeaths, int totalAssists, double kda) {
+        public void addTotalKillsAndTotalDeathsAndTotalAssists(int totalKills, int totalDeaths, int totalAssists ) {
             this.totalKills += totalKills;
             this.totalDeaths += totalDeaths;
             this.totalAssists += totalAssists;
-            this.sumKda += kda;
+//            this.sumKda += kda;
         }
     }
 

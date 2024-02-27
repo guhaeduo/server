@@ -34,7 +34,7 @@ public class ProcessMatchMapper {
         matchingRankInfo.setWinningRate((double) rankInfo.getWins() / rankInfo.getCntGame() * 100);
         matchingRankInfo.setWins(rankInfo.getWins());
         matchingRankInfo.setLoses(rankInfo.getLoses());
-        matchingRankInfo.setKda(rankInfo.getSumKda() / rankInfo.getCntGame());
+        matchingRankInfo.setKda( (rankInfo.getTotalKills() + rankInfo.getTotalAssists()) / (double) rankInfo.getTotalDeaths());
         if (rankInfo.getCntGame() == 0) {
             matchingRankInfo.setKillAvg(0);
             matchingRankInfo.setDeathAvg(0);

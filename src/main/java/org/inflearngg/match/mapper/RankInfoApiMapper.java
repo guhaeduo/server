@@ -27,7 +27,8 @@ public class RankInfoApiMapper {
             }
 
             //총 kill, death, assist, kda
-            info.addKdaAndTotalKillsAndTotalDeathsAndTotalAssists(participantInfo.getKills(), participantInfo.getDeaths(), participantInfo.getAssists(), participantInfo.getChallenges().getKda());
+//            double kda = (participantInfo.getKills() + participantInfo.getAssists()) / (double) participantInfo.getDeaths();
+            info.addTotalKillsAndTotalDeathsAndTotalAssists(participantInfo.getKills(), participantInfo.getDeaths(), participantInfo.getAssists());
 
             Lane lane = rankInfo.getLane();
             //ALL
