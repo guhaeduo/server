@@ -1,5 +1,6 @@
 package org.inflearngg.summoner.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.aop.dto.Region;
@@ -24,16 +25,14 @@ public class SummonerController {
 
     @GetMapping("/info")
     public SummonerIdInfo getSummonerIdByNameAndTag(
-            @RequestParam("region") Region region,
-            @RequestParam("gameName") String gameName,
-            @RequestParam("tagLine") String tagLine) {
+            @Valid SummonerRequestDto.NameAndTagAndRegion requestDto) {
         return summonerMapper.mapToRiotSummonerIdInfo(
-                summonerService.checkAndGetIdList(gameName, tagLine, region));
+                summonerService.checkAndGetIdList(requestDto.getGameName(), requestDto.getTagLine(), requestDto.getRegion()));
     }
 
     @GetMapping("/rank")
     public SummonerData getSummonerRankByPuuid(
-            @RequestHeader("region") Region region,
+            @RequestHeader("region") @Valid Region region,
             @RequestHeader("summonerId") String summonerId) {
         SummonerInfo.RankInfo[] rankInfos = summonerService.getRankData(region.name(), summonerId);
         SummonerData summonerData = summonerMapper.mapToSummonerResponseDto(rankInfos);
