@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.aop.dto.Region;
 import org.inflearngg.summoner.client.AccountClient;
 import org.inflearngg.summoner.client.RiotApiResponseDto;
+import org.inflearngg.summoner.client.SummonerClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -23,6 +24,7 @@ public class SummonerService {
 
     private final RestTemplate restTemplate;
     private final AccountClient accountClient;
+    private final SummonerClient summonerClient;
 
 
     public RiotApiResponseDto.RiotSummonerIdInfo checkAndGetIdList(String gameName, String gameTag, Region region){
@@ -37,7 +39,7 @@ public class SummonerService {
     }
 
     public RiotApiResponseDto.RiotSummonerIdInfo getSummonerIdInfo(String puuid, String region){
-        return accountClient.fetchSummonerIdAPI(puuid, region);
+        return summonerClient.fetchSummonerIdAPI(puuid, region);
     }
 
 
