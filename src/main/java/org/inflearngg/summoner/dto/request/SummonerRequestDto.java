@@ -15,10 +15,4 @@ public class SummonerRequestDto {
         private String summonerId;
     }
 
-    public static enum Region {
-        kr, jp1, ph2, sg2, th2, tw2, vn2, na1, br1, la1, la2, oc1, euw1, eun1, ru, tr1;
-        public String getRegion() {
-            return this.name();
-        }
-    }
 }

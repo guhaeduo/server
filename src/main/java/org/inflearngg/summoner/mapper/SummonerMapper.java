@@ -1,11 +1,25 @@
 package org.inflearngg.summoner.mapper;
 
+import org.inflearngg.summoner.client.RiotApiResponseDto;
 import org.inflearngg.summoner.dto.response.SummonerResponseDto;
 import org.inflearngg.summoner.service.SummonerInfo;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SummonerMapper {
+
+    public SummonerResponseDto.SummonerIdInfo mapToRiotSummonerIdInfo(RiotApiResponseDto.RiotSummonerIdInfo riotSummonerIdInfo) {
+        SummonerResponseDto.SummonerIdInfo summonerIdInfo = new SummonerResponseDto.SummonerIdInfo();
+        summonerIdInfo.setSummonerId(riotSummonerIdInfo.getId());
+        summonerIdInfo.setAccountId(riotSummonerIdInfo.getAccountId());
+        summonerIdInfo.setPuuid(riotSummonerIdInfo.getPuuid());
+        summonerIdInfo.setName(riotSummonerIdInfo.getName());
+        summonerIdInfo.setProfileIconId(riotSummonerIdInfo.getProfileIconId());
+        summonerIdInfo.setRevisionDate(riotSummonerIdInfo.getRevisionDate());
+        summonerIdInfo.setSummonerLevel(riotSummonerIdInfo.getSummonerLevel());
+        return summonerIdInfo;
+
+    }
 
     public SummonerResponseDto.SummonerData mapToSummonerResponseDto(SummonerInfo.RankInfo[] rankInfos) {
         SummonerResponseDto.SummonerData summonerData = new SummonerResponseDto.SummonerData();
