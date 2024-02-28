@@ -1,4 +1,4 @@
-package org.inflearngg.aop;
+package org.inflearngg.aop.exception;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.aop.error.ErrorCode;
 import org.inflearngg.aop.error.ErrorResponse;
@@ -31,7 +32,10 @@ import java.util.stream.Collectors;
 //controller 에서 발생하는 예외를 처리하는 클래스
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+    private final ClientErrorHandler clientErrorHandler;
 
     //예외처리로직
 
@@ -89,34 +93,14 @@ public class GlobalExceptionHandler {
 
     /**
      * Client에서 발생하는 에러 핸들링
+     *
      * @throws JsonProcessingException
      */
     @ExceptionHandler(HttpClientErrorException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleHttpClientErrorException(HttpClientErrorException e) throws JsonProcessingException {
-
-        log.info("HttpClientErrorException : " + e.getMessage());
-        String errorMessage = e.getMessage().substring(e.getMessage().indexOf(":")+3);
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(errorMessage);
-
-        String message = jsonNode.at("/status/message").asText();
-        int status = e.getStatusCode().value();
-        log.info("HttpClientErrorException : " + message);
-
-        List<ErrorResponse.FieldError> fieldErrors = new ArrayList<>();
-        fieldErrors.add(ErrorResponse.FieldError.builder()
-                .field("HttpClientError")
-                .value(message)
-                .reason("")
-                .build());
-
-        return ErrorResponse.builder()
-                .code(ErrorCode.Client_INVALID_INPUT_VALUE.code())
-                .message(message)
-                .status(status)
-                .errors(fieldErrors)
-                .build();
+        log.info(e.getResponseBodyAsString());
+        return clientErrorHandler.handleClientError(e.getResponseBodyAsString());
     }
 
     private List<ErrorResponse.FieldError> bindingFieldErrors(BindingResult bindingResult) {
