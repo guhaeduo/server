@@ -4,6 +4,9 @@ package org.inflearngg.aop;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.aop.error.ErrorCode;
 import org.inflearngg.aop.error.ErrorResponse;
@@ -13,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -30,46 +34,22 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     //예외처리로직
+
+    /**
+     * 컨트롤러 들어오는 값들에 대한 에러 핸드링
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorResponse handleValidationException(MethodArgumentNotValidException e) {
         final List<ErrorResponse.FieldError> fieldErrors = bindingFieldErrors(e.getBindingResult());
         return bindingFieldErrors(ErrorCode.INVALID_INPUT_VALUE, fieldErrors);
     }
-    @ExceptionHandler(BindException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ErrorResponse handleBindException(org.springframework.validation.BindException e) {
-        final List<ErrorResponse.FieldError> fieldErrors = bindingFieldErrors(e.getBindingResult());
-        return bindingFieldErrors(ErrorCode.INVALID_INPUT_VALUE, fieldErrors);
-    }
-
-    @ExceptionHandler(HttpClientErrorException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ErrorResponse handleHttpClientErrorException(HttpClientErrorException e) throws JsonProcessingException {
-
-        String errorMessage = e.getMessage().substring(e.getMessage().indexOf(":")+3);
-        log.info(errorMessage);
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(errorMessage);
-        log.info("jsonNode : " + jsonNode);
-
-        String message = jsonNode.at("/status/message").asText();
-        int status = e.getStatusCode().value();
-        log.info("HttpClientErrorException : " + message);
-
-        List<ErrorResponse.FieldError> fieldErrors = new ArrayList<>();
-        fieldErrors.add(ErrorResponse.FieldError.builder()
-                .field("HttpClientError")
-                .value(message)
-                .reason("Riot Api 요청 에러 발생")
-                .build());
-
-        return ErrorResponse.builder()
-                .code(ErrorCode.Client_INVALID_INPUT_VALUE.code())
-                .message(message)
-                .status(status)
-                .errors(fieldErrors)
-                .build();
-    }
+    // mvc패턴일 경우
+//    @ExceptionHandler(BindException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    protected ErrorResponse handleBindException(org.springframework.validation.BindException e) {
+//        final List<ErrorResponse.FieldError> fieldErrors = bindingFieldErrors(e.getBindingResult());
+//        return bindingFieldErrors(ErrorCode.INVALID_INPUT_VALUE, fieldErrors);
+//    }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -80,7 +60,7 @@ public class GlobalExceptionHandler {
                 .value(e.getValue().toString())
                 .reason(e.getMessage())
                 .build());
-        return bindingFieldErrors(ErrorCode.HEADER_INPUT_VALUE, fieldErrors);
+        return bindingFieldErrors(ErrorCode.METHOD_NOT_ALLOWED, fieldErrors);
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
@@ -95,6 +75,49 @@ public class GlobalExceptionHandler {
         return bindingFieldErrors(ErrorCode.HEADER_NOT_NULL, fieldErrors);
     }
 
+    @ExceptionHandler(MissingPathVariableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleMissingPathVariableException(MissingPathVariableException e) {
+        final List<ErrorResponse.FieldError> fieldErrors = new ArrayList<>();
+        fieldErrors.add(ErrorResponse.FieldError.builder()
+                .field(e.getVariableName())
+                .value("null")
+                .reason(e.getMessage())
+                .build());
+        return bindingFieldErrors(ErrorCode.INVALID_INPUT_VALUE, fieldErrors);
+    }
+
+    /**
+     * Client에서 발생하는 에러 핸들링
+     * @throws JsonProcessingException
+     */
+    @ExceptionHandler(HttpClientErrorException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleHttpClientErrorException(HttpClientErrorException e) throws JsonProcessingException {
+
+        log.info("HttpClientErrorException : " + e.getMessage());
+        String errorMessage = e.getMessage().substring(e.getMessage().indexOf(":")+3);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(errorMessage);
+
+        String message = jsonNode.at("/status/message").asText();
+        int status = e.getStatusCode().value();
+        log.info("HttpClientErrorException : " + message);
+
+        List<ErrorResponse.FieldError> fieldErrors = new ArrayList<>();
+        fieldErrors.add(ErrorResponse.FieldError.builder()
+                .field("HttpClientError")
+                .value(message)
+                .reason("")
+                .build());
+
+        return ErrorResponse.builder()
+                .code(ErrorCode.Client_INVALID_INPUT_VALUE.code())
+                .message(message)
+                .status(status)
+                .errors(fieldErrors)
+                .build();
+    }
 
     private List<ErrorResponse.FieldError> bindingFieldErrors(BindingResult bindingResult) {
         final List<FieldError> errors = bindingResult.getFieldErrors();

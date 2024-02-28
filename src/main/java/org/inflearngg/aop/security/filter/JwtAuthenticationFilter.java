@@ -1,11 +1,13 @@
 package org.inflearngg.aop.security.filter;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.jwt.token.JwtTokenProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,14 +30,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         log.info("doFilterInternal");
-        String authToken = resolveToken(request);
+        try {
+            String authToken = resolveToken(request);
 
-        if (StringUtils.hasText(authToken) && jwtTokenProvider.validateToken(authToken)) {
-            String userId = getUserIdFromToken(authToken);
-            request.setAttribute("userId", userId);
+            if (StringUtils.hasText(authToken) && jwtTokenProvider.validateToken(authToken)) {
+                String userId = getUserIdFromToken(authToken);
+                request.setAttribute("userId", userId);
+            }
+            filterChain.doFilter(request, response);
+        }
+        catch (JwtException ex) {
+            //에러 메시지 가공
+            log.error("JwtException : {}", ex.getMessage());
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.getWriter().write(ex.getMessage());
+
         }
 
-        filterChain.doFilter(request, response);
+
     }
 
     private String resolveToken(HttpServletRequest request) {
