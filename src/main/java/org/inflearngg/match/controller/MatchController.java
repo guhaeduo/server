@@ -3,6 +3,7 @@ package org.inflearngg.match.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.inflearngg.aop.dto.Region;
 import org.inflearngg.match.dto.request.MatchRequestDto;
 import org.inflearngg.match.dto.response.MatchingResponseDto;
 import org.inflearngg.match.mapper.ProcessMatchMapper;
@@ -33,7 +34,7 @@ public class MatchController {
     public MatchingResponseDto getMatchDataListByPuuid(
             @RequestHeader("puuid") String puuid,
             @RequestHeader("queueType") MatchRequestDto.QueueType queueId,
-            @RequestHeader("region") MatchRequestDto.Region region
+            @RequestHeader("region") Region region
     ) {
         // 헤더 검증
         if (puuid == null) {
@@ -58,7 +59,7 @@ public class MatchController {
     public MatchingResponseDto.SummonerRankInfo getSummonerRankInfo(
             @RequestHeader("puuid") String puuid,
             @RequestHeader("queueType") MatchRequestDto.QueueType queueId,
-            @RequestHeader("region") MatchRequestDto.Region region
+            @RequestHeader("region") Region region
     ) throws ExecutionException, InterruptedException {
         LocalDateTime startTime = LocalDateTime.now();
         log.debug("요청시간 : " + startTime);
