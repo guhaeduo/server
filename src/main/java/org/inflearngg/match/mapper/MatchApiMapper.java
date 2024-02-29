@@ -20,6 +20,9 @@ public class MatchApiMapper {
     //client.RiotAPIMatchInfo.ApiData -> dto.process.ProcessMatchInfo
 
     public ProcessMatchInfo mapRiotAPIToProcessMatchInfo(RiotAPIMatchInfo.MatchBasicInfo riotApiData, String curPuuid, String matchId){
+        if (riotApiData == null) {
+            return null;
+        }
         ProcessMatchInfo processMatchInfo = new ProcessMatchInfo();
         processMatchInfo.setMatchId(matchId);
         processMatchInfo.setInfo(mapRiotAPIToInfo(riotApiData));
@@ -37,6 +40,9 @@ public class MatchApiMapper {
 
     //client.RiotAPIMatchInfo.MatchBasicInfo -> dto.process.ProcessMatchInfo.Info
     public Info mapRiotAPIToInfo(RiotAPIMatchInfo.MatchBasicInfo matchBasicInfo) {
+        if (matchBasicInfo == null) {
+            return null;
+        }
         Info info = new Info();
         info.setGameDuration(matchBasicInfo.getGameDuration());
         info.setGameEndStamp(matchBasicInfo.getGameEndTimestamp());
