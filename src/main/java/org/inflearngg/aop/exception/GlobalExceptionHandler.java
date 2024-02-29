@@ -43,6 +43,7 @@ public class GlobalExceptionHandler {
      * 컨트롤러 들어오는 값들에 대한 에러 핸드링
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(MethodArgumentNotValidException e) {
         final List<ErrorResponse.FieldError> fieldErrors = bindingFieldErrors(e.getBindingResult());
         return bindingFieldErrors(ErrorCode.INVALID_INPUT_VALUE, fieldErrors);
@@ -100,7 +101,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleHttpClientErrorException(HttpClientErrorException e) throws JsonProcessingException {
         log.info(e.getResponseBodyAsString());
-        return clientErrorHandler.handleClientError(e.getResponseBodyAsString());
+        ErrorCode errorCode = clientErrorHandler.handleClientError(e.getResponseBodyAsString());
+        return ErrorResponse.builder()
+                .code(errorCode.code())
+                .message(errorCode.message())
+                .status(errorCode.status())
+                .build();
     }
 
     private List<ErrorResponse.FieldError> bindingFieldErrors(BindingResult bindingResult) {
