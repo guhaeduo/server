@@ -45,7 +45,7 @@ public class MatchController {
         String[] matchIdList = matchService.getMatchIdsByPuuid(puuid, queueId.getQueueId(), region.getContinent());
         MatchingResponseDto matchingResponseDto = new MatchingResponseDto();
         matchingResponseDto.setMatchDataList(mapper.mapToMatchDataList(matchService.getMatchDataList(matchIdList, puuid, region.getContinent())));
-        matchingResponseDto.setTotalGameCnt(matchIdList.length);
+        matchingResponseDto.setTotalGameCnt(matchingResponseDto.getMatchDataList().size());
         matchingResponseDto.setQueueType(queueId.name());
 
         LocalDateTime endTime = LocalDateTime.now();
