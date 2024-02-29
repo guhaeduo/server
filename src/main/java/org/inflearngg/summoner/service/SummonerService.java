@@ -27,15 +27,25 @@ public class SummonerService {
     private final SummonerClient summonerClient;
 
 
-    public RiotApiResponseDto.RiotSummonerIdInfo checkAndGetIdList(String gameName, String gameTag, Region region){
+    public RiotApiResponseDto.RiotSummonerInfo checkAndGetIdList(String gameName, String gameTag, Region region){
+        RiotApiResponseDto.RiotSummonerInfo riotSummonerInfo = new RiotApiResponseDto.RiotSummonerInfo();
         RiotApiResponseDto.RiotPuuid puuid = getPuuid(gameName, gameTag, region.getContinent());
-        return getSummonerIdInfo(puuid.getPuuid(), region.name());
+        RiotApiResponseDto.RiotSummonerIdInfo summonerIdInfo = getSummonerIdInfo(puuid.getPuuid(), region.name());
+        riotSummonerInfo.setGameName(puuid.getGameName());
+        riotSummonerInfo.setTagLine(puuid.getTagLine());
+        riotSummonerInfo.setPuuid(puuid.getPuuid());
 
+        riotSummonerInfo.setAccountId(summonerIdInfo.getAccountId());
+        riotSummonerInfo.setSummonerId(summonerIdInfo.getId());
+        riotSummonerInfo.setProfileIconId(summonerIdInfo.getProfileIconId());
+        riotSummonerInfo.setRevisionDate(summonerIdInfo.getRevisionDate());
+        riotSummonerInfo.setSummonerLevel(summonerIdInfo.getSummonerLevel());
+        return riotSummonerInfo;
     }
 
 
     public  RiotApiResponseDto.RiotPuuid getPuuid(String gameName, String gameTag, String continent) {
-         return accountClient.fetchPuuidAPI(gameName, gameTag, continent);
+         return accountClient.fetchPuuidAPI(gameName, gameTag, "ASIA");
     }
 
     public RiotApiResponseDto.RiotSummonerIdInfo getSummonerIdInfo(String puuid, String region){

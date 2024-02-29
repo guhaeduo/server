@@ -8,15 +8,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class SummonerMapper {
 
-    public SummonerResponseDto.SummonerIdInfo mapToRiotSummonerIdInfo(RiotApiResponseDto.RiotSummonerIdInfo riotSummonerIdInfo) {
+    public SummonerResponseDto.SummonerIdInfo mapToRiotSummonerInfo(RiotApiResponseDto.RiotSummonerInfo riotSummonerInfo) {
         SummonerResponseDto.SummonerIdInfo summonerIdInfo = new SummonerResponseDto.SummonerIdInfo();
-        summonerIdInfo.setSummonerId(riotSummonerIdInfo.getId());
-        summonerIdInfo.setAccountId(riotSummonerIdInfo.getAccountId());
-        summonerIdInfo.setPuuid(riotSummonerIdInfo.getPuuid());
-        summonerIdInfo.setName(riotSummonerIdInfo.getName());
-        summonerIdInfo.setProfileIconId(riotSummonerIdInfo.getProfileIconId());
-        summonerIdInfo.setRevisionDate(riotSummonerIdInfo.getRevisionDate());
-        summonerIdInfo.setSummonerLevel(riotSummonerIdInfo.getSummonerLevel());
+        summonerIdInfo.setGameName(riotSummonerInfo.getGameName());
+        summonerIdInfo.setTagLine(riotSummonerInfo.getTagLine());
+        summonerIdInfo.setSummonerId(riotSummonerInfo.getSummonerId());
+        summonerIdInfo.setAccountId(riotSummonerInfo.getAccountId());
+        summonerIdInfo.setPuuid(riotSummonerInfo.getPuuid());
+        summonerIdInfo.setProfileIconId(riotSummonerInfo.getProfileIconId());
+        summonerIdInfo.setRevisionDate(riotSummonerInfo.getRevisionDate());
+        summonerIdInfo.setSummonerLevel(riotSummonerInfo.getSummonerLevel());
         return summonerIdInfo;
 
     }

@@ -26,7 +26,7 @@ public class SummonerController {
     @GetMapping("/info")
     public SummonerIdInfo getSummonerIdByNameAndTag(
             @Valid SummonerRequestDto.NameAndTagAndRegion requestDto) {
-        return summonerMapper.mapToRiotSummonerIdInfo(
+        return summonerMapper.mapToRiotSummonerInfo(
                 summonerService.checkAndGetIdList(requestDto.getGameName(), requestDto.getTagLine(), requestDto.getRegion()));
     }
 

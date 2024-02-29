@@ -54,10 +54,11 @@ public class SummonerResponseDto {
     @Setter
     @NoArgsConstructor
     public static class SummonerIdInfo{
+        private String gameName;
+        private String tagLine;
         private String summonerId;
         private String accountId;
         private String puuid;
-        private String name;
         private int profileIconId;
         private long revisionDate;
         private int summonerLevel;
