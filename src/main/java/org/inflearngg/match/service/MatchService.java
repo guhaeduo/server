@@ -102,6 +102,9 @@ public class MatchService {
                     .thenApply(completableFuture -> {
                                 RiotAPIMatchInfo.MatchBasicInfo riotApiData = null;
                                 try {
+                                    if (completableFuture == null) {
+                                        return null;
+                                    }
                                     riotApiData = completableFuture.get();
                                     //challenges가 null일때가 있음
                                 } catch (InterruptedException | ExecutionException e) {
