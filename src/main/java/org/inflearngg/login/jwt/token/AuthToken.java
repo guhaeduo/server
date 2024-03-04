@@ -1,9 +1,12 @@
-package org.inflearngg.jwt.token;
+package org.inflearngg.login.jwt.token;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class AuthToken {
+    private long memberId;
     private String accessToken;
     private String refreshToken;
     private String tokenType;
