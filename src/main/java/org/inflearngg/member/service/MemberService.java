@@ -20,17 +20,15 @@ public class MemberService {
         return memberRepository.findById(id).orElseThrow();
     }
 
-    public Member findUserByEmail(String email) {
-        return memberRepository.findByEmail(email).orElseThrow();
-    }
-
     public Long findUserIdByEmailOrNewMember(String email, String password, String socialId) {
-        Optional<Member> byEmail = memberRepository.findByEmail(email);
-        if (byEmail.isPresent()) {
-            return byEmail.get().getMemberId();
+        Optional<Member> member = memberRepository.findByEmailAndSocialId(email, socialId);
+        if (member.isPresent()) {
+            return member.get().getMemberId();
         }
-        Member member = new Member(email, password, socialId);
-        Member save = memberRepository.save(member);
+        Member newMember = new Member(email, password, socialId);
+        Member save = memberRepository.save(newMember);
+        //검증로직
+
         return save.getMemberId();
 
     }

@@ -1,20 +1,21 @@
-package org.inflearngg.oauth.client;
+package org.inflearngg.login.oauth.client.login.kakao;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.inflearngg.oauth.client.login.OAuthLoginParams;
-import org.inflearngg.oauth.domain.OAuthProvider;
-import org.inflearngg.oauth.domain.OAuthUserInfo;
-import org.inflearngg.oauth.client.login.kakao.KakaoToken;
-import org.inflearngg.oauth.domain.kakao.KakaoUserInfo;
+import org.inflearngg.login.oauth.accesstoken.OAuthAccessCode;
+import org.inflearngg.login.oauth.client.OAuthClient;
+import org.inflearngg.login.oauth.client.login.OAuthLoginParams;
+import org.inflearngg.login.oauth.domain.OAuthProvider;
+import org.inflearngg.login.oauth.domain.OAuthUserInfo;
+import org.inflearngg.login.oauth.domain.kakao.KakaoUserInfo;
+import org.inflearngg.login.oauth.client.OAuthConstant;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Objects;
@@ -25,6 +26,8 @@ import java.util.Objects;
 public class KakaoApiClient implements OAuthClient {
 
 
+    @Value("${oauth.kakao.url.base}")
+    private String baseUrl;
     @Value("${oauth.kakao.url.token}")
     private String tokenUrl;
     @Value("${oauth.kakao.url.profile}")
@@ -40,6 +43,17 @@ public class KakaoApiClient implements OAuthClient {
     @Override
     public OAuthProvider oAuthProvider() {
         return OAuthProvider.KAKAO;
+    }
+
+    @Override
+    public String requestAccessCode(OAuthAccessCode code) {
+        String authorizeUrl = code.makeQueryParams(baseUrl, clientId);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(authorizeUrl, String.class);
+        log.info("responseEntity : {}", responseEntity);
+        String uri = responseEntity.getHeaders().getLocation().toString();
+        log.info("uri : {}", uri);
+        UriComponents uriComponents = UriComponentsBuilder.fromUriString(uri).build();
+        return uriComponents.getQueryParams().getFirst("code");
     }
 
     @Override
@@ -73,7 +87,8 @@ public class KakaoApiClient implements OAuthClient {
         MultiValueMap<String, String> body = params.makeBody();
         body.add("grant_type", OAuthConstant.GRANT_TYPE);
         body.add("client_id", clientId);
-//        body.add("redirect_uri", "http://localhost:8080/api/login/kakao/callback");
+        body.add("redirect_uri", "http://localhost:8080/api/oauth/kakao/callback");
+
         return new HttpEntity<>(body, headers);
     }
 
