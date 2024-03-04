@@ -28,10 +28,13 @@ public class ClientErrorHandler {
         if (jsonNode.has("error")) {
             String message = jsonNode.at("/error_description").asText();
             String code = jsonNode.at("/error_code").asText();
-            return new ErrorCode("KakaoApiException", message, 400);
+            return new ErrorCode("SocialLoginException", message, 400);
         }
+        // error 가 있다면 discord api 에러
         else {
-            return ErrorCode.Client_INVALID_INPUT_VALUE;
+            String message = jsonNode.at("/message").asText();
+            return new ErrorCode("DiscordApiException", message, 400);
+//            return ErrorCode.Client_INVALID_INPUT_VALUE;
         }
     }
 }
