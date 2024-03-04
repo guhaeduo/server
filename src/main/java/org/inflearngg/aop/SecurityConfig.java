@@ -28,6 +28,8 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST = {
             "/api/oauth/**",
             "/api/oauth/kakao/callback",
+            "/api/oauth/discord/callback",
+            "/h2-console/**",
             "/api/duo/post/**",
             "/api/matches/**",
             "/api/summoner/**",
@@ -54,6 +56,13 @@ public class SecurityConfig {
                                 .requestMatchers(SELLER_LIST).hasRole("SELLER")
                                 .anyRequest().authenticated()
                         ;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                })
+                .headers(headers -> {
+                    try {
+                        headers.frameOptions( f -> f.sameOrigin());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
