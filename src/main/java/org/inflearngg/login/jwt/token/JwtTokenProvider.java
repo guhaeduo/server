@@ -1,4 +1,4 @@
-package org.inflearngg.jwt.token;
+package org.inflearngg.login.jwt.token;
 
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;

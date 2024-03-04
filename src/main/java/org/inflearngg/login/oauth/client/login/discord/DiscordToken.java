@@ -1,4 +1,4 @@
-package org.inflearngg.oauth.client.login.discord;
+package org.inflearngg.login.oauth.client.login.discord;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

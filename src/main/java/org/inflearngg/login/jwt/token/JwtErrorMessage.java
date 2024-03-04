@@ -1,4 +1,4 @@
-package org.inflearngg.jwt.token;
+package org.inflearngg.login.jwt.token;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

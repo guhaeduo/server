@@ -1,4 +1,4 @@
-package org.inflearngg.oauth.client;
+package org.inflearngg.login.oauth.client;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

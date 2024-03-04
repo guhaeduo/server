@@ -1,8 +1,8 @@
-package org.inflearngg.oauth.client.login.kakao;
+package org.inflearngg.login.oauth.client.login.kakao;
 
 import lombok.Getter;
-import org.inflearngg.oauth.client.login.OAuthLoginParams;
-import org.inflearngg.oauth.domain.OAuthProvider;
+import org.inflearngg.login.oauth.domain.OAuthProvider;
+import org.inflearngg.login.oauth.client.login.OAuthLoginParams;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 

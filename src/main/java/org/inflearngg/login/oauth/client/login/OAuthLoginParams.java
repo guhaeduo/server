@@ -1,6 +1,6 @@
-package org.inflearngg.oauth.client.login;
+package org.inflearngg.login.oauth.client.login;
 
-import org.inflearngg.oauth.domain.OAuthProvider;
+import org.inflearngg.login.oauth.domain.OAuthProvider;
 import org.springframework.util.MultiValueMap;
 
 public interface OAuthLoginParams {

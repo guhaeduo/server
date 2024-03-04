@@ -1,9 +1,8 @@
-package org.inflearngg.oauth.domain;
+package org.inflearngg.login.oauth.domain;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.inflearngg.oauth.domain.OAuthProvider;
 
 @Getter
 @NoArgsConstructor

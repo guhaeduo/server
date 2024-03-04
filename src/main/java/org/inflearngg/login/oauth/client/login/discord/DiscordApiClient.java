@@ -1,17 +1,14 @@
-package org.inflearngg.oauth.client.login.discord;
+package org.inflearngg.login.oauth.client.login.discord;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.inflearngg.oauth.accesstoken.OAuthAccessCode;
-import org.inflearngg.oauth.client.OAuthClient;
-import org.inflearngg.oauth.client.OAuthConstant;
-import org.inflearngg.oauth.client.login.OAuthLoginParams;
-import org.inflearngg.oauth.domain.OAuthProvider;
-import org.inflearngg.oauth.domain.OAuthUserInfo;
-import org.inflearngg.oauth.domain.discord.DiscordUserInfo;
+import org.inflearngg.login.oauth.domain.OAuthProvider;
+import org.inflearngg.login.oauth.domain.OAuthUserInfo;
+import org.inflearngg.login.oauth.accesstoken.OAuthAccessCode;
+import org.inflearngg.login.oauth.client.OAuthClient;
+import org.inflearngg.login.oauth.client.OAuthConstant;
+import org.inflearngg.login.oauth.client.login.OAuthLoginParams;
+import org.inflearngg.login.oauth.domain.discord.DiscordUserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -36,7 +33,6 @@ public class DiscordApiClient implements OAuthClient {
     private String redirectUri;
 
     private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
 
     @Override
     public OAuthProvider oAuthProvider() {
@@ -62,7 +58,6 @@ public class DiscordApiClient implements OAuthClient {
     @Override
     public OAuthUserInfo requestOAuthInfo(String accessToken)  {
         String profileUrl = baseUrl + "/users/@me";
-        log.info("profileUrl : {}", profileUrl);
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
         HttpEntity<Object> entity = new HttpEntity<>(headers);

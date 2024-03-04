@@ -1,17 +1,18 @@
-package org.inflearngg.jwt.service;
+package org.inflearngg.login.jwt.service;
 
 import lombok.RequiredArgsConstructor;
-import org.inflearngg.jwt.token.AuthToken;
-import org.inflearngg.jwt.token.AuthTokenGenerator;
+import lombok.extern.slf4j.Slf4j;
+import org.inflearngg.login.jwt.token.AuthToken;
+import org.inflearngg.login.jwt.token.AuthTokenGenerator;
 import org.inflearngg.member.service.MemberService;
-import org.inflearngg.oauth.client.login.OAuthLoginParams;
-import org.inflearngg.oauth.domain.OAuthUserInfo;
-import org.inflearngg.oauth.service.RequestOAuthInfoService;
-import org.springframework.beans.factory.annotation.Value;
+import org.inflearngg.login.oauth.accesstoken.OAuthAccessCode;
+import org.inflearngg.login.oauth.client.login.OAuthLoginParams;
+import org.inflearngg.login.oauth.domain.OAuthUserInfo;
+import org.inflearngg.login.oauth.service.RequestOAuthInfoService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OAuthLoginService {
@@ -21,16 +22,12 @@ public class OAuthLoginService {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${oauth.kakao.client-id}")
-    private String clientId;
 
-    public String getAccessCode() {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://kauth.kakao.com/oauth/authorize")
-                .queryParam("client_id", clientId)
-                .queryParam("redirect_uri", "http://localhost:8080/api/oauth/kakao/callback")
-                .queryParam("response_type", "code");
-        return builder.toUriString();
+
+    public String getAccessCode(OAuthAccessCode code) {
+        return requestOAuthInfoService.requestAccessCode(code);
     }
+
 
     public AuthToken login(OAuthLoginParams params) {
         OAuthUserInfo oAuthUserInfo = requestOAuthInfoService.request(params);
@@ -38,7 +35,10 @@ public class OAuthLoginService {
         String socialId = oAuthUserInfo.getOAuthProvider().name();
         // 유저 있는지 확인후, 있으면 userID를 받아오고, 없으면 만들고 userID를 받아온다.
         Long userId = memberService.findUserIdByEmailOrNewMember(email, passwordEncoder.encode(oAuthUserInfo.getEmail()), socialId);
-        return authTokenGenerator.generateAuthToken(userId);
+        log.info("userId : {}", userId);
+        AuthToken authToken = authTokenGenerator.generateAuthToken(userId);
+        authToken.setMemberId(userId);
+        return authToken;
     }
 
 }

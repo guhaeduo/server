@@ -1,4 +1,4 @@
-package org.inflearngg.oauth.client.login.kakao;
+package org.inflearngg.login.oauth.client.login.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

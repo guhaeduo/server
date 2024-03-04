@@ -1,11 +1,11 @@
-package org.inflearngg.oauth.domain.discord;
+package org.inflearngg.login.oauth.domain.discord;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.inflearngg.oauth.domain.OAuthProvider;
-import org.inflearngg.oauth.domain.OAuthUserInfo;
+import org.inflearngg.login.oauth.domain.OAuthProvider;
+import org.inflearngg.login.oauth.domain.OAuthUserInfo;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
