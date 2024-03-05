@@ -87,7 +87,6 @@ public class KakaoApiClient implements OAuthClient {
         MultiValueMap<String, String> body = params.makeBody();
         body.add("grant_type", OAuthConstant.GRANT_TYPE);
         body.add("client_id", clientId);
-        body.add("redirect_uri", "http://localhost:8080/api/oauth/kakao/callback");
 
         return new HttpEntity<>(body, headers);
     }

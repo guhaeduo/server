@@ -10,6 +10,7 @@ import org.springframework.util.MultiValueMap;
 public class DiscordLoginParam implements OAuthLoginParams {
 
     private String authorizeCode;
+    private String redirectUri;
     @Override
     public OAuthProvider oAuthProvider() {
         return OAuthProvider.DISCORD;
@@ -20,6 +21,7 @@ public class DiscordLoginParam implements OAuthLoginParams {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("code", authorizeCode);
         body.add("scope", "email");
+        body.add("redirect_uri", redirectUri);
         return body;
     }
 }

@@ -73,7 +73,6 @@ public class DiscordApiClient implements OAuthClient {
         body.add("grant_type", OAuthConstant.GRANT_TYPE);
         body.add("client_id", clientId);
         body.add("client_secret", clientSecret);
-        body.add("redirect_uri", "http://localhost:8080/api/oauth/discord/callback");
         return new HttpEntity<>(body, headers);
     }
 }

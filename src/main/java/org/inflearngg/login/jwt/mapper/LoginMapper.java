@@ -12,9 +12,6 @@ public class LoginMapper {
     public LoginResponseDto mapToAuthToken(AuthToken authToken) {
         log.info("mapToAuthToken");
         LoginResponseDto loginResponseDto = new LoginResponseDto();
-        loginResponseDto.setRefreshToken(authToken.getRefreshToken());
-        loginResponseDto.setTokenType(authToken.getTokenType());
-        loginResponseDto.setExpiresIn(authToken.getExpiresIn());
         loginResponseDto.setMemberId(authToken.getMemberId());
         return loginResponseDto;
     }

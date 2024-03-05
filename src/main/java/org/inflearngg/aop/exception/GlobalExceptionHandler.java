@@ -101,12 +101,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleHttpClientErrorException(HttpClientErrorException e) throws JsonProcessingException {
         log.info(e.getResponseBodyAsString());
-        ErrorCode errorCode = clientErrorHandler.handleClientError(e.getResponseBodyAsString());
-        return ErrorResponse.builder()
-                .code(errorCode.code())
-                .message(errorCode.message())
-                .status(errorCode.status())
-                .build();
+        List<ErrorResponse.FieldError> errors = clientErrorHandler.handleClientError(e.getResponseBodyAsString());
+        return bindingFieldErrors(ErrorCode.Client_INVALID_INPUT_VALUE, errors);
     }
 
     private List<ErrorResponse.FieldError> bindingFieldErrors(BindingResult bindingResult) {

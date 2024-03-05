@@ -10,6 +10,7 @@ import org.springframework.util.MultiValueMap;
 public class KakaoLoginParam implements OAuthLoginParams {
 
     private String authorizeCode;
+    private String redirectUri;
 
     @Override
     public OAuthProvider oAuthProvider() {
@@ -20,6 +21,7 @@ public class KakaoLoginParam implements OAuthLoginParams {
     public MultiValueMap<String, String> makeBody() {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("code", authorizeCode);
+        body.add("redirect_uri", redirectUri);
         return body;
     }
 }
