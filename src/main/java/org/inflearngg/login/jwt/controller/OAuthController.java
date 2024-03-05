@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.login.jwt.dto.LoginResponseDto;
+import org.inflearngg.login.jwt.dto.RefreshToken;
 import org.inflearngg.login.jwt.mapper.LoginMapper;
 import org.inflearngg.login.jwt.token.AuthToken;
 import org.inflearngg.login.jwt.service.OAuthLoginService;
@@ -57,6 +58,17 @@ public class OAuthController {
         AuthToken authToken = oAuthLoginService.login(param);
         return new ResponseEntity<>(loginMapper.mapToAuthToken(authToken), setTokenHttpHeaders(authToken), HttpStatus.OK);
     }
+
+    //토큰 재발급
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponseDto> refreshToken(@RequestBody RefreshToken refreshToken) {
+        log.info("refreshToken={}", refreshToken.getRefreshToken());
+        //refreshToken을 이용해서 새로운 토큰을 발급받는다.
+        AuthToken authToken = oAuthLoginService.refreshAccessToken(refreshToken.getRefreshToken());
+        return new ResponseEntity<>(loginMapper.mapToAuthToken(authToken), setTokenHttpHeaders(authToken), HttpStatus.OK);
+    }
+
+
 
     @NotNull
     private static MultiValueMap<String, String> setTokenHttpHeaders(AuthToken authToken) {

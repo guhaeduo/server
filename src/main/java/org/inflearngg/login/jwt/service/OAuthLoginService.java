@@ -1,16 +1,21 @@
 package org.inflearngg.login.jwt.service;
 
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.login.jwt.token.AuthToken;
 import org.inflearngg.login.jwt.token.AuthTokenGenerator;
+import org.inflearngg.login.jwt.token.JwtErrorMessage;
+import org.inflearngg.login.jwt.token.JwtTokenProvider;
 import org.inflearngg.member.service.MemberService;
 import org.inflearngg.login.oauth.accesstoken.OAuthAccessCode;
 import org.inflearngg.login.oauth.client.login.OAuthLoginParams;
 import org.inflearngg.login.oauth.domain.OAuthUserInfo;
 import org.inflearngg.login.oauth.service.RequestOAuthInfoService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -21,7 +26,7 @@ public class OAuthLoginService {
     private final RequestOAuthInfoService requestOAuthInfoService;
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
-
+    private final JwtTokenProvider jwtTokenProvider;
 
 
     public String getAccessCode(OAuthAccessCode code) {
@@ -41,4 +46,11 @@ public class OAuthLoginService {
         return authToken;
     }
 
+    public AuthToken refreshAccessToken(String refreshToken) {
+        //검증
+        if (StringUtils.hasText(refreshToken) && jwtTokenProvider.validateToken(refreshToken)) {
+            return authTokenGenerator.refreshAccessToken(refreshToken);
+        }
+        throw new JwtException(JwtErrorMessage.UNKNOWN_ERROR.getMessage());
+    }
 }

@@ -1,10 +1,11 @@
 package org.inflearngg.login.jwt.token;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthTokenGenerator {
@@ -20,6 +21,7 @@ public class AuthTokenGenerator {
         Date refreshTokenExpireDate = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
         String subject = userId.toString();
         String accessToken = jwtTokenProvider.generateToken(subject, accessTokenExpireDate);
+        // 사용자 정보를 담고 있지 않아야한다. (보안상의 이유)
         String refreshToken = jwtTokenProvider.generateToken(subject, refreshTokenExpireDate);
         return AuthToken.of(accessToken, refreshToken, BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME);
     }
@@ -29,4 +31,14 @@ public class AuthTokenGenerator {
         return Long.valueOf(jwtTokenProvider.extractSubject(accessToken));
     }
 
+    //accessToken 연장
+    public AuthToken refreshAccessToken(String refreshToken) {
+        long now = System.currentTimeMillis();
+        Date accessTokenExpireDate = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+        long memberId = extractUserId(refreshToken);
+        log.info("subject : {}", memberId);
+        String accessToken = jwtTokenProvider.generateToken(String.valueOf(memberId), accessTokenExpireDate);
+        return AuthToken.of(accessToken, refreshToken, BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME, memberId);
+
+    }
 }

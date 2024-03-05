@@ -12,5 +12,5 @@ public record ErrorCode(String code, String message, int status) {
     public static final ErrorCode Client_INVALID_INPUT_VALUE = new ErrorCode("C004", "Bad Request : Client_ERROR_입력한 요청 값이 올바르지 않습니다.", 400);
     public static final ErrorCode HEADER_NOT_NULL = new ErrorCode("C006", "Bad Request : 요청 헤더 값이 필요합니다. ", 400);
 
-
+    public static final ErrorCode UNAUTHORIZED = new ErrorCode("C007", "Unauthorized : 토큰이 유효하지 않습니다.", 401);
 }
