@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
@@ -104,6 +105,21 @@ public class GlobalExceptionHandler {
         List<ErrorResponse.FieldError> errors = clientErrorHandler.handleClientError(e.getResponseBodyAsString());
         return bindingFieldErrors(ErrorCode.Client_INVALID_INPUT_VALUE, errors);
     }
+
+    /**
+     * JWT 토큰 에러 핸들링
+     */
+    @ExceptionHandler(JwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    protected ErrorResponse handleJwtException(JwtException e) {
+        return ErrorResponse.builder()
+                .code(ErrorCode.UNAUTHORIZED.code())
+                .message(e.getMessage())
+                .status(ErrorCode.UNAUTHORIZED.status())
+                .build();
+    }
+
+
 
     private List<ErrorResponse.FieldError> bindingFieldErrors(BindingResult bindingResult) {
         final List<FieldError> errors = bindingResult.getFieldErrors();
