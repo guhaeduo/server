@@ -32,8 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String authToken = resolveToken(request);
 
             if (StringUtils.hasText(authToken) && jwtTokenProvider.validateToken(authToken)) {
-                String userId = getUserIdFromToken(authToken);
-                request.setAttribute("userId", userId);
+                String memberId = getUserIdFromToken(authToken);
+                request.setAttribute("memberId", memberId);
             }
             filterChain.doFilter(request, response);
         }

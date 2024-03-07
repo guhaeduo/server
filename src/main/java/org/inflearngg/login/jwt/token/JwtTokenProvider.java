@@ -35,6 +35,7 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String accessToken) throws ExpiredJwtException, MalformedJwtException, UnsupportedJwtException, IllegalArgumentException {
+        log.info("validateToken");
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -55,7 +56,6 @@ public class JwtTokenProvider {
             throw new JwtException(JwtErrorMessage.UNSUPPORTED_TOKEN.getMessage());
         } catch (IllegalArgumentException e) {
             // JWT 내용이 비어 있음
-            log.warn("JWT claims string is empty", e);
             throw new JwtException(JwtErrorMessage.UNKNOWN_ERROR.getMessage());
         } catch (Exception e) {
             throw new JwtException(JwtErrorMessage.ACCESS_DENIED.getMessage());
