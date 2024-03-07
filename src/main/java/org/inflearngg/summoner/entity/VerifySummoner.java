@@ -13,7 +13,8 @@ public class VerifySummoner {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long verifySummonerId;
+    private Long id;
+    private String puuid;
     private String summonerName;
     private String summonerTag;
 
