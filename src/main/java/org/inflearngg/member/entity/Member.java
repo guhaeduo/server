@@ -24,8 +24,11 @@ public class Member {
     private String password;
     private String socialId;
     private boolean isRiotVerified;
+//    @OneToMany(mappedBy = "member")
+//    private List<RiotAccount> riotAccounts = new ArrayList<>();
+
     // 인증된소환사이름과 연관관계 매핑
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<VerifySummoner> verifySummonerList = new ArrayList<>();
 
     // 듀오게시판과도 연관관계매핑
