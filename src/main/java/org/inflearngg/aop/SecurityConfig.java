@@ -13,6 +13,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 @Configuration
@@ -34,6 +40,7 @@ public class SecurityConfig {
             "/api/matches/**",
             "/api/summoner/**",
             "/api/**",
+            "/healthcheck",
             "/api/duo/**",
     };
 
@@ -46,7 +53,7 @@ public class SecurityConfig {
         http
                 .csrf(c -> c.disable())
                 .cors(Customizer.withDefaults())
-                .formLogin(Customizer.withDefaults())
+                .formLogin(c -> c.disable())
                 .authorizeHttpRequests(auth -> {
                     try {
                         auth
@@ -60,6 +67,7 @@ public class SecurityConfig {
                         e.printStackTrace();
                     }
                 })
+
                 .headers(headers -> {
                     try {
                         headers.frameOptions( f -> f.sameOrigin());
@@ -67,6 +75,7 @@ public class SecurityConfig {
                         e.printStackTrace();
                     }
                 })
+//                .exposedHeaders("accessToken", "refreshToken", "expiresIn");
 //                .exceptionHandling(c ->
 //                        c.authenticationEntryPoint(/*커스텀 에러 핸들링*/).accessDeniedHandler(accessDeniedHandler))
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -81,4 +90,16 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(List.of("*"));  // 허용할 origin 설정
+//        configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS", "DELETE", "PUT", "PATCH"));  // 허용할 HTTP method 설정
+//        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type")); // 허용할 HTTP 헤더 설정
+//        configuration.setExposedHeaders(Arrays.asList("access-token", "refresh-token", "expiresIn", "token-type")); // 클라이언트에 노출할 HTTP 헤더 설정
+//        //위 cors설정을 허용할 장소 선택
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 }
