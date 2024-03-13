@@ -22,7 +22,7 @@ public class Member {
     private LocalDate createdAt = LocalDate.now();
     private String email;
     private String password;
-    private String socialId;
+    private String socialId; // 추후 Enum으로 변경(KAKAO, DISCORD, SITE)
     private boolean isRiotVerified;
 //    @OneToMany(mappedBy = "member")
 //    private List<RiotAccount> riotAccounts = new ArrayList<>();
