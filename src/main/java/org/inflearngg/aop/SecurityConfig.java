@@ -33,7 +33,7 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST = {
             "/api/oauth/**",
-            "/api/login/**",
+            "/api/site/**",
             "/api/oauth/kakao/callback",
             "/api/oauth/discord/callback",
             "/h2-console/**",

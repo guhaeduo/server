@@ -13,7 +13,7 @@ public class LoginMapper {
         log.info("mapToAuthToken");
         LoginResponseDto loginResponseDto = new LoginResponseDto();
         loginResponseDto.setTokenType(authToken.getTokenType());
-        loginResponseDto.setMemberId(authToken.getMemberId());
+//        loginResponseDto.setMemberId(authToken.getMemberId());
         return loginResponseDto;
     }
 

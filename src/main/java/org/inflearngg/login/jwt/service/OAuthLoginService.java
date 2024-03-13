@@ -42,7 +42,6 @@ public class OAuthLoginService {
         Long userId = memberService.findUserIdByEmailOrNewMember(email, passwordEncoder.encode(oAuthUserInfo.getEmail()), socialId);
         log.info("userId : {}", userId);
         AuthToken authToken = authTokenGenerator.generateAuthToken(userId);
-        authToken.setMemberId(userId);
         return authToken;
     }
 
