@@ -25,7 +25,7 @@ public class SiteLoginService {
     }
 
 
-    public boolean signUp(String email, String password) {
+    public void signUp(String email, String password) {
         //중복체크
         if(isAccountEmail(email)){
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
@@ -33,7 +33,6 @@ public class SiteLoginService {
         Long memberId = memberService.findUserIdByEmailOrNewMember(email, password, "SITE");
         if (memberId == null)
             throw new IllegalArgumentException("회원가입에 실패하였습니다.");
-        return true;
     }
 
     public boolean isAccountEmail(String email) {

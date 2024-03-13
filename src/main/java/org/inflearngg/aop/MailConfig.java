@@ -12,7 +12,7 @@ import java.util.Properties;
 @Configuration
 public class MailConfig {
 
-    @Value("${login.naver.mail.password}")
+    @Value("${mail.naver.password}")
     private String password;
 
     @Bean
