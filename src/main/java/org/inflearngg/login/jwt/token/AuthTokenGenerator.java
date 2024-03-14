@@ -11,6 +11,8 @@ import java.util.Date;
 public class AuthTokenGenerator {
     private static final String BEARER_TYPE = "Bearer";
     private static final long ACCESS_TOKEN_EXPIRE_TIME= 1000 * 60;            // 1분
+    private static final long RESET_PASSWORD_TOKEN_EXPIRE_TIME= 1000 * 60* 30;            // 30분
+
     private static final long REFRESH_TOKEN_EXPIRE_TIME= 1000L * 60 * 60 * 24 * 365;         // 365일
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -40,5 +42,13 @@ public class AuthTokenGenerator {
         String accessToken = jwtTokenProvider.generateToken(String.valueOf(memberId), accessTokenExpireDate);
         return AuthToken.of(accessToken, "", BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME);
 
+    }
+
+    public AuthToken resetPasswordToken(Long userId) {
+        long now = System.currentTimeMillis();
+        Date accessTokenExpireDate = new Date(now + RESET_PASSWORD_TOKEN_EXPIRE_TIME);
+        String subject = userId.toString();
+        String accessToken = jwtTokenProvider.generateToken(subject, accessTokenExpireDate);
+        return AuthToken.of(accessToken, "", BEARER_TYPE, RESET_PASSWORD_TOKEN_EXPIRE_TIME);
     }
 }
