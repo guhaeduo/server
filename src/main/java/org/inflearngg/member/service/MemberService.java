@@ -50,6 +50,14 @@ public class MemberService {
         }
         return false;
     }
+    public Long findMemberIdByEmail(String email) {
+        Optional<Member> member = memberRepository.findByEmailAndSocialId(email, "SITE");
+        if (member.isPresent()) {
+            return member.get().getMemberId();
+        }
+        throw new IllegalArgumentException("회원으로 존재하지않는 이메일입니다.");
+    }
+
     public Member updateMemberPassword(String email, String password) {
         Optional<Member> member = memberRepository.findByEmailAndSocialId(email, "SITE");
         member.orElseThrow(() -> new IllegalArgumentException("회원으로 존재하지않는 이메일입니다."));

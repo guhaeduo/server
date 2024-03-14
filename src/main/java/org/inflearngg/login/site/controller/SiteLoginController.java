@@ -31,7 +31,6 @@ public class SiteLoginController {
     private final SiteLoginService siteLoginService;
     private final MailService mailService;
 
-
     // 자체 로그인
     @PostMapping("/login")
     public ResponseEntity siteLogin(
@@ -53,33 +52,31 @@ public class SiteLoginController {
     public ResponseEntity findPassword(
             @RequestBody EmailAuthenticationDto emailReq) throws Exception {
         // 이메일이 존재하는지 체크 후 인증코드를 보낸다.
-        if (!siteLoginService.isAccountEmail(emailReq.getEmail()))
-            return new ResponseEntity<>("이메일이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
-        mailService.sendPasswordResetMail(emailReq.getEmail());
-        return new ResponseEntity<>("이메일 전송 완료", HttpStatus.OK);
+        String jwtCode = siteLoginService.makeResetPasswordJwtCode(emailReq.getEmail());
+
+        mailService.sendPasswordResetMail(emailReq.getEmail(), jwtCode);
+        return new ResponseEntity<>("비밀번호 변경 가능한 이메일 전송 완료", HttpStatus.OK);
     }
 
     @PatchMapping("/reset-password")
     public ResponseEntity resetPassword(
             @RequestBody ResetPasswordDto resetPasswordDto) {
-        if (mailService.isVerifyEmailCode(resetPasswordDto.getEmail(), resetPasswordDto.getCode())) {
-            siteLoginService.resetPassword(resetPasswordDto.getEmail(), resetPasswordDto.getPassword());
-            return new ResponseEntity<>("비밀번호 변경 완료", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("인증코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
+        mailService.verifyEmailCode(resetPasswordDto.getEmail(), resetPasswordDto.getCode());
+        siteLoginService.resetPassword(resetPasswordDto.getEmail(), resetPasswordDto.getPassword());
+        return new ResponseEntity<>("비밀번호 변경 완료", HttpStatus.OK);
     }
 
     @PostMapping("/email-code/request")
     public String mailAuthentication(@Valid @RequestBody EmailAuthenticationDto emailReq) throws Exception {
+        siteLoginService.checkEmailDuplication(emailReq.getEmail());
         mailService.sendCertificationMail(emailReq.getEmail());
         return "이메일 전송 완료";
     }
 
     @PostMapping("/email-code/verify")
-    public String verifyEmailCode(@Valid EmailCodeVerifyDto dto) {
-        if (mailService.isVerifyEmailCode(dto.getEmail(), dto.getCode()))
-            return "인증 성공";
-        return "인증 실패";
+    public String verifyEmailCode(@Valid  @RequestBody EmailCodeVerifyDto dto) {
+        mailService.verifyEmailCode(dto.getEmail(), dto.getCode());
+        return "인증 성공";
     }
 
     @NotNull

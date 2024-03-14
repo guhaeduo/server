@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.aop.error.ErrorCode;
 import org.inflearngg.aop.error.ErrorResponse;
+import org.inflearngg.login.site.exception.EmailException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -119,7 +120,32 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /**
+     * 이메일 에러 핸들링
+     */
 
+    @ExceptionHandler(EmailException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ErrorResponse handleEmailException(EmailException e) {
+        return ErrorResponse.builder()
+                .code(ErrorCode.EMAIL_NOT_FOUND.code())
+                .message(e.getMessage())
+                .status(ErrorCode.EMAIL_NOT_FOUND.status())
+                .build();
+    }
+
+    /**
+     * 추후 바꿀 핸들링
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
+        return ErrorResponse.builder()
+                .code(ErrorCode.INVALID_INPUT_VALUE.code())
+                .message(e.getMessage())
+                .status(ErrorCode.INVALID_INPUT_VALUE.status())
+                .build();
+    }
 
     private List<ErrorResponse.FieldError> bindingFieldErrors(BindingResult bindingResult) {
         final List<FieldError> errors = bindingResult.getFieldErrors();

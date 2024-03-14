@@ -13,4 +13,6 @@ public record ErrorCode(String code, String message, int status) {
     public static final ErrorCode HEADER_NOT_NULL = new ErrorCode("C006", "Bad Request : 요청 헤더 값이 필요합니다. ", 400);
 
     public static final ErrorCode UNAUTHORIZED = new ErrorCode("C007", "Unauthorized : 토큰이 유효하지 않습니다.", 401);
+
+    public static final ErrorCode EMAIL_NOT_FOUND = new ErrorCode("C008", "Not Found : EMAIL_NOT_FOUND_이메일이 존재하지 않습니다.", 401);
 }

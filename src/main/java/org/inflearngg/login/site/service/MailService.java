@@ -7,6 +7,8 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.login.jwt.token.AuthToken;
+import org.inflearngg.login.site.exception.ExpireEmailCodeException;
+import org.inflearngg.login.site.exception.InvalidEmailCodeException;
 import org.inflearngg.login.site.redis.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,34 +71,31 @@ public class MailService {
         redisUtil.setDataExpire(email, authNumber, expireTime);
     }
 
-    public boolean isVerifyEmailCode(String email, String code) {
+    public void verifyEmailCode(String email, String code) {
         String redisCode = redisUtil.getData(email);
         if (redisCode == null) {
             //
-            return false;
+            throw new ExpireEmailCodeException("인증번호가 만료되었습니다.");
         }
         if (redisCode.equals(code)) {
             redisUtil.deleteData(email);
-            return true;
+            return;
         }
         //인증번호가 일치하지 않음
-        return false;
+        throw new InvalidEmailCodeException("인증번호가 일치하지 않습니다.");
     }
 
     public void sendCertificationMail(String email) throws Exception {
         String code = createAuthNumber();
         //메일 생성
         sendMail(createCodeEmail(email, code));
-        saveRedisAuthNumber(email, code, 180L); //3분
+        saveRedisAuthNumber(email, code, 1800L); //30분
 //        return code;
     }
     //이메일 비밀번호 바꾸기
-    public void sendPasswordResetMail(String email) throws Exception {
-        // code만 생성
-        String authNumber = createAuthNumber();
-        sendMail(createResetPasswordEmail(email, authNumber));
-        // code를 redis에 저장
-        saveRedisAuthNumber(email, authNumber, 300L); //5분
+    public void sendPasswordResetMail(String email, String code) throws Exception {
+        sendMail(createResetPasswordEmail(email, code));
+        // 레디스 저장할 필요 없음
     }
 
 
