@@ -10,13 +10,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class ResetPasswordDto {
-// 수정 필요
-    @Email
-    String email;
 
     @NotBlank
     String password;
-
-    @NotBlank
-    String code;
 }

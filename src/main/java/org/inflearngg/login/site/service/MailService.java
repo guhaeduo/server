@@ -67,7 +67,7 @@ public class MailService {
     }
 
     // 해당 인증번호와 이메일, 만료기한을 저장하고 관리하는 서비스
-    private void saveRedisAuthNumber(String email, String authNumber, long expireTime) {
+    private void saveRedisAuthNumber(String email, String authNumber, Long expireTime) {
         redisUtil.setDataExpire(email, authNumber, expireTime);
     }
 
@@ -75,14 +75,14 @@ public class MailService {
         String redisCode = redisUtil.getData(email);
         if (redisCode == null) {
             //
-            throw new ExpireEmailCodeException("인증번호가 만료되었습니다.");
+            throw new ExpireEmailCodeException();
         }
         if (redisCode.equals(code)) {
             redisUtil.deleteData(email);
             return;
         }
         //인증번호가 일치하지 않음
-        throw new InvalidEmailCodeException("인증번호가 일치하지 않습니다.");
+        throw new InvalidEmailCodeException();
     }
 
     public void sendCertificationMail(String email) throws Exception {
