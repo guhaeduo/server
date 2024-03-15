@@ -31,11 +31,9 @@ public class MemberController {
 
     //회원 삭제
     @DeleteMapping("/delete")
-    public boolean deleteMember(@RequestAttribute("memberId") String memberId,
-                                @Valid @RequestBody PasswordDto password) {
+    public boolean deleteMember(@RequestAttribute("memberId") String memberId) {
         log.info("memberId : {}", memberId);
-        log.info("password : {}", password.getPassword());
-        memberService.deleteMember(Long.valueOf(memberId), password.getPassword());
+        memberService.deleteMember(Long.valueOf(memberId));
         return true;
     }
 

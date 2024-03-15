@@ -1,7 +1,7 @@
 package org.inflearngg.match.mapper;
 
 import lombok.extern.slf4j.Slf4j;
-import org.inflearngg.match.client.RiotAPIMatchInfo;
+import org.inflearngg.client.riot.dto.RiotAPIMatchInfo;
 import org.inflearngg.match.dto.process.ProcessMatchInfo;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;

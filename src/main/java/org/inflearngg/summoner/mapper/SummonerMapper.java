@@ -1,6 +1,6 @@
 package org.inflearngg.summoner.mapper;
 
-import org.inflearngg.summoner.client.RiotApiResponseDto;
+import org.inflearngg.client.riot.dto.RiotApiResponseDto;
 import org.inflearngg.summoner.dto.response.SummonerResponseDto;
 import org.inflearngg.summoner.service.SummonerInfo;
 import org.springframework.stereotype.Component;

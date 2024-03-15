@@ -2,8 +2,8 @@ package org.inflearngg.match.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.inflearngg.match.client.MatchClient;
-import org.inflearngg.match.client.RiotAPIMatchInfo;
+import org.inflearngg.client.riot.api.MatchClient;
+import org.inflearngg.client.riot.dto.RiotAPIMatchInfo;
 import org.inflearngg.match.dto.process.ProcessMatchInfo;
 import org.inflearngg.match.dto.process.ProcessRankInfo;
 import org.inflearngg.match.mapper.MatchApiMapper;

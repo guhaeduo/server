@@ -1,6 +1,6 @@
 package org.inflearngg.match.mapper;
 
-import org.inflearngg.match.client.RiotAPIMatchInfo;
+import org.inflearngg.client.riot.dto.RiotAPIMatchInfo;
 import org.inflearngg.match.dto.process.ProcessRankInfo;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;

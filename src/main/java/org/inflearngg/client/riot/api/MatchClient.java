@@ -1,6 +1,7 @@
-package org.inflearngg.match.client;
+package org.inflearngg.client.riot.api;
 
 import lombok.extern.slf4j.Slf4j;
+import org.inflearngg.client.riot.dto.RiotAPIMatchInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;

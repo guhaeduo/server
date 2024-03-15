@@ -16,7 +16,7 @@ public record ErrorCode(String code, String message, int status) {
 
     public static final ErrorCode  EXPIRE_EMAIL_CODE = new ErrorCode("C005", "Unauthorized : 만료된 인증번호입니다.", 401);
 
-    public static final ErrorCode EMAIL_NOT_FOUND = new ErrorCode("C008", "Not Found : EMAIL_NOT_FOUND_이메일이 존재하지 않습니다.", 401);
+    public static final ErrorCode EMAIL_NOT_FOUND = new ErrorCode("C008", "Not Found : EMAIL_NOT_FOUND_이메일이 존재하지 않습니다.", 404);
 
     public static final ErrorCode INVALID_INPUT_LOGIN_VALUE = new ErrorCode("C009", "Bad Request : 이메일 또는 비밀번호를 잘못 입력하셨습니다", 400);
 }

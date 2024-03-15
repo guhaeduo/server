@@ -107,11 +107,9 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public void deleteMember(Long memberId, String password) {
+    public void deleteMember(Long memberId ) {
         // 유저유무 체크
         Member member = findMemberByMemberId(memberId);
-        // 비밀번호 확인
-        checkMemberPassword(member, password);
         // 삭제
         memberRepository.delete(member);
     }

@@ -1,4 +1,4 @@
-package org.inflearngg.match.client;
+package org.inflearngg.client.riot.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,7 @@
-package org.inflearngg.summoner.client;
+package org.inflearngg.client.riot.api;
 
 import lombok.RequiredArgsConstructor;
+import org.inflearngg.client.riot.dto.RiotApiResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
