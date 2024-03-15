@@ -2,13 +2,17 @@ package org.inflearngg.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.inflearngg.login.site.exception.EmailNotFoundException;
 import org.inflearngg.member.dto.RiotAccount;
 import org.inflearngg.member.entity.Member;
+import org.inflearngg.member.exception.MemberIdNotFoundException;
 import org.inflearngg.member.repository.MemberRepository;
 import org.inflearngg.summoner.entity.VerifySummoner;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
+import static org.inflearngg.aop.error.ExceptionErrorMessage.EMAIL_AND_PASSWORD_NOT_MATCH;
 
 @Slf4j
 @Service
@@ -39,8 +43,7 @@ public class MemberService {
         if (member.isPresent()) {
             return member.get().getMemberId();
         }
-        //비밀번호 일치하지 않을때
-        throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        throw new IllegalArgumentException(EMAIL_AND_PASSWORD_NOT_MATCH);
     }
 
     public boolean isSiteEmail(String email) {
@@ -50,23 +53,45 @@ public class MemberService {
         }
         return false;
     }
+
     public Long findMemberIdByEmail(String email) {
         Optional<Member> member = memberRepository.findByEmailAndSocialId(email, "SITE");
         if (member.isPresent()) {
             return member.get().getMemberId();
         }
-        throw new IllegalArgumentException("회원으로 존재하지않는 이메일입니다.");
+        throw new EmailNotFoundException();
     }
 
-    public Member updateMemberPassword(String email, String password) {
-        Optional<Member> member = memberRepository.findByEmailAndSocialId(email, "SITE");
-        member.orElseThrow(() -> new IllegalArgumentException("회원으로 존재하지않는 이메일입니다."));
+
+    public Member updateMemberPassword(Long memberId, String password) {
+        Optional<Member> member = memberRepository.findById(memberId);
+        member.orElseThrow(EmailNotFoundException::new);
+        if (!member.get().getSocialId().equals("SITE")) {
+            throw new EmailNotFoundException();
+        }
         member.get().setPassword(password);
         return memberRepository.save(member.get());
     }
 
-    public Member findUserByMemberId(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. memberID : " + memberId));
+    public void checkAndUpdateMemberPassword(Long memberId, String password, String newPassword) {
+        Member member = findMemberByMemberId(memberId);
+        // 비밀번호 확인
+        checkMemberPassword(member, password);
+        // 비밀번호 변경
+        updateMemberPassword(memberId, newPassword);
+    }
+
+    public void checkMemberPassword(Member member, String password) {
+        if (!member.getSocialId().equals("SITE")) {
+            throw new EmailNotFoundException();
+        }
+        if (!member.getPassword().equals(password)) {
+            throw new IllegalArgumentException(EMAIL_AND_PASSWORD_NOT_MATCH);
+        }
+    }
+
+    public Member findMemberByMemberId(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(MemberIdNotFoundException::new);
     }
 
 
@@ -76,9 +101,18 @@ public class MemberService {
         verifySummoner.setSummonerName(riotAccount.getGameName());
         verifySummoner.setSummonerTag(riotAccount.getTagLine());
 
-        Member member = findUserByMemberId(memberId);
+        Member member = findMemberByMemberId(memberId);
         verifySummoner.setMember(member);
         member.getVerifySummonerList().add(verifySummoner);
         memberRepository.save(member);
+    }
+
+    public void deleteMember(Long memberId, String password) {
+        // 유저유무 체크
+        Member member = findMemberByMemberId(memberId);
+        // 비밀번호 확인
+        checkMemberPassword(member, password);
+        // 삭제
+        memberRepository.delete(member);
     }
 }
