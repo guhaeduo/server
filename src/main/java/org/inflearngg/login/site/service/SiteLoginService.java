@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.inflearngg.login.jwt.token.AuthToken;
 import org.inflearngg.login.jwt.token.AuthTokenGenerator;
 import org.inflearngg.login.site.exception.EmailNotFoundException;
+import org.inflearngg.login.site.exception.ExistingEmailException;
 import org.inflearngg.member.entity.Member;
 import org.inflearngg.member.service.MemberService;
 import org.springframework.stereotype.Service;
+
+import static org.inflearngg.aop.error.ExceptionErrorMessage.PASSWORD_RESET_FAIL;
 
 @Service
 @RequiredArgsConstructor
@@ -27,19 +30,13 @@ public class SiteLoginService {
 
 
     public void signUp(String email, String password) {
-        //중복체크
-        if(memberService.isSiteEmail(email)){
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
-        }
-        Long memberId = memberService.findUserIdByEmailOrNewMember(email, password, "SITE");
-        if (memberId == null)
-            throw new IllegalArgumentException("회원가입에 실패하였습니다.");
+        memberService.findUserIdByEmailOrNewMember(email, password, "SITE");
     }
 
     //중복 체크
     public void checkEmailDuplication(String email) {
-        if(memberService.isSiteEmail(email)){
-            throw new EmailNotFoundException("이미 회원으로 존재하는 이메일입니다.");
+        if (memberService.isSiteEmail(email)) {
+            throw new ExistingEmailException();
         }
     }
 
@@ -47,17 +44,21 @@ public class SiteLoginService {
         //이메일로 회원정보 조회
         Long memberId = memberService.findMemberIdByEmail(email);
         //일치하면 토큰 발급
-        AuthToken authToken = authTokenGenerator.generateAuthToken(memberId);
+        AuthToken authToken = authTokenGenerator.resetPasswordToken(memberId);
         return authToken.getAccessToken();
     }
 
 
-        public void resetPassword(String email, String password) {
+    public void resetPassword(Long memberId, String password) {
         //이메일로 회원정보 조회
-        Member siteEmail = memberService.updateMemberPassword(email, password);
+        Member siteEmail = memberService.updateMemberPassword(memberId, password);
 
         if (!siteEmail.getPassword().equals(password)) {
-            throw new IllegalArgumentException("비밀번호 변경에 실패하였습니다.");
+            throw new IllegalArgumentException(PASSWORD_RESET_FAIL);
         }
+    }
+
+    public void updatePassword(Long memberId, String beforePassword, String afterPassword) {
+        memberService.checkAndUpdateMemberPassword(memberId, beforePassword, afterPassword);
     }
 }

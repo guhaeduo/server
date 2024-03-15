@@ -8,10 +8,7 @@ import org.inflearngg.login.jwt.dto.LoginResponseDto;
 import org.inflearngg.login.jwt.token.AuthToken;
 import org.inflearngg.login.oauth.accesstoken.KakaoAccessCode;
 import org.inflearngg.login.oauth.client.login.kakao.KakaoLoginParam;
-import org.inflearngg.login.site.dto.request.EmailAuthenticationDto;
-import org.inflearngg.login.site.dto.request.EmailCodeVerifyDto;
-import org.inflearngg.login.site.dto.request.ResetPasswordDto;
-import org.inflearngg.login.site.dto.request.SiteLoginMemberInfo;
+import org.inflearngg.login.site.dto.request.*;
 import org.inflearngg.login.site.service.MailService;
 import org.inflearngg.login.site.service.SiteLoginService;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +31,7 @@ public class SiteLoginController {
     // 자체 로그인
     @PostMapping("/login")
     public ResponseEntity siteLogin(
-            @RequestBody SiteLoginMemberInfo siteLoginMemberInfo) {
+            @Valid @RequestBody SiteLoginMemberInfo siteLoginMemberInfo) {
         AuthToken authToken = siteLoginService.login(siteLoginMemberInfo.getEmail(), siteLoginMemberInfo.getPassword());
         return new ResponseEntity<>(setTokenHttpHeaders(authToken), HttpStatus.OK);
     }
@@ -43,6 +40,7 @@ public class SiteLoginController {
     @PostMapping("/signup")
     public ResponseEntity siteSignUp(
             @RequestBody SiteLoginMemberInfo siteLoginMemberInfo) {
+        siteLoginService.checkEmailDuplication(siteLoginMemberInfo.getEmail());
         siteLoginService.signUp(siteLoginMemberInfo.getEmail(), siteLoginMemberInfo.getPassword());
         return new ResponseEntity<>("회원가입완료", HttpStatus.OK);
     }
@@ -60,9 +58,17 @@ public class SiteLoginController {
 
     @PatchMapping("/reset-password")
     public ResponseEntity resetPassword(
+            @RequestAttribute("memberId") String memberId,
             @RequestBody ResetPasswordDto resetPasswordDto) {
-        mailService.verifyEmailCode(resetPasswordDto.getEmail(), resetPasswordDto.getCode());
-        siteLoginService.resetPassword(resetPasswordDto.getEmail(), resetPasswordDto.getPassword());
+        siteLoginService.resetPassword(Long.valueOf(memberId), resetPasswordDto.getPassword());
+        return new ResponseEntity<>("비밀번호 변경 완료", HttpStatus.OK);
+    }
+
+    @PatchMapping("/update-password")
+    public ResponseEntity updatePassword(
+            @RequestAttribute("memberId") String memberId,
+            @RequestBody UpdatePasswordDto passwordDto) {
+        siteLoginService.updatePassword(Long.valueOf(memberId),passwordDto.getBeforePassword(), passwordDto.getAfterPassword());
         return new ResponseEntity<>("비밀번호 변경 완료", HttpStatus.OK);
     }
 
