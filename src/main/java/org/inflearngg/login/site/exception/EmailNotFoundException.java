@@ -1,7 +1,9 @@
 package org.inflearngg.login.site.exception;
 
+import org.inflearngg.aop.error.ExceptionErrorMessage;
+
 public class EmailNotFoundException extends EmailException{
-    public EmailNotFoundException(String message) {
-        super(message);
+    public EmailNotFoundException() {
+        super(ExceptionErrorMessage.EMAIL_NOT_FOUND);
     }
 }
