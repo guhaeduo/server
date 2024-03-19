@@ -1,10 +1,31 @@
 package org.inflearngg.client.riot.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.inflearngg.duo.dto.QueueType;
 
 public class RiotApiResponseDto {
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class RiotPuuidAndTierInfo {
+        private String puuid;
+        private RankData soloRank = new RankData();
+        private RankData freeRank = new RankData();
+
+        @Setter
+        @Getter
+        @NoArgsConstructor
+        public static class RankData{
+            private String tier; // gold, silver, bronze, platinum, diamond, master, grandmaster, challenger
+            private String rank; // 1,2,3,4
+            private QueueType queueType;
+        }
+    }
 
     @Getter
     @Setter
