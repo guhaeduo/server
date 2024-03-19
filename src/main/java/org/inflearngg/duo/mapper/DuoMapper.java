@@ -1,6 +1,7 @@
 package org.inflearngg.duo.mapper;
 
 import lombok.extern.slf4j.Slf4j;
+import org.inflearngg.client.riot.dto.RiotApiResponseDto;
 import org.inflearngg.duo.dto.request.DuoRequestDto;
 import org.inflearngg.duo.dto.response.DuoResponseDto;
 import org.inflearngg.duo.entity.DuoPost;
@@ -22,28 +23,40 @@ public class DuoMapper {
                 duoPost.isRiotVerified(),
                 duoPost.getNeedPosition(),
                 duoPost.getNeedQueueType(),
-                duoPost.getNeedTier(),
                 duoPost.getMyMainLane(),
                 duoPost.getMyMainChampionName(),
-                duoPost.getMyMainChampionIconNumber(),
                 duoPost.getMySubLane(),
                 duoPost.getMySubChampionName(),
-                duoPost.getMySubChampionIconNumber(),
                 duoPost.isMicOn(),
                 duoPost.getMemo());
     }
 
     //requestDto -> entity
-    public DuoPost duoPostSaveToDuoPost(DuoRequestDto.DuoPostSave duoPostSave) {
+    public DuoPost duoPostSaveToDuoPost(DuoRequestDto.DuoPostSave duoPostSave, RiotApiResponseDto.RiotPuuidAndTierInfo riotPuuidAndTierInfo) {
         DuoPost duoPost = new DuoPost();
-        duoPost.setPUuid(duoPostSave.getPuuid());
-        setDuplicateDuoPost(duoPostSave, duoPost);
-        log.info("isLogin : " + duoPostSave.getLogin());
-        if (duoPostSave.getLogin()) {
-            log.info("memberId : " + duoPostSave.getMemberId());
-            duoPost.setUser(new Member(duoPostSave.getMemberId()));
-        } else
+        duoPost.setRiotVerified(duoPostSave.isRiotVerified());
+        duoPost.setRiotGameName(duoPostSave.getRiotGameName());
+        duoPost.setRiotGameTag(duoPostSave.getRiotGameTag());
+        duoPost.setPUuid(riotPuuidAndTierInfo.getPuuid());
+        duoPost.setNeedPosition(duoPostSave.getNeedPosition());
+        duoPost.setNeedQueueType(duoPostSave.getQueueType().name());
+
+        duoPost.setMyMainLane(duoPostSave.getMyMainLane().name());
+        duoPost.setMyMainChampionName(duoPostSave.getMyMainChampionName());
+        duoPost.setMySubLane(duoPostSave.getMySubLane().name());
+        duoPost.setMySubChampionName(duoPostSave.getMySubChampionName());
+
+        duoPost.setMySoloRankTier(riotPuuidAndTierInfo.getSoloRank().getTier());
+        duoPost.setMySoloRankLevel(riotPuuidAndTierInfo.getSoloRank().getRank());
+        duoPost.setMyFreeRankTier(riotPuuidAndTierInfo.getFreeRank().getTier());
+        duoPost.setMyFreeRankLevel(riotPuuidAndTierInfo.getFreeRank().getRank());
+
+        duoPost.setMicOn(duoPostSave.isMicOn());
+        duoPost.setMemo(duoPostSave.getMemo());
+
+        if(!duoPostSave.isRiotVerified()){ //비회원
             duoPost.setPostPassword(duoPostSave.getPassword());
+        }
         return duoPost;
     }
 
@@ -63,15 +76,6 @@ public class DuoMapper {
         duoPost.setRiotGameName(duoPostSave.getRiotGameName());
         duoPost.setRiotGameTag(duoPostSave.getRiotGameTag());
         duoPost.setRiotVerified(duoPostSave.isRiotVerified());
-        duoPost.setNeedPosition(duoPostSave.getNeedPosition());
-        duoPost.setNeedQueueType(duoPostSave.getNeedQueueType());
-        duoPost.setNeedTier(duoPostSave.getNeedTier());
-        duoPost.setMyMainLane(duoPostSave.getMyPosition().getMain().getLane());
-        duoPost.setMyMainChampionName(duoPostSave.getMyPosition().getMain().getChampionName());
-        duoPost.setMyMainChampionIconNumber(duoPostSave.getMyPosition().getMain().getChampionIconNumber());
-        duoPost.setMySubLane(duoPostSave.getMyPosition().getSub().getLane());
-        duoPost.setMySubChampionName(duoPostSave.getMyPosition().getSub().getChampionName());
-        duoPost.setMySubChampionIconNumber(duoPostSave.getMyPosition().getSub().getChampionIconNumber());
         duoPost.setMicOn(duoPostSave.isMicOn());
         duoPost.setMemo(duoPostSave.getMemo());
     }

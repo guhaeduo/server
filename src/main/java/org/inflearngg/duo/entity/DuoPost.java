@@ -19,58 +19,68 @@ public class DuoPost {
     private LocalDate createdAt = LocalDate.now();
     @Column(nullable = false)
     private boolean isRiotVerified;
-    @Column(nullable = true)
-    private String postPassword;
     private String riotGameName;
     private String riotGameTag;
+    //혹시 모르니까
     @Column(nullable = false)
     private String pUuid;
+    // 원하는 포지션 및 티어
     private String needPosition;
     private String needQueueType;
-    private String needTier;
 
+    // 라인 및 챔프
     private String myMainLane;
     private String myMainChampionName;
-    private int myMainChampionIconNumber;
     private String mySubLane;
     private String mySubChampionName;
-    private int mySubChampionIconNumber;
+
+    // 랭크 티어1~4
+    private String mySoloRankTier;
+    private String mySoloRankLevel;
+    private String myFreeRankTier;
+    private String myFreeRankLevel;
 
     private boolean isMicOn;
     private String memo;
     // 유저랑 연관관계 매핑해야됨.
+    @Column(nullable = true)
+    private String postPassword;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     // 테스트용 생성자
-    public DuoPost(String riotGameName, String riotGameTag, String pUuid){
-        this(false, null, riotGameName, riotGameTag, pUuid, "TOP", "SOLO", "IRON", "MID", "ZED", 238, "BOT", "KAI'SA", 145, true, "test");
+    public DuoPost(String riotGameName, String riotGameTag, String pUuid) {
+        this(false, riotGameName, riotGameTag, pUuid, "ALL", "SOLO", "TOP", "티모", "MID", "아리", "GOLD", "IV", "SILVER", "II", false, "메모", "1234");
     }
-
-    // 테스트용 생성자
     public DuoPost(String riotGameName, String riotGameTag, String pUuid, boolean isRiotVerified) {
-        this(isRiotVerified, null, riotGameName, riotGameTag, pUuid, "TOP", "SOLO", "IRON", "MID", "ZED", 238, "BOT", "KAI'SA", 145, true, "test");
+        this(isRiotVerified, riotGameName, riotGameTag, pUuid, "ALL", "SOLO", "TOP", "티모", "MID", "아리", "GOLD", "IV", "SILVER", "II", true, "메모", "1234");
     }
 
-    public DuoPost(boolean isRiotVerified, String postPassword, String riotGameName, String riotGameTag, String pUuid, String needPosition, String needQueueType, String needTier, String myMainLane, String myMainChampionName, int myMainChampionIconNumber, String mySubLane, String mySubChampionName, int mySubChampionIconNumber, boolean isMicOn, String memo) {
+    public DuoPost(boolean isRiotVerified,String riotGameName, String riotGameTag, String pUuid, String needPosition, String needQueueType, String myMainLane, String myMainChampionName, String mySubLane, String mySubChampionName, String mySoloRankTier, String mySoloRankLevel, String myFreeRankTier, String myFreeRankLevel, boolean isMicOn, String memo, String postPassword) {
         this.isRiotVerified = isRiotVerified;
-        this.postPassword = postPassword;
         this.riotGameName = riotGameName;
         this.riotGameTag = riotGameTag;
         this.pUuid = pUuid;
         this.needPosition = needPosition;
         this.needQueueType = needQueueType;
-        this.needTier = needTier;
+
         this.myMainLane = myMainLane;
         this.myMainChampionName = myMainChampionName;
-        this.myMainChampionIconNumber = myMainChampionIconNumber;
         this.mySubLane = mySubLane;
         this.mySubChampionName = mySubChampionName;
-        this.mySubChampionIconNumber = mySubChampionIconNumber;
+
+        this.mySoloRankTier = mySoloRankTier;
+        this.mySoloRankLevel = mySoloRankLevel;
+        this.myFreeRankTier = myFreeRankTier;
+        this.myFreeRankLevel = myFreeRankLevel;
+
         this.isMicOn = isMicOn;
         this.memo = memo;
+        this.postPassword = postPassword;
     }
+
 
     // 추가되면, User에도 추가해야함.
     public void setUser(Member member) {

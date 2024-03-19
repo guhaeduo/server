@@ -4,8 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.inflearngg.client.riot.dto.RiotApiResponseDto;
 import org.inflearngg.duo.mapper.DuoMapper;
 import org.inflearngg.duo.service.DuoService;
+import org.inflearngg.summoner.service.SummonerService;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -20,28 +22,44 @@ import static org.inflearngg.duo.dto.response.DuoResponseDto.*;
 public class DuoController {
 
     private final DuoService duoService;
+    private final SummonerService summonerService;
     private final DuoMapper mapper;
 
-    @GetMapping("/{page}")
-    public Page<DuoInfo> getDuoList(@PathVariable("page") int page, @Valid @RequestBody DuoSearch duoSearch) {
+    @GetMapping
+    public Page<DuoInfo> getDuoList(@Valid DuoSearch duoSearch) {
         // 추후 mapper 사용하기
-        return duoService.getDuoList(page, duoSearch);
+        return duoService.getDuoList(duoSearch.getPage(), duoSearch);
     }
 
-    @GetMapping("/post/{postId}")
+    @GetMapping("/{postId}")
     public DuoInfo getDuoPost(@PathVariable("postId") Long postId) { // 상세조회
         return mapper.duoPostToDuoResponseDtoDuoInfo(
                 duoService.getDuoPost(postId)
         );
     }
 
+    // 인증된 소환사 리스트 보기
+
+
     @PostMapping("/post")
-    public DuoInfo createDuoPost(@Valid @RequestBody DuoPostSave makeDuoPost) {
-        log.debug("makeDuoPost.isLogin : " + makeDuoPost.getLogin());
-        log.debug("makeDuoPost.isRiotVerified : " + makeDuoPost.isRiotVerified());
+    public DuoInfo createDuoPost(
+            @RequestAttribute("memberId") Long memberId,
+            @Valid @RequestBody DuoPostSave makeDuoPost) {
+        //일단 puuid 및 티어 확인
+        RiotApiResponseDto.RiotPuuidAndTierInfo riotPuuidAndTierInfo = summonerService.checkAndGetTier(makeDuoPost.getRiotGameName(), makeDuoPost.getRiotGameTag(), makeDuoPost.getRegion());
+
+        if (memberId == -1L) { //비회원로그인
+            if (makeDuoPost.isRiotVerified()) {
+                //비회원인데 인증된 소환사로 등록하려고 할 때
+                throw new IllegalArgumentException("인증된 소환사가 아닙니다.");
+            }
+            if (makeDuoPost.getPassword() == null) {
+                throw new IllegalArgumentException("비밀번호를 입력해주세요.");
+            }
+        }
         return mapper.duoPostToDuoResponseDtoDuoInfo(
                 duoService.createDuoPost(
-                        mapper.duoPostSaveToDuoPost(makeDuoPost)));
+                        mapper.duoPostSaveToDuoPost(makeDuoPost, riotPuuidAndTierInfo)));
     }
 
 

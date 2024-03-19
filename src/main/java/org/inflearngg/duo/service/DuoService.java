@@ -86,19 +86,15 @@ public class DuoService {
             duoPost.setNeedPosition(duoPostUpdate.getNeedPosition());
         if (!duoPostUpdate.getNeedQueueType().equals(duoPost.getNeedQueueType()))
             duoPost.setNeedQueueType(duoPostUpdate.getNeedQueueType());
-        if (!duoPostUpdate.getNeedTier().equals(duoPost.getNeedTier()))
-            duoPost.setNeedTier(duoPostUpdate.getNeedTier());
         if (!duoPostUpdate.getMyMainLane().equals(duoPost.getMyMainLane()))
             duoPost.setMyMainLane(duoPostUpdate.getMyMainLane());
         if (!duoPostUpdate.getMyMainChampionName().equals(duoPost.getMyMainChampionName())) {
             duoPost.setMyMainChampionName(duoPostUpdate.getMyMainChampionName());
-            duoPost.setMyMainChampionIconNumber(duoPostUpdate.getMyMainChampionIconNumber());
         }
         if (!duoPostUpdate.getMySubLane().equals(duoPost.getMySubLane()))
             duoPost.setMySubLane(duoPostUpdate.getMySubLane());
         if (!duoPostUpdate.getMySubChampionName().equals(duoPost.getMySubChampionName())) {
             duoPost.setMySubChampionName(duoPostUpdate.getMySubChampionName());
-            duoPost.setMySubChampionIconNumber(duoPostUpdate.getMySubChampionIconNumber());
         }
         if (duoPostUpdate.isMicOn() != duoPost.isMicOn())
             duoPost.setMicOn(duoPostUpdate.isMicOn());

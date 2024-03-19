@@ -5,7 +5,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.inflearngg.aop.dto.Region;
+import org.inflearngg.duo.dto.Lane;
+import org.inflearngg.duo.dto.QueueType;
 
 public class DuoRequestDto {
 
@@ -14,6 +18,7 @@ public class DuoRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DuoSearch {
+        private int page; // 동적
         private String lane; // 동적
         private String queueType; // 동적
         private String tier; // 동적
@@ -31,31 +36,38 @@ public class DuoRequestDto {
     @Setter
     @NoArgsConstructor
     public static class DuoPostSave implements DuoPostSaveData {
-        @JsonSetter("isLogin")
-        @NotNull
-        private Boolean login;
-        private Long memberId;
-        @NotBlank
-        private String puuid;
+
+        private Region region;
+
         @NotNull
         private String riotGameName;
         @NotNull
         private String riotGameTag;
-        @JsonSetter("isRiotVerified")
-        private Boolean riotVerified;
+
         @NotBlank
         private String needPosition;
-        @NotBlank
-        private String needQueueType;
-        @NotBlank
-        private String needTier;
-        @Valid
-        @NotNull
-        private Position myPosition;
+
         @JsonSetter("isMicOn")
         private Boolean micOn;
+
+        @NotBlank
+        private QueueType queueType; // ALL, SOLO, FREE, NORMAL, ABYSS
+        @NotBlank
+        private Lane myMainLane; // TOP, JUNGLE, MID, BOT, SUP
+
+        private String myMainChampionName;
+
+        private Lane mySubLane; // TOP, JUNGLE, MID, BOT, SUP
+
+        private String mySubChampionName;
+
+        @Size(max = 100)
         private String memo;
+        //회원시 memberId, 비회원시 password
         private String password;
+
+        @JsonSetter("isRiotVerified")
+        private Boolean riotVerified;
 
         @Override
         public Boolean isRiotVerified() {
@@ -113,13 +125,6 @@ public class DuoRequestDto {
 
         Boolean isRiotVerified();
 
-        String getNeedPosition();
-
-        String getNeedQueueType();
-
-        String getNeedTier();
-
-        Position getMyPosition();
 
         Boolean isMicOn();
 
