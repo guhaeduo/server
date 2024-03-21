@@ -14,6 +14,7 @@ public class RiotApiResponseDto {
     @NoArgsConstructor
     public static class RiotPuuidAndTierInfo {
         private String puuid;
+        private int profileIconId;
         private RankData soloRank = new RankData();
         private RankData freeRank = new RankData();
 

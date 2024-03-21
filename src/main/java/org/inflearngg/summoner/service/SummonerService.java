@@ -47,7 +47,9 @@ public class SummonerService {
 
         RiotApiResponseDto.RiotPuuid puuid = getPuuid(gameName, gameTag);
         riotPuuidAndTierInfo.setPuuid(puuid.getPuuid());
-        String summonerId = getSummonerIdInfo(puuid.getPuuid(), region.name()).getId();
+        RiotApiResponseDto.RiotSummonerIdInfo summonerIdInfo = getSummonerIdInfo(puuid.getPuuid(), region.name());
+        String summonerId = summonerIdInfo.getId();
+        riotPuuidAndTierInfo.setProfileIconId(summonerIdInfo.getProfileIconId());
         SummonerInfo.RankInfo[] rankData = getRankData(region.name(), summonerId);
         for (SummonerInfo.RankInfo rankDatum : rankData) {
             if (rankDatum.getQueueType().equals("RANKED_SOLO_5x5")) {
