@@ -8,6 +8,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.validation.UnexpectedTypeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.aop.error.ErrorCode;
@@ -57,6 +58,18 @@ public class GlobalExceptionHandler {
 //        final List<ErrorResponse.FieldError> fieldErrors = bindingFieldErrors(e.getBindingResult());
 //        return bindingFieldErrors(ErrorCode.INVALID_INPUT_VALUE, fieldErrors);
 //    }
+
+    @ExceptionHandler(UnexpectedTypeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleUnexpectedTypeException(UnexpectedTypeException e) {
+        final List<ErrorResponse.FieldError> fieldErrors = new ArrayList<>();
+        fieldErrors.add(ErrorResponse.FieldError.builder()
+                .field("type")
+                .value("typeError")
+                .reason(e.getMessage())
+                .build());
+        return bindingFieldErrors(ErrorCode.INVALID_INPUT_VALUE, fieldErrors);
+    }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

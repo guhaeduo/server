@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 import static org.inflearngg.aop.error.ExceptionErrorMessage.EMAIL_AND_PASSWORD_NOT_MATCH;
+import static org.inflearngg.aop.error.ExceptionErrorMessage.PASSWORD_NOT_MATCH;
 
 @Slf4j
 @Service
@@ -86,7 +87,7 @@ public class MemberService {
             throw new EmailNotFoundException();
         }
         if (!member.getPassword().equals(password)) {
-            throw new IllegalArgumentException(EMAIL_AND_PASSWORD_NOT_MATCH);
+            throw new IllegalArgumentException(PASSWORD_NOT_MATCH);
         }
     }
 

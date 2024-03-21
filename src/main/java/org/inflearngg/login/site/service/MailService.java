@@ -25,7 +25,6 @@ public class MailService {
 
     @Value("${mail.reset.redirect}")
     private String redirectUri;
-    private String TOKEN_TYPE = "Bearer ";
     private final JavaMailSender javaMailSender;
     private final RedisUtil redisUtil;
 
@@ -44,7 +43,7 @@ public class MailService {
         MimeMessage message = javaMailSender.createMimeMessage();
         message.addRecipients(Message.RecipientType.TO, email);
         message.setSubject("구해듀오 비밀번호 재설정입니다.");
-        message.setText("비밀번호 재설정 코드 : "+ redirectUri  + TOKEN_TYPE + code);
+        message.setText("비밀번호 재설정 코드 : "+ redirectUri + code);
         message.setFrom(new InternetAddress("guhaeduo@naver.com", "구해듀오"));
         return message;
     }
