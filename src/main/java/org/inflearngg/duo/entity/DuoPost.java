@@ -5,6 +5,7 @@ import lombok.*;
 import org.inflearngg.member.entity.Member;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -16,7 +17,8 @@ public class DuoPost {
     @Column(name = "id")
     private Long postId;
     @Column(nullable = false, updatable = false)
-    private LocalDate createdAt = LocalDate.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private boolean isGuestPost;
     @Column(nullable = false)
     private boolean isRiotVerified;
     private String riotGameName;
@@ -24,6 +26,7 @@ public class DuoPost {
     //혹시 모르니까
     @Column(nullable = false)
     private String pUuid;
+    private int profileIconId;
     // 원하는 포지션 및 티어
     private String needPosition;
     private String needQueueType;
@@ -51,13 +54,15 @@ public class DuoPost {
     private Member member;
 
     // 테스트용 생성자
-    public DuoPost(String riotGameName, String riotGameTag, String pUuid) {
-        this(false, riotGameName, riotGameTag, pUuid, "ALL", "SOLO", "TOP", "티모", "MID", "아리", "GOLD", "IV", "SILVER", "II", false, "메모", "1234");
-    }
-    public DuoPost(String riotGameName, String riotGameTag, String pUuid, boolean isRiotVerified) {
-        this(isRiotVerified, riotGameName, riotGameTag, pUuid, "ALL", "SOLO", "TOP", "티모", "MID", "아리", "GOLD", "IV", "SILVER", "II", true, "메모", "1234");
+    public DuoPost(String lane, String queueType, String tier) {
+        this(false, "테스트", "kr", "테스트puuid", lane, queueType, "TOP", "Timo", "MID", "Ari", "GOLD", "IV", "SILVER", "II", true, "메모", "1234");
     }
 
+    public DuoPost(String lane, String queueType, String tier, boolean isRiotVerified) {
+        this(isRiotVerified, "테스트", "kr", "테스트puuid", lane, queueType, "TOP", "Timo", "MID", "Ari", "GOLD", "IV", "SILVER", "II", true, "메모", "1234");
+        this.setMember(new Member(1L));
+        this.isGuestPost = true;
+    }
     public DuoPost(boolean isRiotVerified,String riotGameName, String riotGameTag, String pUuid, String needPosition, String needQueueType, String myMainLane, String myMainChampionName, String mySubLane, String mySubChampionName, String mySoloRankTier, String mySoloRankLevel, String myFreeRankTier, String myFreeRankLevel, boolean isMicOn, String memo, String postPassword) {
         this.isRiotVerified = isRiotVerified;
         this.riotGameName = riotGameName;
