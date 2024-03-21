@@ -5,12 +5,16 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.aop.dto.Region;
 import org.inflearngg.duo.dto.Lane;
 import org.inflearngg.duo.dto.QueueType;
+import org.inflearngg.duo.dto.Tier;
 
+@Slf4j
 public class DuoRequestDto {
 
     @Setter
@@ -18,27 +22,52 @@ public class DuoRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DuoSearch {
+        @NotNull
         private int page; // 동적
-        private String lane; // 동적
-        private String queueType; // 동적
-        private String tier; // 동적
+        private Lane lane; // 동적
+        private String queueType;
+        private Tier tier; // 동적
+        @NotNull
         @JsonSetter("isRiotVerified")
-        private boolean riotVerified; // 동적
+        private Boolean isRiotVerified; // 동적
 
-        // 테스트용
-        public DuoSearch(String lane, String queueType) {
-            this.lane = lane;
-            this.queueType = queueType;
+        public int getPage() {
+            if (this.page <= 0)
+                throw new IllegalArgumentException("페이지 번호가 잘못되었습니다.");
+            return this.page;
+        }
+
+        public String getLane() {
+            if (this.lane == null || this.lane == Lane.ALL)
+                return null;
+            return this.lane.name();
+        }
+
+        public String getQueueType() {
+            QueueType qt = QueueType.findByDescription(this.queueType, "queueType");
+            if (this.queueType == null || qt == QueueType.ALL)
+                throw new IllegalArgumentException("queueType 이 잘못되었습니다.");
+            return qt.name();
+        }
+
+        public String getTier() {
+            if (this.tier == null || this.tier == Tier.ALL)
+                return null;
+            return this.tier.name();
+        }
+
+        public Boolean isRiotVerified() {
+            return this.isRiotVerified;
         }
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class DuoPostSave implements DuoPostSaveData {
+    public static class DuoPostSave implements DtoDuoPost {
 
-        private Region region;
-
+        @NotBlank
+        private String region;
         @NotNull
         private String riotGameName;
         @NotNull
@@ -47,17 +76,14 @@ public class DuoRequestDto {
         @NotBlank
         private String needPosition;
 
-        @JsonSetter("isMicOn")
-        private Boolean micOn;
-
         @NotBlank
-        private QueueType queueType; // ALL, SOLO, FREE, NORMAL, ABYSS
+        private String queueType; //  SOLO, FREE, NORMAL, ABYSS
         @NotBlank
-        private Lane myMainLane; // TOP, JUNGLE, MID, BOT, SUP
+        private String myMainLane; // ALL, TOP, JUG, MID, ADC, SUP
 
         private String myMainChampionName;
-
-        private Lane mySubLane; // TOP, JUNGLE, MID, BOT, SUP
+        @NotBlank
+        private String mySubLane; //  ALL, TOP, JUG, MID, ADC, SUP
 
         private String mySubChampionName;
 
@@ -65,48 +91,16 @@ public class DuoRequestDto {
         private String memo;
         //회원시 memberId, 비회원시 password
         private String password;
-
+        @NotNull
+        @JsonSetter("isMicOn")
+        private Boolean isMicOn; // 마이크 여부(디폴트 false)
+        @NotNull
         @JsonSetter("isRiotVerified")
-        private Boolean riotVerified;
+        private Boolean isRiotVerified; // 라이엇 인증 여부(디폴트 false)
 
-        @Override
-        public Boolean isRiotVerified() {
-            return this.riotVerified;
+        public Region getRegion() {
+            return Region.findByDescription(this.region, "region");
         }
-
-        @Override
-        public Boolean isMicOn() {
-            return this.micOn;
-        }
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    public static class DuoPostUpdate implements DuoPostSaveData {
-        @NotBlank
-        private Long postId;
-        @NotBlank
-        private String riotGameName;
-        @NotBlank
-        private String riotGameTag;
-        @NotBlank
-        private Boolean isRiotVerified;
-        @NotBlank
-        private String needPosition;
-        @NotBlank
-        private String needQueueType;
-        @NotBlank
-        private String needTier;
-        @NotBlank
-        private Position myPosition;
-        @NotBlank
-        private Boolean isMicOn;
-        private String memo;
-        // 체크리스트
-        private Long memberId;
-        private String passwordCheck;
-
         @Override
         public Boolean isRiotVerified() {
             return this.isRiotVerified;
@@ -116,15 +110,107 @@ public class DuoRequestDto {
         public Boolean isMicOn() {
             return this.isMicOn;
         }
+        public String getQueueType() {
+            return QueueType.findByDescription(this.queueType, "queueType").name();
+        }
+
+        public String getNeedPosition() {
+            return Lane.findByDescription(this.needPosition, "needPosition").name();
+        }
+        public String getMyMainLane() {
+            return Lane.findByDescription(this.myMainLane, "myMainLane").name();
+        }
+
+        public String getMySubLane() {
+            return Lane.findByDescription(this.mySubLane, "mySubLane").name();
+        }
+
+
     }
 
-    public interface DuoPostSaveData {
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class DuoPostUpdate implements DtoDuoPost {
+        @NotNull
+        @JsonSetter("isGuestPost")
+        private Boolean isGuestPost;
+        @NotBlank
+        private String region;
+        @NotBlank
+        private String riotGameName;
+        @NotBlank
+        private String riotGameTag;
+        @NotNull
+        @JsonSetter("isRiotVerified")
+        private Boolean isRiotVerified;
+        @NotBlank
+        private String needPosition;
+        @NotBlank
+        private String queueType;
+        @NotBlank
+        private String myMainLane; // TOP, JUNGLE, MID, BOT, SUP
+
+        private String myMainChampionName;
+        @NotBlank
+        private String mySubLane; // TOP, JUNGLE, MID, BOT, SUP
+
+        private String mySubChampionName;
+        @NotNull
+        @JsonSetter("isMicOn")
+        private Boolean isMicOn;
+        @Size(max = 100)
+        private String memo;
+
+        private String passwordCheck;
+
+        public Region getRegion() {
+            return Region.findByDescription(this.region, "region");
+        }
+        @Override
+        public Boolean isRiotVerified() {
+            return this.isRiotVerified;
+        }
+
+        @Override
+        public Boolean isMicOn() {
+            return this.isMicOn;
+        }
+
+        public String getQueueType() {
+            return QueueType.findByDescription(this.queueType, "queueType").name();
+        }
+
+        public String getNeedPosition() {
+            return Lane.findByDescription(this.needPosition, "needPosition").name();
+        }
+        public String getMyMainLane() {
+            return Lane.findByDescription(this.myMainLane, "myMainLane").name();
+        }
+
+        public String getMySubLane() {
+            return Lane.findByDescription(this.mySubLane, "mySubLane").name();
+        }
+    }
+
+    public interface DtoDuoPost {
         String getRiotGameName();
 
         String getRiotGameTag();
 
         Boolean isRiotVerified();
 
+        String getNeedPosition();
+
+        String getQueueType();
+
+        String getMyMainLane();
+
+        String getMyMainChampionName();
+
+        String getMySubLane();
+
+        String getMySubChampionName();
 
         Boolean isMicOn();
 
@@ -135,49 +221,10 @@ public class DuoRequestDto {
     @Setter
     @NoArgsConstructor
     public static class DuoPostDelete {
-        @NotBlank
-        private Boolean isLogin; // true면 deleteInfo 에 memberId, false면 deleteInfo 에 password
-        @NotBlank
-        private String deleteInfo;
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    public static class Position {
-        @Valid
         @NotNull
-        private Main main;
-        private Sub sub;
-
-        //테스트용
-        public Position(Main main, Sub sub) {
-            this.main = main;
-            this.sub = sub;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class Main {
-            @NotBlank
-            private String lane;
-            @NotBlank
-            private String championName;
-            @NotNull
-            private int championIconNumber;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class Sub {
-            private String lane;
-            private String championName;
-            private int championIconNumber;
-        }
+        @JsonSetter("isGuestPost")
+        private Boolean isGuestPost;
+        private String PasswordCheck;
     }
 
 }

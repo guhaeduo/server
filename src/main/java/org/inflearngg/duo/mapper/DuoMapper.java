@@ -9,6 +9,10 @@ import org.inflearngg.duo.entity.DuoPost;
 import org.inflearngg.member.entity.Member;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+
 @Slf4j
 @Component
 public class DuoMapper {
@@ -16,67 +20,92 @@ public class DuoMapper {
     //entity -> responseDto
     public DuoResponseDto.DuoInfo duoPostToDuoResponseDtoDuoInfo(DuoPost duoPost) {
         return new DuoResponseDto.DuoInfo(
+                duoPost.isGuestPost(),
                 duoPost.getPostId(),
+                duoPost.getCreatedAt().atZone(ZoneId.of("Asia/Seoul")).toEpochSecond() * 1000,
+                duoPost.getProfileIconId(),
+                //회원이면 닉네임, 비회원이면 null
                 duoPost.getRiotGameName(),
                 duoPost.getRiotGameTag(),
-                duoPost.getPUuid(),
-                duoPost.isRiotVerified(),
                 duoPost.getNeedPosition(),
                 duoPost.getNeedQueueType(),
+
                 duoPost.getMyMainLane(),
                 duoPost.getMyMainChampionName(),
                 duoPost.getMySubLane(),
                 duoPost.getMySubChampionName(),
+
+                duoPost.getMySoloRankTier(),
+                duoPost.getMySoloRankLevel(),
+                duoPost.getMyFreeRankTier(),
+                duoPost.getMyFreeRankLevel(),
+
+                duoPost.getMemo(),
+                duoPost.getPUuid(),
                 duoPost.isMicOn(),
-                duoPost.getMemo());
+                duoPost.isRiotVerified()
+        );
     }
 
     //requestDto -> entity
-    public DuoPost duoPostSaveToDuoPost(DuoRequestDto.DuoPostSave duoPostSave, RiotApiResponseDto.RiotPuuidAndTierInfo riotPuuidAndTierInfo) {
+    public DuoPost duoPostSaveToDuoPost(Long memberId, DuoRequestDto.DuoPostSave duoPostSave, RiotApiResponseDto.RiotPuuidAndTierInfo riotPuuidAndTierInfo) {
         DuoPost duoPost = new DuoPost();
-        duoPost.setRiotVerified(duoPostSave.isRiotVerified());
-        duoPost.setRiotGameName(duoPostSave.getRiotGameName());
-        duoPost.setRiotGameTag(duoPostSave.getRiotGameTag());
         duoPost.setPUuid(riotPuuidAndTierInfo.getPuuid());
-        duoPost.setNeedPosition(duoPostSave.getNeedPosition());
-        duoPost.setNeedQueueType(duoPostSave.getQueueType().name());
+        setDuplicateDuoPost(duoPostSave, duoPost);
+        setRankTierDuoPost(riotPuuidAndTierInfo, duoPost);
 
-        duoPost.setMyMainLane(duoPostSave.getMyMainLane().name());
-        duoPost.setMyMainChampionName(duoPostSave.getMyMainChampionName());
-        duoPost.setMySubLane(duoPostSave.getMySubLane().name());
-        duoPost.setMySubChampionName(duoPostSave.getMySubChampionName());
-
-        duoPost.setMySoloRankTier(riotPuuidAndTierInfo.getSoloRank().getTier());
-        duoPost.setMySoloRankLevel(riotPuuidAndTierInfo.getSoloRank().getRank());
-        duoPost.setMyFreeRankTier(riotPuuidAndTierInfo.getFreeRank().getTier());
-        duoPost.setMyFreeRankLevel(riotPuuidAndTierInfo.getFreeRank().getRank());
-
-        duoPost.setMicOn(duoPostSave.isMicOn());
-        duoPost.setMemo(duoPostSave.getMemo());
-
-        if(!duoPostSave.isRiotVerified()){ //비회원
+        if (memberId != -1L) { // 회원상태인 경우
+            duoPost.setMember(new Member(memberId));
+            duoPost.setGuestPost(false);
+        } else { //비회원시 비밀번호 저장
             duoPost.setPostPassword(duoPostSave.getPassword());
+            duoPost.setGuestPost(true);
         }
         return duoPost;
     }
 
 
-    public DuoPost duoPostUpdateToDuoPost(DuoRequestDto.DuoPostUpdate duoPostUpdate) {
+    public DuoPost duoPostUpdateToDuoPost(Long postId, Long memberId, DuoRequestDto.DuoPostUpdate duoPostUpdate, RiotApiResponseDto.RiotPuuidAndTierInfo riotPuuidAndTierInfo) {
         DuoPost duoPost = new DuoPost();
-        duoPost.setPostId(duoPostUpdate.getPostId());
+        duoPost.setPostId(postId);
         setDuplicateDuoPost(duoPostUpdate, duoPost);
-        if (duoPostUpdate.getMemberId() != null)
-            duoPost.setMember(new Member(duoPostUpdate.getMemberId()));
-        if (duoPostUpdate.getPasswordCheck() != null)
+        setRankTierDuoPost(riotPuuidAndTierInfo, duoPost);
+
+
+        if (!duoPostUpdate.getIsGuestPost()) { // 비밀번호가 필요없는 경우
+            duoPost.setMember(new Member(memberId)); //회원시 memberId로 연결
+            duoPost.setGuestPost(false);
+        } else { //비회원시 비밀번호 저장
             duoPost.setPostPassword(duoPostUpdate.getPasswordCheck());
+            duoPost.setGuestPost(true);
+        }
+
         return duoPost;
     }
 
-    private static void setDuplicateDuoPost(DuoRequestDto.DuoPostSaveData duoPostSave, DuoPost duoPost) {
-        duoPost.setRiotGameName(duoPostSave.getRiotGameName());
-        duoPost.setRiotGameTag(duoPostSave.getRiotGameTag());
-        duoPost.setRiotVerified(duoPostSave.isRiotVerified());
-        duoPost.setMicOn(duoPostSave.isMicOn());
-        duoPost.setMemo(duoPostSave.getMemo());
+    private static void setRankTierDuoPost(RiotApiResponseDto.RiotPuuidAndTierInfo riotPuuidAndTierInfo, DuoPost duoPost) {
+        duoPost.setMySoloRankTier(riotPuuidAndTierInfo.getSoloRank().getTier());
+        duoPost.setMySoloRankLevel(riotPuuidAndTierInfo.getSoloRank().getRank());
+        duoPost.setMyFreeRankTier(riotPuuidAndTierInfo.getFreeRank().getTier());
+        duoPost.setMyFreeRankLevel(riotPuuidAndTierInfo.getFreeRank().getRank());
+
+        duoPost.setProfileIconId(riotPuuidAndTierInfo.getProfileIconId());
+    }
+
+    private static void setDuplicateDuoPost(DuoRequestDto.DtoDuoPost postDto, DuoPost duoPost) {
+        duoPost.setRiotGameName(postDto.getRiotGameName());
+        duoPost.setRiotGameTag(postDto.getRiotGameTag());
+        duoPost.setRiotVerified(postDto.isRiotVerified());
+
+        duoPost.setNeedPosition(postDto.getNeedPosition());
+        duoPost.setNeedQueueType(postDto.getQueueType());
+
+        duoPost.setMyMainLane(postDto.getMyMainLane());
+        duoPost.setMyMainChampionName(postDto.getMyMainChampionName());
+        duoPost.setMySubLane(postDto.getMySubLane());
+        duoPost.setMySubChampionName(postDto.getMySubChampionName());
+
+        duoPost.setMicOn(postDto.isMicOn());
+        duoPost.setMemo(postDto.getMemo());
     }
 }
