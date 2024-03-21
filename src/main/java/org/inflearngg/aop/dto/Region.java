@@ -1,6 +1,9 @@
 package org.inflearngg.aop.dto;
 
 import lombok.Getter;
+import org.inflearngg.duo.dto.Lane;
+
+import java.util.Arrays;
 
 @Getter
 public enum Region {
@@ -35,6 +38,11 @@ public enum Region {
         return continent;
     }
 
-
+    public static Region findByDescription(String description, String name) {
+        return Arrays.stream(Region.values())
+                .filter(region -> region.name().equals(description))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 리전이 없습니다."+ name + " = " +description));
+    }
 }
 
