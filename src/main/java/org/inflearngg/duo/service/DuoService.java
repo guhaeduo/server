@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.duo.entity.DuoPost;
 import org.inflearngg.duo.repository.DuoRepository;
+import org.inflearngg.member.entity.Member;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +24,7 @@ public class DuoService {
     private static final int PAGE_SIZE = 10;
 
     public Page<DuoInfo> getDuoList(int page, DuoSearch duoSearch) {
-        return duoRepository.searchDuoList(duoSearch, PageRequest.of(page, PAGE_SIZE));
+        return duoRepository.searchDuoList(duoSearch, PageRequest.of(page -1 , PAGE_SIZE));
     }
 
     // 상세 조회
@@ -32,41 +33,45 @@ public class DuoService {
     }
 
     public DuoPost createDuoPost(DuoPost makeDuoPost) {
-        return duoRepository.save(makeDuoPost);
+        DuoPost save = duoRepository.save(makeDuoPost);
+        return save;
     }
 
-    public DuoPost updateDuoPost(Long postId, Long memberId, String password, DuoPost duoPostUpdate) {
-        //memberId, passwordCheck 으로 게시판 주인인지 체크
+    public DuoPost updateDuoPost(DuoPost duoPostUpdate) {
+        // 회원id 체크 or password 체크
+
         DuoPost getDuoPost = null;
-        if (memberId != null) {
-            getDuoPost = validateMember(postId, memberId);
+        if (duoPostUpdate.getMember() != null) { //로그인이 필요한 경우
+            getDuoPost = validateMember(duoPostUpdate.getPostId(), duoPostUpdate.getMember().getMemberId());
         }
-        if (password != null) {
-            getDuoPost = validatePassword(postId, password);
+        if (duoPostUpdate.getPostPassword() != null) {//비밀번호가 필요한 경우
+            getDuoPost = validatePassword(duoPostUpdate.getPostId(), duoPostUpdate.getPostPassword());
         }
         if (getDuoPost == null)
-            throw new IllegalArgumentException("게시글 수정 권한이 없습니다. id=" + postId);
+            throw new IllegalArgumentException("게시글 수정 권한이 없습니다. id=" + duoPostUpdate.getPostId());
         // update 된 부분만 적용
         DuoPost duoPost = getUpdateDuoPost(getDuoPost, duoPostUpdate);
         duoRepository.save(duoPost);
         return duoPost;
     }
 
-    public boolean deleteDuoPost(Long postId, boolean isLogin, String deleteInfo) {
+    public boolean deleteDuoPost(Long postId, Long memberId, String passwordCheck) {
         DuoPost duoPost = verifiedPostId(postId);
 
-        if (isLogin) {
-            //memberId
-            Long memberId = Long.valueOf(deleteInfo);
+        if (duoPost.getMember() != null) { // 회원게시글
             if (duoPost.getMember().getMemberId().equals(memberId)) {
+                // 내가 로그인했고, 내 회원 게시물의 경우 (service)
                 duoRepository.deleteById(postId);
                 return true;
             }
+            // 내가 로그인도 했지만, 다른 회원의 게시물인 경우(service)
             throw new IllegalArgumentException("해당 게시글의 주인이 아닙니다. id=" + postId);
-
-
-        } else {
-            if (duoPost.getPostPassword().equals(deleteInfo)) {
+        } else { // 비회원 게시글
+            // 비밀번호가 없는 경우
+            if (passwordCheck.isEmpty()) {
+                throw new IllegalArgumentException("비밀번호가 필요합니다.");
+            }
+            if (duoPost.getPostPassword().equals(passwordCheck)) {
                 duoRepository.deleteById(postId);
                 return true;
             }
@@ -108,6 +113,8 @@ public class DuoService {
     }
 
     private DuoPost validateMember(Long postId, Long memberId) {
+        if(memberId < 0L)
+            throw new IllegalArgumentException("로그인이 필요합니다.");
         DuoPost duoPost = verifiedPostId(postId);
         if (duoPost.getMember().getMemberId().equals(memberId))
             return duoPost;

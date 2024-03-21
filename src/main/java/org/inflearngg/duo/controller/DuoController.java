@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.inflearngg.client.riot.dto.RiotApiResponseDto;
+import org.inflearngg.duo.dto.Tier;
 import org.inflearngg.duo.mapper.DuoMapper;
 import org.inflearngg.duo.service.DuoService;
 import org.inflearngg.summoner.service.SummonerService;
@@ -59,29 +60,54 @@ public class DuoController {
         }
         return mapper.duoPostToDuoResponseDtoDuoInfo(
                 duoService.createDuoPost(
-                        mapper.duoPostSaveToDuoPost(makeDuoPost, riotPuuidAndTierInfo)));
+                        mapper.duoPostSaveToDuoPost(memberId, makeDuoPost, riotPuuidAndTierInfo)));
     }
 
 
-    @PatchMapping("/post/{postId}")
-    public DuoInfo updateDuoPost(@PathVariable("postId") Long postId, @RequestBody DuoPostUpdate duoPostUpdate) {
+    @PutMapping("/post/{postId}")
+    public DuoInfo updateDuoPost(@PathVariable("postId") Long postId,
+                                 @RequestAttribute("memberId") Long memberId,
+                                 @Valid @RequestBody DuoPostUpdate duoPostUpdate) {
+        //일단 puuid 및 티어 확인
+        RiotApiResponseDto.RiotPuuidAndTierInfo riotPuuidAndTierInfo = summonerService.checkAndGetTier(duoPostUpdate.getRiotGameName(), duoPostUpdate.getRiotGameTag(), duoPostUpdate.getRegion());
+
+
+        if (duoPostUpdate.getIsGuestPost()) { //비밀번호 필요한 게시판
+            if (duoPostUpdate.isRiotVerified()) {
+                //비회원인데 인증된 소환사로 등록하려고 할 때
+                throw new IllegalArgumentException("인증된 소환사가 아닙니다.");
+            }
+            if (duoPostUpdate.getPasswordCheck() == null) {
+                throw new IllegalArgumentException("비밀번호를 입력해주세요.");
+            }
+        }
         return mapper.duoPostToDuoResponseDtoDuoInfo(
                 duoService.updateDuoPost(
-                        postId,
-                        duoPostUpdate.getMemberId(),
-                        duoPostUpdate.getPasswordCheck(),
-                        mapper.duoPostUpdateToDuoPost(duoPostUpdate)
+                        mapper.duoPostUpdateToDuoPost(postId, memberId, duoPostUpdate, riotPuuidAndTierInfo)
                 ));
     }
 
     @DeleteMapping("/post/{postId}")
-    public String deleteDuoPost(@PathVariable Long postId, @RequestBody DuoPostDelete duoPostDelete) {
-        if(duoService.deleteDuoPost(postId, duoPostDelete.getIsLogin(), duoPostDelete.getDeleteInfo())) {
+    public String deleteDuoPost(@PathVariable("postId") Long postId,
+                                @RequestAttribute("memberId") Long memberId,
+                                @Valid @RequestBody DuoPostDelete duoPostDelete) {
+        if (duoPostDelete.getIsGuestPost()) { // 비회원게시물
+            if (duoPostDelete.getPasswordCheck() == null) {
+                throw new IllegalArgumentException("비밀번호를 입력해주세요.");
+
+            }
+        }
+        if (!duoPostDelete.getIsGuestPost()) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
+        log.info("passwordCheck : " + duoPostDelete.getPasswordCheck());
+        // 비밀번호가 있다면 비회원 게시물
+        if (duoService.deleteDuoPost(postId, memberId, duoPostDelete.getPasswordCheck())) {
             return "delete success";
         }
         return "delete fail";
     }
-
 
 
 }
