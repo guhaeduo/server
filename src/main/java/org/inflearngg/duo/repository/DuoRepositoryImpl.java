@@ -35,8 +35,8 @@ public class DuoRepositoryImpl implements DuoRepositoryCustom {
                         duoPost.isGuestPost,
                         duoPost.postId,
                         duoPost.createdAt,
+                        duoPost.member.memberId,
                         duoPost.profileIconId,
-
                         duoPost.riotGameName,
                         duoPost.riotGameTag,
                         duoPost.needPosition,
@@ -60,23 +60,36 @@ public class DuoRepositoryImpl implements DuoRepositoryCustom {
                         ))
                 .from(duoPost)
                 .where(
-                        needPositionEq(duoSearch.getLane()),
+                        myMainLaneEq(duoSearch.getLane()),
                         needQueueTypeEq(duoSearch.getQueueType()),
                         needTierEq(duoSearch.getTier()),
                         isRiotVerifiedEq(duoSearch.isRiotVerified())
                 )
                 .offset(pageable.getOffset()) // 페이지네이션 시작점
                 .limit(pageable.getPageSize()) // 페이지당 항목 수
+                .orderBy(duoPost.createdAt.desc())
                 .fetch();
 
-        return new PageImpl<>(results, pageable, results.size());
+        // 전체 결과 수를 구하는 쿼리
+        Long total = queryFactory
+                .select(duoPost.count())
+                .from(duoPost)
+                .where(
+                        myMainLaneEq(duoSearch.getLane()),
+                        needQueueTypeEq(duoSearch.getQueueType()),
+                        needTierEq(duoSearch.getTier()),
+                        isRiotVerifiedEq(duoSearch.isRiotVerified())
+                )
+                .fetchOne();
+
+        return new PageImpl<>(results, pageable,total== null?0L:total);
     }
 
-    private BooleanExpression needPositionEq(String lane) {
+    private BooleanExpression myMainLaneEq(String lane) {
         log.info("lane : " + lane);
         if (StringUtils.hasText(lane)) {
             log.info("lane 조건문 실행");
-            return duoPost.needPosition.eq(lane);
+            return duoPost.myMainLane.eq(lane);
         }
         return null;
     }
