@@ -27,9 +27,9 @@ public class DuoController {
     private final DuoMapper mapper;
 
     @GetMapping
-    public Page<DuoInfo> getDuoList(@Valid DuoSearch duoSearch) {
+    public PageInfo getDuoList(@Valid DuoSearch duoSearch) {
         // 추후 mapper 사용하기
-        return duoService.getDuoList(duoSearch.getPage(), duoSearch);
+        return mapper.duoPageToDuoResponseDtoPageInfo(duoService.getDuoList(duoSearch.getPage(), duoSearch));
     }
 
     @GetMapping("/{postId}")

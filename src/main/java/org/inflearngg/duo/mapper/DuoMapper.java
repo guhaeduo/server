@@ -7,6 +7,7 @@ import org.inflearngg.duo.dto.response.DuoResponseDto;
 import org.inflearngg.duo.entity.DuoPost;
 
 import org.inflearngg.member.entity.Member;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
@@ -17,12 +18,25 @@ import java.time.ZoneOffset;
 @Component
 public class DuoMapper {
 
+    //page<entity> -> pageInfo
+    public DuoResponseDto.PageInfo duoPageToDuoResponseDtoPageInfo(Page<DuoResponseDto.DuoInfo> duoPosts) {
+        DuoResponseDto.PageInfo pageInfo = new DuoResponseDto.PageInfo();
+        pageInfo.setContent(duoPosts.getContent());
+        pageInfo.setHasNextPage(duoPosts.hasNext());
+        pageInfo.setHasPreviousPage(duoPosts.hasPrevious());
+        pageInfo.setCurrentPageNumber(duoPosts.getNumber() + 1);
+        pageInfo.setNextPageNumber(duoPosts.getNumber() + 2);
+        pageInfo.setPreviousPageNumber(duoPosts.getNumber());
+        return pageInfo;
+    }
+
     //entity -> responseDto
     public DuoResponseDto.DuoInfo duoPostToDuoResponseDtoDuoInfo(DuoPost duoPost) {
         return new DuoResponseDto.DuoInfo(
                 duoPost.isGuestPost(),
                 duoPost.getPostId(),
-                duoPost.getCreatedAt().atZone(ZoneId.of("Asia/Seoul")).toEpochSecond() * 1000,
+                duoPost.getCreatedAt(),
+                duoPost.getMember() == null ? null : duoPost.getMember().getMemberId(),
                 duoPost.getProfileIconId(),
                 //회원이면 닉네임, 비회원이면 null
                 duoPost.getRiotGameName(),
