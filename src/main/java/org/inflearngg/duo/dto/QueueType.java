@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 @Slf4j
 public enum QueueType {
-    ALL, SOLO, FREE, NORMAL, ABYSS;
+    ALL, SOLO, FREE, NORMAL, ARAM;
 
     public static QueueType findByDescription(String description, String name) {
         return Arrays.stream(QueueType.values())
