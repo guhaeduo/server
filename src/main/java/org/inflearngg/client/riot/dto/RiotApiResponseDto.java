@@ -22,8 +22,8 @@ public class RiotApiResponseDto {
         @Getter
         @NoArgsConstructor
         public static class RankData{
-            private String tier; // gold, silver, bronze, platinum, diamond, master, grandmaster, challenger
-            private String rank; // 1,2,3,4
+            private String tier = "UNRANKED"; // gold, silver, bronze, platinum, diamond, master, grandmaster, challenger
+            private String rank = "0"; // 1,2,3,4
             private QueueType queueType;
         }
     }
