@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.aop.error.ErrorCode;
 import org.inflearngg.aop.error.ErrorResponse;
+import org.inflearngg.client.riot.exception.BadRequestRiotClientErrorException;
+import org.inflearngg.client.riot.exception.NotFoundRiotClientErrorException;
+import org.inflearngg.client.riot.exception.RiotClientErrorException;
 import org.inflearngg.login.site.exception.EmailException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -39,6 +42,7 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     private final ClientErrorHandler clientErrorHandler;
+    private final ObjectMapper objectMapper;
 
     //예외처리로직
 
@@ -112,10 +116,27 @@ public class GlobalExceptionHandler {
      *
      * @throws JsonProcessingException
      */
+
+    /**
+     * Riot API 에러 핸들링
+     */
+    @ExceptionHandler(NotFoundRiotClientErrorException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ErrorResponse handleNotFoundRiotClientErrorException(RiotClientErrorException e) throws JsonProcessingException {
+        List<ErrorResponse.FieldError> errors = riotClientErrors(e.getMessage());
+        return bindingFieldErrors(ErrorCode.RIOT_NOT_FOUND, errors);
+    }
+
+    @ExceptionHandler(BadRequestRiotClientErrorException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleRiotClientErrorException(RiotClientErrorException e) throws JsonProcessingException {
+        List<ErrorResponse.FieldError> errors = riotClientErrors(e.getMessage());
+        return bindingFieldErrors(ErrorCode.Client_INVALID_INPUT_VALUE, errors);
+    }
+
     @ExceptionHandler(HttpClientErrorException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleHttpClientErrorException(HttpClientErrorException e) throws JsonProcessingException {
-        log.info(e.getResponseBodyAsString());
         List<ErrorResponse.FieldError> errors = clientErrorHandler.handleClientError(e.getResponseBodyAsString());
         return bindingFieldErrors(ErrorCode.Client_INVALID_INPUT_VALUE, errors);
     }
@@ -169,6 +190,23 @@ public class GlobalExceptionHandler {
                         .reason(error.getDefaultMessage())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private List<ErrorResponse.FieldError> riotClientErrors(String errorMessage) throws JsonProcessingException {
+        JsonNode jsonNode = objectMapper.readTree(errorMessage);
+        final List<ErrorResponse.FieldError> fieldErrors = new ArrayList<>();
+        log.info(jsonNode.toString());
+        JsonNode messageNode = jsonNode.path("status").path("message");
+
+        if (!messageNode.isMissingNode()) { // "message" 키가 존재하는지 확인
+            fieldErrors.add(ErrorResponse.FieldError.builder()
+                    .field("RiotApiException")
+                    .value("null")
+                    .reason(messageNode.asText())
+                    .build());
+        }
+        return fieldErrors;
+
     }
 
 

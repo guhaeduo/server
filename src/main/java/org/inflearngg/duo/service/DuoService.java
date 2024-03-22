@@ -29,7 +29,7 @@ public class DuoService {
 
     // 상세 조회
     public DuoPost getDuoPost(Long postId) {
-        return duoRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
+        return duoRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
     }
 
     public DuoPost createDuoPost(DuoPost makeDuoPost) {
@@ -48,7 +48,7 @@ public class DuoService {
             getDuoPost = validatePassword(duoPostUpdate.getPostId(), duoPostUpdate.getPostPassword());
         }
         if (getDuoPost == null)
-            throw new IllegalArgumentException("게시글 수정 권한이 없습니다. id=" + duoPostUpdate.getPostId());
+            throw new IllegalArgumentException("게시글 수정 권한이 없습니다.");
         // update 된 부분만 적용
         DuoPost duoPost = getUpdateDuoPost(getDuoPost, duoPostUpdate);
         duoRepository.save(duoPost);
@@ -65,7 +65,7 @@ public class DuoService {
                 return true;
             }
             // 내가 로그인도 했지만, 다른 회원의 게시물인 경우(service)
-            throw new IllegalArgumentException("해당 게시글의 주인이 아닙니다. id=" + postId);
+            throw new IllegalArgumentException("해당 게시글의 주인이 아닙니다.");
         } else { // 비회원 게시글
             // 비밀번호가 없는 경우
             if (passwordCheck.isEmpty()) {
@@ -75,7 +75,7 @@ public class DuoService {
                 duoRepository.deleteById(postId);
                 return true;
             }
-            throw new IllegalArgumentException("비밀번호가 틀렸습니다. id=" + postId);
+            throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
         }
     }
 
@@ -109,7 +109,7 @@ public class DuoService {
     }
 
     private DuoPost verifiedPostId(Long postId) {
-        return duoRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
+        return duoRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
     }
 
     private DuoPost validateMember(Long postId, Long memberId) {
@@ -118,7 +118,7 @@ public class DuoService {
         DuoPost duoPost = verifiedPostId(postId);
         if (duoPost.getMember().getMemberId().equals(memberId))
             return duoPost;
-        throw new IllegalArgumentException("해당 게시글의 주인이 아닙니다. id=" + postId);
+        throw new IllegalArgumentException("해당 게시글의 주인이 아닙니다.");
 
     }
 
@@ -127,7 +127,7 @@ public class DuoService {
         DuoPost duoPost = verifiedPostId(postId);
         if (duoPost.getPostPassword().equals(passwordCheck))
             return duoPost;
-        throw new IllegalArgumentException("비밀번호가 틀렸습니다. id=" + postId);
+        throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
     }
 
 
