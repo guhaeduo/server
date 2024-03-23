@@ -25,8 +25,8 @@ public class SummonerMapper {
     public SummonerResponseDto.SummonerData mapToSummonerResponseDto(SummonerInfo.RankInfo[] rankInfos) {
         SummonerResponseDto.SummonerData summonerData = new SummonerResponseDto.SummonerData();
 
-        SummonerResponseDto.RankData soloRank = new SummonerResponseDto.RankData("unRanked", 0, 0, 0, 0);
-        SummonerResponseDto.RankData freeRank = new SummonerResponseDto.RankData("unRanked", 0, 0, 0, 0);
+        SummonerResponseDto.RankData soloRank = new SummonerResponseDto.RankData("UNRANKED", 0, 0, 0, 0);
+        SummonerResponseDto.RankData freeRank = new SummonerResponseDto.RankData("UNRANKED", 0, 0, 0, 0);
 
         for (SummonerInfo.RankInfo rankInfo : rankInfos) {
             if (rankInfo.getQueueType().equals("RANKED_SOLO_5x5")) { // 솔로랭크

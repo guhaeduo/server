@@ -36,10 +36,7 @@ public class SummonerController {
     public SummonerData getSummonerRankByPuuid(
             @RequestHeader("region") @Valid Region region,
             @RequestHeader("summonerId") String summonerId) {
-        SummonerInfo.RankInfo[] rankInfos = summonerService.getRankData(region.name(), summonerId);
-        log.info("rankInfos : " + rankInfos[0].getRank() + "," + rankInfos[0].getTier() + "," + rankInfos[0].getQueueType() + ",");
-        SummonerData summonerData = summonerMapper.mapToSummonerResponseDto(rankInfos);
-        return summonerData;
+        return summonerMapper.mapToSummonerResponseDto(summonerService.getRankData(region.name(), summonerId));
     }
 
 }
