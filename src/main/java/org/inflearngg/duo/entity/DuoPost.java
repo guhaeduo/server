@@ -54,15 +54,15 @@ public class DuoPost {
     private Member member;
 
     // 테스트용 생성자
-    public DuoPost(String lane, String queueType, String tier) {
-        this(false, "테스트", "kr", "테스트puuid", lane, queueType, "TOP", "Timo", "MID", "Ari", "GOLD", "IV", "SILVER", "II", true, "메모", "1234");
-    }
-
-    public DuoPost(String lane, String queueType, String tier, boolean isRiotVerified) {
-        this(isRiotVerified, "테스트", "kr", "테스트puuid", lane, queueType, "TOP", "Timo", "MID", "Ari", "GOLD", "IV", "SILVER", "II", true, "메모", "1234");
-        this.setMember(new Member(1L));
-        this.isGuestPost = true;
-    }
+//    public DuoPost(String lane, String queueType, String tier) {
+//        this(false, "테스트", "kr", "테스트puuid", lane, queueType, "TOP", "Timo", "MID", "Ari", "GOLD", "IV", "SILVER", "II", true, "메모", "1234");
+//    }
+//
+//    public DuoPost(String lane, String queueType, String tier, boolean isRiotVerified) {
+//        this(isRiotVerified, "테스트", "kr", "테스트puuid", lane, queueType, "TOP", "Timo", "MID", "Ari", "GOLD", "IV", "SILVER", "II", true, "메모", "1234");
+//        this.setMember(new Member(1L));
+//        this.isGuestPost = true;
+//    }
     public DuoPost(boolean isRiotVerified,String riotGameName, String riotGameTag, String pUuid, String needPosition, String needQueueType, String myMainLane, String myMainChampionName, String mySubLane, String mySubChampionName, String mySoloRankTier, String mySoloRankLevel, String myFreeRankTier, String myFreeRankLevel, boolean isMicOn, String memo, String postPassword) {
         this.isRiotVerified = isRiotVerified;
         this.riotGameName = riotGameName;
