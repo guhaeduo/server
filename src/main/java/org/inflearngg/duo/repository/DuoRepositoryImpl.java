@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.inflearngg.duo.dto.QueueType;
 import org.inflearngg.duo.dto.request.DuoRequestDto;
 import org.inflearngg.duo.dto.response.DuoResponseDto;
 import org.inflearngg.duo.entity.DuoPost;
@@ -62,7 +63,7 @@ public class DuoRepositoryImpl implements DuoRepositoryCustom {
                 .where(
                         myMainLaneEq(duoSearch.getLane()),
                         needQueueTypeEq(duoSearch.getQueueType()),
-                        needTierEq(duoSearch.getTier()),
+                        needTierEq(duoSearch.getTier(), duoSearch.getQueueType()),
                         isRiotVerifiedEq(duoSearch.isRiotVerified())
                 )
                 .offset(pageable.getOffset()) // 페이지네이션 시작점
@@ -77,7 +78,7 @@ public class DuoRepositoryImpl implements DuoRepositoryCustom {
                 .where(
                         myMainLaneEq(duoSearch.getLane()),
                         needQueueTypeEq(duoSearch.getQueueType()),
-                        needTierEq(duoSearch.getTier()),
+                        needTierEq(duoSearch.getTier(), duoSearch.getQueueType()),
                         isRiotVerifiedEq(duoSearch.isRiotVerified())
                 )
                 .fetchOne();
@@ -103,10 +104,13 @@ public class DuoRepositoryImpl implements DuoRepositoryCustom {
         return null;
     }
 
-    private BooleanExpression needTierEq(String tier) {
+    private BooleanExpression needTierEq(String tier, String queueType) {
         log.info("tier : " + tier);
         if (StringUtils.hasText(tier)) {
-            log.info("tier 조건문 실행" );
+            if(queueType.equals(QueueType.SOLO.name()))
+                return duoPost.mySoloRankTier.eq(tier);
+            if (queueType.equals(QueueType.FREE.name()))
+                return duoPost.myFreeRankTier.eq(tier);
             return duoPost.mySoloRankTier.eq(tier);
         }
         return null;
