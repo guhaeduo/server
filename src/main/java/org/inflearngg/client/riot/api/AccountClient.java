@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -46,7 +47,11 @@ public class AccountClient {
                 throw new BadRequestRiotClientErrorException(e.getResponseBodyAsString(), e.getStatusCode(), e.getResponseHeaders());
             }
             throw new HttpClientErrorException(e.getStatusCode());
-        } catch (Exception e) {
+        }
+        catch (HttpServerErrorException e) {
+            throw new HttpServerErrorException(e.getStatusCode());
+        }
+        catch (Exception e) {
             throw new RuntimeException("API 요청 중 오류가 발생 했습니다.", e);
         }
     }
