@@ -97,7 +97,7 @@ public class DuoController {
 
             }
         }
-        if (!duoPostDelete.getIsGuestPost()) {
+        if (!duoPostDelete.getIsGuestPost() && memberId == -1L) {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
 
