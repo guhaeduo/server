@@ -8,6 +8,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.UnexpectedTypeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,20 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(MethodArgumentNotValidException e) {
         final List<ErrorResponse.FieldError> fieldErrors = bindingFieldErrors(e.getBindingResult());
+        return bindingFieldErrors(ErrorCode.INVALID_INPUT_VALUE, fieldErrors);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
+        final List<ErrorResponse.FieldError> fieldErrors = new ArrayList<>();
+        e.getConstraintViolations().forEach(error -> {
+            fieldErrors.add(ErrorResponse.FieldError.builder()
+                    .field(error.getPropertyPath().toString())
+                    .value((String) error.getInvalidValue())
+                    .reason(error.getMessage())
+                    .build());
+        });
         return bindingFieldErrors(ErrorCode.INVALID_INPUT_VALUE, fieldErrors);
     }
     // mvc패턴일 경우
