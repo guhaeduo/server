@@ -98,11 +98,10 @@ public class DuoMapper {
     }
 
     private static void setRankTierDuoPost(RiotApiResponseDto.RiotPuuidAndTierInfo riotPuuidAndTierInfo, DuoPost duoPost) {
-        duoPost.setMySoloRankTier(riotPuuidAndTierInfo.getSoloRank().getTier());
+        duoPost.setMySoloRankTier(riotPuuidAndTierInfo.getSoloRank().getTier().toUpperCase());
         duoPost.setMySoloRankLevel(riotPuuidAndTierInfo.getSoloRank().getRank());
-        duoPost.setMyFreeRankTier(riotPuuidAndTierInfo.getFreeRank().getTier());
+        duoPost.setMyFreeRankTier(riotPuuidAndTierInfo.getFreeRank().getTier().toUpperCase());
         duoPost.setMyFreeRankLevel(riotPuuidAndTierInfo.getFreeRank().getRank());
-
         duoPost.setProfileIconId(riotPuuidAndTierInfo.getProfileIconId());
     }
 

@@ -19,7 +19,7 @@ public class MatchClient {
     private String API_KEY;
 
 
-    private final int MATCH_CNT = 10;
+    private final int MATCH_CNT = 20;
     String region = "asia";
     String API_URL_MathIdList = "https://"+ region + ".api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?count={cnt}";
     String API_URL_MathInfo = "https://"+ region +".api.riotgames.com/lol/match/v5/matches/{matchId}";
@@ -40,12 +40,11 @@ public class MatchClient {
             } else
                 response = restTemplate.exchange(API_URL_MathIdList, HttpMethod.GET, entity, String[].class, puuid, MATCH_CNT);
             if (response.getStatusCode().is2xxSuccessful()) {
-
                 return response.getBody();
             } else {
                 throw new RuntimeException("소환사 정보를 가져오는데 실패했습니다.");
             }
-        } catch (Exception e) {
+        }catch (Exception e) {
             throw new RuntimeException("API 요청 중 오류가 발생 했습니다.", e);
         }
     }

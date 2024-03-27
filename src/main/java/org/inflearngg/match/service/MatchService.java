@@ -4,15 +4,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.client.riot.api.MatchClient;
 import org.inflearngg.client.riot.dto.RiotAPIMatchInfo;
+import org.inflearngg.client.riot.exception.NotFoundRiotClientErrorException;
 import org.inflearngg.match.dto.process.ProcessMatchInfo;
 import org.inflearngg.match.dto.process.ProcessRankInfo;
 import org.inflearngg.match.mapper.MatchApiMapper;
 import org.inflearngg.match.mapper.RankInfoApiMapper;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import java.util.concurrent.CompletableFuture;
@@ -31,11 +35,14 @@ public class MatchService {
     private final RankInfoApiMapper rankInfoApiMapper;
     private final MatchApiMapper matchApiMapper;
 
-    private final int THRED_CNT = 3;
+    private final int THRED_CNT = 5;
 
     public String[] getMatchIdsByPuuid(String puuid, int queueType, String region) {
         // Header에 API키 셋팅
-        return matchClient.fetchMatchIdListAPI(puuid, queueType , region);
+        String[] strings = matchClient.fetchMatchIdListAPI(puuid, queueType, region);
+        if (strings.length == 0)
+            throw new NotFoundRiotClientErrorException(HttpStatus.NOT_FOUND, "소환사의 게임 정보를 찾을 수 없습니다.");
+        return strings;
 
     }
 
@@ -51,15 +58,15 @@ public class MatchService {
     public void calculateSummonerSummaryInfo(String[] matchIdList, String puuid, ProcessRankInfo rankInfo, String region) throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(THRED_CNT);
         HashMap<String, Integer> laneMap = new HashMap<>();
-        log.debug("[비동기 시작]");
+        log.info("[비동기 시작]" + LocalDateTime.now());
         for (String matchId : matchIdList) {
-//            log.info("[matchId]" + matchId);
             CompletableFuture<RiotAPIMatchInfo.MatchBasicInfo> data;
             try {
                 data = matchClient.fetchAsyncMatchData(matchId, region);
                 if (data == null) {
                     continue;
                 }
+                log.info("비동기중" +  matchId + " : " + LocalDateTime.now());
                 for (RiotAPIMatchInfo.ParticipantInfo participantInfo : data.get().getParticipants()) {
                     if (participantInfo.getPuuid().equals(puuid)) {
                         rankInfoApiMapper.setSummonerRankAndLane(participantInfo, rankInfo, laneMap);
@@ -72,6 +79,8 @@ public class MatchService {
             }
         }
         //laneMap value 값 내림차순 정렬
+        // 현재시간 출력
+        log.info("비동기중 현재 시간 : " +  LocalDateTime.now());
         setMainLaneAndSubLaneSummary(rankInfo, laneMap);
         executorService.shutdown();
 
@@ -94,8 +103,6 @@ public class MatchService {
     public List<ProcessMatchInfo> getMatchDataList(String[] matchIdList, String puuid, String region) {
         ArrayList<CompletableFuture<ProcessMatchInfo>> futures = new ArrayList<>();
         ExecutorService executorService = Executors.newFixedThreadPool(THRED_CNT);
-
-
         log.debug("[비동기 시작]");
         for (String matchId : matchIdList) {
             futures.add(CompletableFuture.supplyAsync(() -> matchClient.fetchAsyncMatchData(matchId,region))
@@ -110,18 +117,20 @@ public class MatchService {
                                 } catch (InterruptedException | ExecutionException e) {
                                     throw new RuntimeException(e);
                                 }
-
                                 return matchApiMapper.mapRiotAPIToProcessMatchInfo(riotApiData, puuid, matchId);
                             }
                     )
             );
         }
+        log.debug( "비동기중 현재 시간 : " + System.currentTimeMillis() );
         executorService.shutdown();
-        return futures.stream()
+
+        List<ProcessMatchInfo> collect = futures.stream()
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList());
-
-
+        if (collect.isEmpty())
+            throw new NotFoundRiotClientErrorException(HttpStatus.NOT_FOUND, "소환사의 게임 정보를 찾을 수 없습니다.");
+        return collect;
     }
 }
 

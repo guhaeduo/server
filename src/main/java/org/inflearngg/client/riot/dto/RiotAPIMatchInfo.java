@@ -169,7 +169,7 @@ public class RiotAPIMatchInfo {
         public static class Objectives {
             private Baron baron;
             private Dragon dragon;
-            private Horde horde;
+            private Horde horde = new Horde();
             private Inhibitor inhibitor;
             private RiftHerald riftHerald;
             private Tower tower;
@@ -180,9 +180,7 @@ public class RiotAPIMatchInfo {
             public int getDragonKills() {
                 return dragon.kills;
             }
-            public int getHordeKills() {
-                return horde.kills;
-            }
+            public int getHordeKills() {return horde.kills;}
             public int getInhibitorKills() {
                 return inhibitor.kills;
             }
