@@ -7,7 +7,7 @@ services:
     ports:
       - "6379:6379"
   app:
-    image: "gloomshin/test-docker-image:test0.1.40"
+    image: "gloomshin/test-docker-image:test0.1.41"
     ports:
       - "8080:8080"
     depends_on:
