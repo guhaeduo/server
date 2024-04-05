@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.aop.error.ErrorCode;
 import org.inflearngg.aop.error.ErrorResponse;
 import org.inflearngg.client.riot.exception.BadRequestRiotClientErrorException;
+import org.inflearngg.client.riot.exception.EmptyMatchListClientErrorException;
 import org.inflearngg.client.riot.exception.NotFoundRiotClientErrorException;
 import org.inflearngg.client.riot.exception.RiotClientErrorException;
 import org.inflearngg.login.site.exception.EmailException;
@@ -141,6 +142,13 @@ public class GlobalExceptionHandler {
         List<ErrorResponse.FieldError> errors = riotClientErrors(e.getMessage());
         return bindingFieldErrors(ErrorCode.RIOT_NOT_FOUND, errors);
     }
+    @ExceptionHandler(EmptyMatchListClientErrorException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ErrorResponse handleEmptyMatchListClientErrorException(RiotClientErrorException e) throws JsonProcessingException {
+        List<ErrorResponse.FieldError> errors = riotClientErrors(e.getMessage());
+        return bindingFieldErrors(ErrorCode.EMPTY_MATCH_LIST, errors);
+    }
+
 
     @ExceptionHandler(BadRequestRiotClientErrorException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

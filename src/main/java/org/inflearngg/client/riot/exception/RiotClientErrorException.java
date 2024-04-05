@@ -3,7 +3,6 @@ package org.inflearngg.client.riot.exception;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
 
 import java.nio.charset.Charset;
 

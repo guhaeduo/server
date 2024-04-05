@@ -29,7 +29,6 @@ public class MatchApiMapper {
         processMatchInfo.setCurrentSummonerParticipantInfo(new Team.ParticipantInfo());
         processMatchInfo.setBlue(new Team());
         processMatchInfo.setRed(new Team());
-
         setRedTeamAndBlueTeamAndMaxDamageAndCurrentSummoner(processMatchInfo.getRed(), processMatchInfo.getBlue(), riotApiData.getTeams(), riotApiData.getParticipants(), processMatchInfo.getInfo().getMaxData(), processMatchInfo, curPuuid);
 
         return processMatchInfo;

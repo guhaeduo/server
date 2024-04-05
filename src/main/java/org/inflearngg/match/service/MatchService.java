@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.inflearngg.client.riot.api.MatchClient;
 import org.inflearngg.client.riot.dto.RiotAPIMatchInfo;
+import org.inflearngg.client.riot.exception.EmptyMatchListClientErrorException;
 import org.inflearngg.client.riot.exception.NotFoundRiotClientErrorException;
 import org.inflearngg.match.dto.process.ProcessMatchInfo;
 import org.inflearngg.match.dto.process.ProcessRankInfo;
@@ -40,8 +41,8 @@ public class MatchService {
     public String[] getMatchIdsByPuuid(String puuid, int queueType, String region) {
         // Header에 API키 셋팅
         String[] strings = matchClient.fetchMatchIdListAPI(puuid, queueType, region);
-        if (strings.length == 0)
-            throw new NotFoundRiotClientErrorException(HttpStatus.NOT_FOUND, "소환사의 게임 정보를 찾을 수 없습니다.");
+//        if (strings.length == 0)
+//            throw new NotFoundRiotClientErrorException(HttpStatus.NOT_FOUND, "소환사의 게임 정보를 찾을 수 없습니다.");
         return strings;
 
     }
@@ -128,8 +129,8 @@ public class MatchService {
         List<ProcessMatchInfo> collect = futures.stream()
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList());
-        if (collect.isEmpty())
-            throw new NotFoundRiotClientErrorException(HttpStatus.NOT_FOUND, "소환사의 게임 정보를 찾을 수 없습니다.");
+//        if (collect.isEmpty())
+//            throw new EmptyMatchListClientErrorException(HttpStatus.NOT_FOUND, "소환사의 게임 정보를 찾을 수 없습니다.");
         return collect;
     }
 }

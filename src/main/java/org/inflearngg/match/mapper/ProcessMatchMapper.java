@@ -23,10 +23,12 @@ public class ProcessMatchMapper {
      * RankSummary
      */
     public MatchingResponseDto.SummonerRankInfo mapToSummonerRankInfo(ProcessRankInfo processRankInfo) {
+        log.info("가공데이터 매핑전 현재 시간: " + System.currentTimeMillis());
         if (processRankInfo == null) return new MatchingResponseDto.SummonerRankInfo();
         MatchingResponseDto.SummonerRankInfo matchingSummonerRankInfo = new MatchingResponseDto.SummonerRankInfo();
         matchingSummonerRankInfo.setInfo(mapToRankInfo(processRankInfo.getInfo()));
         matchingSummonerRankInfo.setLane(mapToLane(processRankInfo.getLane()));
+        log.info("가공데이터 매핑후 현재 시간: " + System.currentTimeMillis());
         return matchingSummonerRankInfo;
     }
 
@@ -121,6 +123,7 @@ public class ProcessMatchMapper {
      * =========================================================================================================================================================
      */
     public List<MatchingResponseDto.MatchData> mapToMatchDataList(List<ProcessMatchInfo> matchDataList) {
+        log.info("가공데이터 매핑전 현재 시간: " + System.currentTimeMillis());
         List<MatchingResponseDto.MatchData> matchingMatchDataList = new ArrayList<>();
         for (ProcessMatchInfo matchData : matchDataList) {
             if (matchData == null) continue;
@@ -138,6 +141,7 @@ public class ProcessMatchMapper {
             matchingMatchData.setBlue(mapToTeam(matchData.getBlue()));
             matchingMatchDataList.add(matchingMatchData);
         }
+        log.info("가공데이터 매핑후 현재 시간: " + System.currentTimeMillis());
         return matchingMatchDataList;
     }
 
