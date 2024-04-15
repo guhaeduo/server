@@ -21,11 +21,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
-import java.util.concurrent.ExecutorService;
 
 
 @Slf4j
@@ -59,7 +56,7 @@ public class MatchService {
 
     public void calculateSummonerSummaryInfo(String[] matchIdList, String puuid, ProcessRankInfo rankInfo, String region) throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(THRED_CNT);
-        HashMap<String, Integer> laneMap = new HashMap<>();
+        ConcurrentHashMap<String, Integer> laneMap = new ConcurrentHashMap<>();
         log.info("[비동기 시작] " + LocalDateTime.now());
 
         List<CompletableFuture<Object>> futures = new ArrayList<>();
@@ -94,7 +91,7 @@ public class MatchService {
 
     }
 
-    private static void setMainLaneAndSubLaneSummary(ProcessRankInfo rankInfo, HashMap<String, Integer> laneMap) {
+    private static void setMainLaneAndSubLaneSummary(ProcessRankInfo rankInfo, ConcurrentHashMap<String, Integer> laneMap) {
         PriorityQueue<HashMap.Entry<String, Integer>> pq = new PriorityQueue<>((a, b) -> b.getValue() - a.getValue());
         pq.addAll(laneMap.entrySet());
         if (!pq.isEmpty()) {
