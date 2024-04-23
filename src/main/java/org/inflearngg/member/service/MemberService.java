@@ -111,6 +111,16 @@ public class MemberService {
     public void deleteMember(Long memberId ) {
         // 유저유무 체크
         Member member = findMemberByMemberId(memberId);
+
+        // 연결된 인증된 소환사 삭제
+        member.getVerifySummonerList().forEach(verifySummoner -> {
+            verifySummoner.setMember(null);
+        });
+        // 연결된 게시글 삭제
+        member.getDuoPostList().forEach(duoPost -> {
+            duoPost.setMember(null);
+        });
+
         // 삭제
         memberRepository.delete(member);
     }
