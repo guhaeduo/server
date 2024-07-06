@@ -8,10 +8,15 @@ services:
       - "6379:6379"
   app:
     image: "gloomshin/test-docker-image:test0.1.45"
+    container_name: spring-app
     ports:
-      - "8080:8080"
+      - "80:8080"
+      - "443:8443"  # 호스트의 443 포트를 컨테이너의 8443 포트로 매핑
     depends_on:
       - redis
     environment:
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
+    volumes:
+      - /home/ubuntu/keystore.p12:/config/keystore.p12
+      # 호스트의 keystore.p12 파일을 컨테이너의 /config/keystore.p12 경로에 마운트
