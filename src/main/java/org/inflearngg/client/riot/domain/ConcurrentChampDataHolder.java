@@ -2,12 +2,13 @@ package org.inflearngg.client.riot.domain;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 public class ConcurrentChampDataHolder {
-
     private final AtomicInteger champGameCnt = new AtomicInteger(0);
     private final AtomicInteger champWinCnt = new AtomicInteger(0);
     private final AtomicInteger champGameDuring = new AtomicInteger(0);
@@ -50,4 +51,9 @@ public class ConcurrentChampDataHolder {
     public void sumChampKillParticipation(double killParticipation){
         champKillParticipation.addAndGet(killParticipation);
     }
+
+//    @Override
+//    public int compareTo(@NotNull ConcurrentChampDataHolder o) {
+//        return o.champGameCnt.get() - this.champGameCnt.get();
+//    }
 }
